@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
-  <title>Zocker-Hölle – Würfelspiele online</title>
+  <title>Zocker-Hölle – Spiele online</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎲%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -22,12 +22,32 @@
       <p>Zehn Phasen mit Würfelkombinationen schaffen. Für 2 bis 5 Personen.</p>
       <span class="go">Spielen</span>
     </a>
+    <a class="gamecard" href="pasch/">
+      <div class="gh"><span class="gi">🎲</span><h2>Pasch &amp; Straße</h2></div>
+      <p>Fünf Würfel, drei Würfe, dreizehn Felder füllen: Full House, Straße, Pasch. Für 2 bis 5 Personen.</p>
+      <span class="go">Spielen</span>
+    </a>
+    <a class="gamecard" href="ludo/">
+      <div class="gh"><span class="gi">🏁</span><h2>Ludo</h2></div>
+      <p>Würfeln, ziehen, Figuren rauswerfen – wer zuerst alle im Ziel hat, gewinnt. Für 2 bis 4 Personen.</p>
+      <span class="go">Spielen</span>
+    </a>
+    <a class="gamecard" href="muehle/">
+      <div class="gh"><span class="gi">⚫</span><h2>Mühle</h2></div>
+      <p>Drei Steine in eine Reihe bringen und gegnerische Steine wegnehmen. Für 2 Personen.</p>
+      <span class="go">Spielen</span>
+    </a>
+    <a class="gamecard" href="dame/">
+      <div class="gh"><span class="gi">♛</span><h2>Dame</h2></div>
+      <p>Diagonal ziehen, schlagen und zur Dame werden. Für 2 Personen.</p>
+      <span class="go">Spielen</span>
+    </a>
     <p class="muted center small">Einfach auf ein Spiel tippen, Vornamen eingeben und den Einladungs-Link an die Mitspieler schicken.</p>
   </main>
   <script>
     // Läuft schon ein Spiel in diesem Browser? Dann direkt "Zurück ins Spiel" anbieten.
     (function () {
-      var games = [['kq', 'kreuzquer/', 'Kreuz & Quer'], ['p10', 'phasen/', 'Phasenwürfeln']];
+      var games = [['kq', 'kreuzquer/', 'Kreuz & Quer'], ['p10', 'phasen/', 'Phasenwürfeln'], ['pasch', 'pasch/', 'Pasch & Straße'], ['ludo', 'ludo/', 'Ludo'], ['muehle', 'muehle/', 'Mühle'], ['dame', 'dame/', 'Dame']];
       var html = '';
       games.forEach(function (g) {
         try {

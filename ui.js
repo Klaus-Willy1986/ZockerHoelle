@@ -69,7 +69,7 @@ export function createUI(cfg) {
       <section class="card"><h2>Wer ist schon da?</h2><ul class="players">${list}</ul></section>${start}`;
   };
 
-  const helpHtml = () => `<div class="overlay" data-act="help-close"><div class="modal" role="dialog" aria-modal="true" aria-label="Spielregeln" onclick="event.stopPropagation()">
+  const helpHtml = () => `<div class="overlay" data-act="help-close"><div class="modal" role="dialog" aria-modal="true" aria-label="Spielregeln">
     <h2>${esc(cfg.helpTitle || 'Die Spielregeln')}</h2>${cfg.helpBody}
     <button class="btn primary huge" data-act="help-close">Alles klar, schließen</button></div></div>`;
 
@@ -81,7 +81,10 @@ export function createUI(cfg) {
         <button class="btn ghost" data-act="leave-now">Abbrechen</button></div>`;
     else if (S.screen === 'lobby') html = lobbyHtml();
     else if (S.screen === 'game' && S.game) html = cfg.renderGame();
+    const ov = $app.querySelector('.overlay');
+    const ovTop = ov ? ov.scrollTop : 0;
     $app.innerHTML = html + (S.ui.helpOpen ? helpHtml() : '');
+    if (ovTop) { const n = $app.querySelector('.overlay'); if (n) n.scrollTop = ovTop; }
   }
 
   function needName() {
@@ -120,7 +123,9 @@ export function createUI(cfg) {
           return sess.joinGame(el.dataset.code);
         case 'start': case 'again': return sess.hostStartGame();
         case 'help': S.ui.helpOpen = true; return render();
-        case 'help-close': S.ui.helpOpen = false; return render();
+        case 'help-close':
+          if (el.classList.contains('overlay') && ev.target !== el) return; // Klick ins Fenster schließt nicht
+          S.ui.helpOpen = false; return render();
         case 'bigger': S.ui.big = !S.ui.big; sess.set('big', S.ui.big); return render();
         case 'leave':
           if (confirm(S.role === 'host' ? 'Das Spiel wirklich beenden? Für alle Mitspieler endet es dann.' : 'Das Spiel wirklich verlassen?')) { sess.leave(); render(); }

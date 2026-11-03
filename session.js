@@ -233,8 +233,13 @@ export function createSession(cfg) {
   }
 
   // ---------- gemeinsam ----------
+  // Nur neu zeichnen, wenn sich wirklich etwas geändert hat (die Lebenszeichen alle paar Sekunden ändern nichts).
+  let lastSig = '';
   function stateChanged() {
     if (S.screen === 'lobby' || S.screen === 'game') S.screen = S.game ? 'game' : 'lobby';
+    const sig = JSON.stringify([S.screen, S.link, S.lobby, S.game]);
+    if (sig === lastSig) return;
+    lastSig = sig;
     cfg.onState();
   }
 
@@ -252,6 +257,7 @@ export function createSession(cfg) {
     H.conns.clear(); H.handle = null; G.conn = null;
     del('session'); del('hostState');
     S.screen = 'start'; S.role = null; S.room = null; S.game = null; S.lobby = []; S.link = 'ok';
+    lastSig = '';
     cfg.onLeave?.();
   }
   function leave() {

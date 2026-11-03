@@ -306,7 +306,7 @@ function startHtml() {
 }
 
 function helpHtml() {
-  return `<div class="overlay" data-act="help-close"><div class="modal" role="dialog" aria-modal="true" aria-label="Spielregeln" onclick="event.stopPropagation()">
+  return `<div class="overlay" data-act="help-close"><div class="modal" role="dialog" aria-modal="true" aria-label="Spielregeln">
     <h2>Die Spielregeln von Kreuz &amp; Quer</h2>
     <p><b>Ziel:</b> Möglichst viele Zahlen auf deinem Spielzettel ankreuzen. Wer am Ende die meisten Punkte hat, gewinnt.</p>
     <h3>Der Spielzettel</h3>
@@ -399,7 +399,9 @@ $app.addEventListener('click', async (ev) => {
     case 'pass-yes': return doPick(null);
     case 'back': S.ui.selected = null; S.ui.confirmPass = false; return render();
     case 'help': S.ui.helpOpen = true; return render();
-    case 'help-close': S.ui.helpOpen = false; return render();
+    case 'help-close':
+      if (el.classList.contains('overlay') && ev.target !== el) return;
+      S.ui.helpOpen = false; return render();
     case 'bigger': S.ui.big = !S.ui.big; sess.set('big', S.ui.big); return render();
     case 'leave':
       if (confirm(S.role === 'host' ? 'Das Spiel wirklich beenden? Für alle Mitspieler endet es dann.' : 'Das Spiel wirklich verlassen?')) {

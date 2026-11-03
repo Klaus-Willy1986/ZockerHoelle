@@ -1,17 +1,20 @@
 # Zocker-Hölle – Würfelspiele online
 
-Zwei Würfelspiele für 2–5 Personen, direkt im Browser. Kein Konto, keine Installation, reine statische Dateien (kein Build).
+Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, keine Installation, reine statische Dateien (kein Build).
 
 - **Kreuz & Quer** (`kreuzquer/`): Würfeln und in vier Farbreihen Zahlen ankreuzen.
 - **Phasenwürfeln** (`phasen/`): Zehn Phasen mit Würfelkombinationen schaffen.
+- **Pasch & Straße** (`pasch/`): Fünf Würfel, 13 Felder auf dem Zettel füllen.
+- **Ludo** (`ludo/`): Würfeln, ziehen, Figuren rauswerfen (2–4 Personen).
+- **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
 **Spielen:** Startseite öffnen → Spiel wählen → Vornamen eingeben → „Neues Spiel eröffnen“ → Einladungs-Link per WhatsApp schicken → Mitspielerin tippt auf den Link → „Spiel starten“.
 
 **Veröffentlichen:** Ordner auf GitHub Pages (Settings → Pages → Branch `main`, `/ (root)`), Netlify oder einen beliebigen Webspace legen. Nötig ist HTTPS.
 
 ## Technik
-- `session.js`: Gastgeber/Gast, Lobby, Einladung, automatische Wiederverbindung. `net.js`: Verbindung (WebRTC über PeerJS, direkt zwischen den Geräten; öffentlicher Vermittlungsserver nur für den Verbindungsaufbau).
+- `ui.js`: gemeinsame Oberfläche (Start, Einladung, Lobby, Hilfe). `session.js`: Gastgeber/Gast, Lobby, Einladung, automatische Wiederverbindung. `net.js`: Verbindung (WebRTC über PeerJS, direkt zwischen den Geräten; öffentlicher Vermittlungsserver nur für den Verbindungsaufbau).
 - Jedes Spiel: `engine.js` (Regeln, ohne Oberfläche) und `app.js` (Oberfläche).
 - Ein Gerät (Gastgeber) verwaltet das Spiel; seine Seite muss offen bleiben. Nach Neuladen/Verbindungsabbruch kehren alle automatisch zurück.
-- Tests: `npm test`. Lokaler Test ohne Internet: Spielseite mit `?mock=1` in zwei Tabs desselben Browsers öffnen.
+- Tests: `npm test` (Regeln). Durchspieltests im Browser: `tests/<spiel>.e2e.cjs` (Playwright, siehe Kopf der Datei). Lokaler Test ohne Internet: Spielseite mit `?mock=1` in zwei Tabs desselben Browsers öffnen.
 - Die Phasenliste von Phasenwürfeln steht in `phasen/engine.js` (`PHASES`) und ist dort leicht anzupassen.
