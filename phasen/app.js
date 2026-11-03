@@ -34,12 +34,7 @@ function onStateChanged() {
     if (sig !== S.ui.sig) {
       S.ui.sig = sig;
       S.ui.confirmSkip = false;
-      // Vorauswahl: die Würfel, die zählen bzw. helfen (Vorschlag)
       S.ui.keep = Array(10).fill(false);
-      if (ap.id === cid && t.stage === 'choose' && t.dice) {
-        for (const i of P.suggestKeep(t.dice, ap.phaseNo)) S.ui.keep[i] = true;
-        if (S.ui.keep.every(Boolean) && t.attempt < P.MAX_ATTEMPTS) S.ui.keep[S.ui.keep.lastIndexOf(true)] = false;
-      }
     }
     if (g.rollId !== S.ui.lastRollId) {
       const resumed = S.ui.lastRollId === 0 && g.rollId > 1;
@@ -131,12 +126,10 @@ function actionHtml() {
     html += `<div class="confirm bad"><p class="big">Leider nicht geschafft.</p><p>${t.final ? 'Damit ist dein Spiel zu Ende. Deine bisherigen Punkte bleiben.' : `Im nächsten Zug versuchst du Phase ${ap.phaseNo} noch einmal.`}</p>
       <button class="btn secondary huge" data-act="finish-yes">OK, weiter</button></div>`;
   } else {
-    html += `<p class="big">Versuch ${t.attempt} von ${P.MAX_ATTEMPTS}. Tippe auf die Würfel, die du <b>behalten</b> willst. Alle anderen werden neu gewürfelt.</p>
-      <p class="muted">Ich habe dir einen Vorschlag markiert – du kannst ihn ändern.</p>`;
+    html += `<p class="big">Versuch ${t.attempt} von ${P.MAX_ATTEMPTS}. Tippe auf die Würfel, die du <b>behalten</b> willst. Alle anderen werden neu gewürfelt.</p>`;
   }
   if (canRoll) {
-    html += `<button class="btn ${ev.ok ? 'secondary' : 'primary'} huge" data-act="reroll" ${rest === 0 ? 'disabled' : ''}>🎲 ${rest} Würfel neu würfeln (Versuch ${t.attempt + 1} von 3)</button>
-      <button class="btn ghost" data-act="suggest">Vorschlag neu markieren</button>`;
+    html += `<button class="btn ${ev.ok ? 'secondary' : 'primary'} huge" data-act="reroll" ${rest === 0 ? 'disabled' : ''}>🎲 ${rest} Würfel neu würfeln (Versuch ${t.attempt + 1} von 3)</button>`;
   }
   if (ev.ok && !t.final) {
     html += S.ui.confirmSkip
@@ -289,7 +282,7 @@ function helpHtml() {
     <p>Es zählen nur die Würfel, die für die Phase nötig sind. Joker zählen 0. Für den <b>5‑Phasen‑Bonus</b> (+40) musst du nach Phase 5 mehr als 220 Punkte haben. Wer als Erste/r alle 10 Phasen schafft, bekommt den <b>10‑Phasen‑Bonus</b> (+40).</p>
     <h3>Spielende</h3>
     <p>Hat jemand alle 10 Phasen geschafft, darf jede andere Person noch einmal versuchen, alle ihre fehlenden Phasen direkt hintereinander zu würfeln. Klappt eine Phase nicht, ist das Spiel für diese Person zu Ende. Es gewinnt, wer alle 10 Phasen geschafft hat und die meisten Punkte hat.</p>
-    <p class="muted">Keine Sorge: Das Programm erkennt selbst, ob eine Phase geschafft ist, zählt die Punkte und macht Vorschläge, welche Würfel du behalten kannst.</p>
+    <p class="muted">Keine Sorge: Das Programm erkennt selbst, ob eine Phase geschafft ist, und zählt die Punkte. Welche Würfel du behältst, entscheidest du ganz allein.</p>
     <button class="btn primary huge" data-act="help-close">Alles klar, schließen</button>
   </div></div>`;
 }
@@ -346,13 +339,6 @@ $app.addEventListener('click', async (ev) => {
     case 'toggle': {
       const i = Number(el.dataset.i);
       S.ui.keep[i] = !S.ui.keep[i];
-      return render();
-    }
-    case 'suggest': {
-      const ap = P.activePlayer(g);
-      S.ui.keep = Array(10).fill(false);
-      for (const i of P.suggestKeep(g.turn.dice, ap.phaseNo)) S.ui.keep[i] = true;
-      if (S.ui.keep.every(Boolean) && g.turn.attempt < P.MAX_ATTEMPTS) S.ui.keep[S.ui.keep.lastIndexOf(true)] = false;
       return render();
     }
     case 'finish-yes': return sess.send({ t: 'finish', note: true });

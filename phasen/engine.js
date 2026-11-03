@@ -110,7 +110,7 @@ export function evaluate(dice, phaseNo) {
   return best;
 }
 
-// Vorschlag, welche Würfel man behalten sollte (Hilfe für Spielerinnen).
+// Nur für Tests (Computergegner in den Zufallspartien). In der Oberfläche gibt es bewusst keine Vorschläge.
 export function suggestKeep(dice, phaseNo) {
   const ev = evaluate(dice, phaseNo);
   if (ev.ok) return ev.used.map((u) => u.i);
