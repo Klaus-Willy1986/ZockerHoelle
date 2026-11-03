@@ -1,12 +1,17 @@
-# Kreuz & Quer – Würfelspiel online
+# Zocker-Hölle – Würfelspiele online
 
-Würfelspiel für 2–5 Personen, online im Browser. Kein Konto, keine Installation, reine statische Dateien (kein Build).
+Zwei Würfelspiele für 2–5 Personen, direkt im Browser. Kein Konto, keine Installation, reine statische Dateien (kein Build).
 
-**Spielen:** Seite öffnen → Vornamen eingeben → „Neues Spiel eröffnen“ → Einladungs-Link per WhatsApp schicken → Mitspielerin tippt auf den Link → „Spiel starten“.
+- **Kreuz & Quer** (`kreuzquer/`): Würfeln und in vier Farbreihen Zahlen ankreuzen.
+- **Phasenwürfeln** (`phasen/`): Zehn Phasen mit Würfelkombinationen schaffen.
 
-**Veröffentlichen:** Den Ordner auf GitHub Pages (Settings → Pages → Branch `main`, Ordner `/ (root)`), Netlify oder einen beliebigen Webspace legen. Nötig ist HTTPS.
+**Spielen:** Startseite öffnen → Spiel wählen → Vornamen eingeben → „Neues Spiel eröffnen“ → Einladungs-Link per WhatsApp schicken → Mitspielerin tippt auf den Link → „Spiel starten“.
+
+**Veröffentlichen:** Ordner auf GitHub Pages (Settings → Pages → Branch `main`, `/ (root)`), Netlify oder einen beliebigen Webspace legen. Nötig ist HTTPS.
 
 ## Technik
-- `engine.js` Regeln, `net.js` Verbindung (WebRTC über PeerJS, direkt zwischen den Geräten; öffentlicher Vermittlungsserver nur für den Verbindungsaufbau), `app.js` Oberfläche.
+- `session.js`: Gastgeber/Gast, Lobby, Einladung, automatische Wiederverbindung. `net.js`: Verbindung (WebRTC über PeerJS, direkt zwischen den Geräten; öffentlicher Vermittlungsserver nur für den Verbindungsaufbau).
+- Jedes Spiel: `engine.js` (Regeln, ohne Oberfläche) und `app.js` (Oberfläche).
 - Ein Gerät (Gastgeber) verwaltet das Spiel; seine Seite muss offen bleiben. Nach Neuladen/Verbindungsabbruch kehren alle automatisch zurück.
-- Tests: `npm test`. Lokaler Test ohne Internet: `index.html?mock=1` in zwei Tabs desselben Browsers.
+- Tests: `npm test`. Lokaler Test ohne Internet: Spielseite mit `?mock=1` in zwei Tabs desselben Browsers öffnen.
+- Die Phasenliste von Phasenwürfeln steht in `phasen/engine.js` (`PHASES`) und ist dort leicht anzupassen.

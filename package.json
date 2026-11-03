@@ -1,1 +1,9 @@
-{ "name": "qwixx", "private": true, "type": "module", "scripts": { "test": "node --test tests/engine.test.mjs", "start": "npx --yes serve ." } }
+{
+  "name": "qwixx",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/kreuzquer.test.mjs tests/phasen.test.mjs",
+    "start": "npx --yes serve ."
+  }
+}

@@ -2,7 +2,9 @@
 // Es wird kein eigener Server und kein Konto benötigt.
 // Mit ?mock=1 in der Adresse wird stattdessen ein Test-Modus (BroadcastChannel, nur im selben Browser) genutzt.
 
-const PREFIX = 'kreuzquer-';
+let GAME = 'spiel';
+export const configure = (game) => { GAME = game; };
+const prefix = () => 'zockerhoelle-' + GAME + '-';
 const ICE = {
   config: {
     iceServers: [
@@ -30,7 +32,7 @@ export const isMock = () => new URLSearchParams(location.search).has('mock');
 // ---------- PeerJS ----------
 function peerHost(code, handlers) {
   return new Promise((resolve, reject) => {
-    const peer = new window.Peer(PREFIX + code, { ...ICE, debug: 0 });
+    const peer = new window.Peer(prefix() + code, { ...ICE, debug: 0 });
     let opened = false;
     peer.on('open', () => {
       opened = true;
@@ -74,7 +76,7 @@ function peerJoin(code, timeoutMs = 15000) {
     const timer = setTimeout(() => fail(new Error('timeout')), timeoutMs);
     peer.on('error', (e) => { clearTimeout(timer); fail(e); });
     peer.on('open', () => {
-      const conn = peer.connect(PREFIX + code, { reliable: true });
+      const conn = peer.connect(prefix() + code, { reliable: true });
       const wrapped = wrapPeerConn(conn);
       conn.on('open', () => {
         if (done) return;
@@ -90,7 +92,7 @@ function peerJoin(code, timeoutMs = 15000) {
 
 // ---------- Test-Modus (BroadcastChannel) ----------
 function mockHost(code, handlers) {
-  const ch = new BroadcastChannel('mock-qwixx-' + code);
+  const ch = new BroadcastChannel('mock-' + prefix() + code);
   const conns = new Map();
   ch.onmessage = (ev) => {
     const m = ev.data;
@@ -119,7 +121,7 @@ function mockHost(code, handlers) {
 function mockJoin(code) {
   return new Promise((resolve, reject) => {
     const id = Math.random().toString(36).slice(2);
-    const ch = new BroadcastChannel('mock-qwixx-' + code);
+    const ch = new BroadcastChannel('mock-' + prefix() + code);
     const l = { data: [], close: [] };
     const conn = {
       send: (d) => ch.postMessage({ to: 'host', from: id, kind: 'data', d: JSON.parse(JSON.stringify(d)) }),

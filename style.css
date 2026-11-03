@@ -135,3 +135,44 @@ details.other[open] .sheet { margin-top: 6px; }
 .modal { background: #fff; border-radius: var(--radius); padding: 18px; max-width: 640px; width: 100%; margin: 10px 0 40px; }
 .modal ol { padding-left: 1.2em; } .modal li { margin: 6px 0; }
 @media (prefers-reduced-motion: reduce) { .spin .die, .cell.opt, .logo.spin { animation: none; } }
+
+/* ===== Phasenwürfeln ===== */
+.p10dice { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.pd { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 96px; padding: 6px 2px 18px; border-radius: 14px; border: 3px solid transparent; font: inherit; color: #fff; box-shadow: 0 2px 3px rgba(0,0,0,.3); }
+button.pd { cursor: pointer; }
+.pd.col-B { background: var(--blue); } .pd.col-R { background: var(--red); } .pd.col-G { background: var(--green); } .pd.col-O { background: #c85a00; }
+.pv { font-size: 2rem; font-weight: 900; line-height: 1; }
+.pc { font-size: .6rem; font-weight: 700; margin-top: 3px; text-align: center; }
+.pd.wild .pv { font-size: 2.1rem; text-shadow: 0 0 6px rgba(255,255,255,.7); }
+.pd.wild::before { content: "★"; position: absolute; top: 2px; left: 6px; font-size: .8rem; }
+.pd.keep { border-color: #fff; outline: 4px solid #111; outline-offset: 1px; transform: translateY(-4px); }
+.pd.use { box-shadow: 0 0 0 3px #ffd54a, 0 2px 3px rgba(0,0,0,.3); }
+.pd.aside { opacity: .75; }
+.pd .tag { position: absolute; bottom: 3px; background: #111; color: #fff; font-size: .55rem; font-weight: 800; padding: 1px 6px; border-radius: 999px; white-space: nowrap; }
+.pd .tag.use { background: #ffd54a; color: #111; }
+.pd:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.dicearea { margin-bottom: 8px; }
+.phasebox h2 { font-size: 1.3rem; margin: 6px 0 4px; }
+.pstrip { display: flex; gap: 4px; }
+.pstep { flex: 1; text-align: center; border-radius: 8px; padding: 3px 0; font-weight: 800; font-size: .75rem; background: #e6e6e6; color: #555; }
+.pstep.done { background: var(--ok); color: #fff; } .pstep.now { background: var(--primary); color: #fff; outline: 3px solid #9cc0f5; }
+.banner.final { background: #b3541e; }
+.confirm.bad { background: #fff4f2; border-color: var(--warn); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+table.block { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: .85rem; }
+table.block td { padding: 6px 6px; border-top: 1px solid var(--line); }
+table.block td:first-child { width: 2em; font-weight: 800; }
+table.block td.num { text-align: right; font-weight: 800; width: 3.5em; }
+table.block tr.done td { background: #eaf6ec; } table.block tr.now td { background: #e8f0fd; font-weight: 700; }
+table.block tr.sumrow td { font-weight: 900; border-top: 2px solid #333; font-size: .95rem; }
+@media (min-width: 560px) { .pd { min-height: 112px; } .pv { font-size: 2.4rem; } .pc { font-size: .75rem; } table.block { font-size: 1rem; } }
+
+/* ===== Spielauswahl ===== */
+.gamecard { display: block; text-decoration: none; color: inherit; background: var(--card); border-radius: var(--radius); padding: 18px; margin: 14px 0; box-shadow: 0 1px 4px rgba(0,0,0,.15); border: 3px solid transparent; }
+.gamecard:hover, .gamecard:focus-visible { border-color: var(--primary); outline: none; }
+.gamecard .gh { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+.gamecard .gi { font-size: 2.6rem; width: 3.2rem; text-align: center; line-height: 1; }
+.gamecard h2 { font-size: 1.5rem; margin: 0; }
+.gamecard p { margin: 0; color: var(--muted); }
+.gamecard .go { display: block; clear: both; margin-top: 12px; background: var(--primary); color: #fff; text-align: center; font-weight: 800; font-size: 1.2rem; padding: 14px; border-radius: 12px; }
+.resume { background: #fff3cd; border: 2px solid #e0a800; }
