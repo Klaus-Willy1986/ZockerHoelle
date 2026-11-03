@@ -45,6 +45,7 @@ const base = `http://localhost:${PORT}/pasch/index.html?mock=1`;
       await me.click('[data-act=reroll]');
       await me.waitForFunction(() => !document.body.innerText.includes('rollen …'));
     }
+    await me.waitForSelector('[data-act=pick]'); // erst nach der Würfel-Animation sind die Felder antippbar
     const cats = await me.$$eval('[data-act=pick]', (els) => els.map((e) => e.dataset.cat));
     if (!cats.length) throw new Error('keine freien Felder');
     const cat = cats[Math.floor(rnd() * cats.length)];

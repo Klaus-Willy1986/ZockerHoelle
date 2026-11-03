@@ -137,7 +137,8 @@ export function suggestKeep(dice, phaseNo) {
 }
 
 // ---------- Spielstand ----------
-export const totalOf = (p) => p.scores.reduce((s, x) => s + (x || 0), 0) + (p.bonus5 || 0) + (p.bonus10 || 0);
+export const SOLO_PENALTY = 5; // Alleinspiel: 5 Punkte Abzug je Fehlversuch (Anleitung)
+export const totalOf = (p) => p.scores.reduce((s, x) => s + (x || 0), 0) + (p.bonus5 || 0) + (p.bonus10 || 0) - (p.penalty || 0);
 
 function newTurn(state, final = false) {
   const p = state.players[state.active];
@@ -147,8 +148,9 @@ function newTurn(state, final = false) {
 export function createGame(playerList) {
   const state = {
     game: 'p10',
+    solo: playerList.length === 1,
     mode: 'normal', // 'normal' | 'final' | 'over'
-    players: playerList.map((p) => ({ id: p.id, name: p.name, phaseNo: 1, scores: Array(10).fill(null), bonus5: null, bonus10: 0, stopped: false })),
+    players: playerList.map((p) => ({ id: p.id, name: p.name, phaseNo: 1, scores: Array(10).fill(null), bonus5: null, bonus10: 0, stopped: false, penalty: 0, failed10: false })),
     active: 0,
     round: 1,
     finisher: null,
@@ -219,8 +221,15 @@ export function finish(state, pid, note = true) {
     if (p.phaseNo > 10) {
       if (state.finisher === null) {
         state.finisher = idx;
-        p.bonus10 = BONUS;
-        state.recap.push(`${p.name}: Alle 10 Phasen geschafft! 10‑Phasen‑Bonus (+${BONUS})`);
+        // Alleinspiel: Bonus nur, wenn die 10. Phase beim ersten Mal gelingt
+        p.bonus10 = state.solo && p.failed10 ? 0 : BONUS;
+        state.recap.push(p.bonus10 ? `${p.name}: Alle 10 Phasen geschafft! 10‑Phasen‑Bonus (+${BONUS})` : `${p.name}: Alle 10 Phasen geschafft! (Kein 10‑Phasen‑Bonus, weil Phase 10 nicht gleich beim ersten Mal klappte.)`);
+        if (state.players.length === 1) {
+          state.mode = 'over';
+          state.endReason = 'Alle 10 Phasen geschafft!';
+          state.turn = null;
+          return { ok: true };
+        }
         state.mode = 'final';
         const n = state.players.length;
         state.queue = Array.from({ length: n - 1 }, (_, k) => (idx + 1 + k) % n);
@@ -249,6 +258,10 @@ export function finish(state, pid, note = true) {
   if (t.final) {
     p.stopped = true;
     state.recap.push(`${p.name}: Phase ${p.phaseNo} nicht geschafft – das Spiel ist für ${p.name} zu Ende`);
+  } else if (state.solo) {
+    p.penalty += SOLO_PENALTY;
+    if (p.phaseNo === 10) p.failed10 = true;
+    state.recap.push(`${p.name}: Phase ${p.phaseNo} nicht geschafft – ${SOLO_PENALTY} Punkte Abzug, im nächsten Zug noch einmal`);
   } else {
     state.recap.push(`${p.name}: Phase ${p.phaseNo} nicht geschafft – im nächsten Zug noch einmal`);
   }

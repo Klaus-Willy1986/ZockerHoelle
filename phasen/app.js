@@ -94,7 +94,8 @@ function blockHtml(p) {
   }).join('');
   const b5 = p.bonus5 == null ? '' : `<tr><td></td><td>5‑Phasen‑Bonus</td><td class="num">${p.bonus5}</td></tr>`;
   const b10 = p.bonus10 ? `<tr><td></td><td>10‑Phasen‑Bonus</td><td class="num">${p.bonus10}</td></tr>` : '';
-  return `<table class="block"><tbody>${rows}${b5}${b10}<tr class="sumrow"><td></td><td>Summe</td><td class="num">${P.totalOf(p)}</td></tr></tbody></table>`;
+  const pen = p.penalty ? `<tr><td></td><td>Fehlversuche</td><td class="num">−${p.penalty}</td></tr>` : '';
+  return `<table class="block"><tbody>${rows}${b5}${b10}${pen}<tr class="sumrow"><td></td><td>Summe</td><td class="num">${P.totalOf(p)}</td></tr></tbody></table>`;
 }
 
 function actionHtml() {
@@ -180,8 +181,34 @@ function gameHtml() {
     ${recapHtml()}${scoreboardHtml()}`;
 }
 
+let soloKey = '', soloInfo = null;
+function soloResult(g) {
+  const p = g.players[0];
+  const total = P.totalOf(p);
+  const key = `${S.room}|${g.rollId}|${total}`;
+  if (soloKey !== key) {
+    soloKey = key;
+    const prev = sess.get('p10_best', 0);
+    soloInfo = { total, prev, record: total > prev };
+    if (total > prev) sess.set('p10_best', total);
+  }
+  return soloInfo;
+}
+
 function overHtml() {
   const g = S.game;
+  if (g.players.length === 1) {
+    const p = g.players[0];
+    const r = soloResult(g);
+    return `${headerHtml()}${lostHtml()}
+      <section class="card over"><div class="trophy">${r.record ? '🏆' : '👏'}</div><h1>${r.total} Punkte!</h1>
+      <p class="center big">${r.record ? 'Neue Bestleistung! 🎉' : `Deine Bestleistung: <b>${r.prev}</b> Punkte`}</p>
+      <p class="center muted">Alle 10 Phasen geschafft${p.penalty ? `, ${p.penalty / P.SOLO_PENALTY} Fehlversuche (−${p.penalty})` : ' – ohne einen Fehlversuch'}.</p>
+      <button class="btn primary huge" data-act="again">🎲 Noch eine Runde spielen</button>
+      <button class="btn ghost" data-act="leave-now">Zurück zum Anfang</button></section>
+      ${recapHtml()}
+      <section class="card"><h2>Dein Block</h2>${blockHtml(p)}</section>`;
+  }
   const rank = P.ranking(g);
   const win = rank[0];
   const medals = ['🥇', '🥈', '🥉'];
@@ -219,6 +246,8 @@ function helpBody() {
     <h3>Die 10 Phasen</h3><ul>${phases}</ul>
     <h3>Punkte</h3>
     <p>Es zählen nur die Würfel, die für die Phase nötig sind. Joker zählen 0. Für den <b>5‑Phasen‑Bonus</b> (+40) musst du nach Phase 5 mehr als 220 Punkte haben. Wer als Erste/r alle 10 Phasen schafft, bekommt den <b>10‑Phasen‑Bonus</b> (+40).</p>
+    <h3>Allein spielen</h3>
+    <p>Du kannst auch allein spielen: Es gelten alle Regeln, aber für jeden Fehlversuch werden 5 Punkte abgezogen. Den 10‑Phasen‑Bonus bekommst du nur, wenn dir Phase 10 gleich beim ersten Mal gelingt. Versuche, deine eigene Bestleistung zu schlagen.</p>
     <h3>Spielende</h3>
     <p>Hat jemand alle 10 Phasen geschafft, darf jede andere Person noch einmal versuchen, alle ihre fehlenden Phasen direkt hintereinander zu würfeln. Klappt eine Phase nicht, ist das Spiel für diese Person zu Ende. Es gewinnt, wer alle 10 Phasen geschafft hat und die meisten Punkte hat.</p>
     <p class="muted">Keine Sorge: Das Programm erkennt selbst, ob eine Phase geschafft ist, und zählt die Punkte. Welche Würfel du behältst, entscheidest du ganz allein.</p>
@@ -227,6 +256,7 @@ function helpBody() {
 
 // ====================== Bedienung ======================
 const ui = createUI({
+  solo: true, soloText: 'Du versuchst die 10 Phasen allein zu schaffen (je Fehlversuch 5 Punkte Abzug) und kannst deine Bestleistung verbessern.',
   sess, $app,
   title: 'Phasenwürfeln', icon: '🎯', sub: 'Zehn Phasen schaffen – online zusammen spielen',
   helpTitle: 'Die Spielregeln von Phasenwürfeln', helpBody: helpBody(),

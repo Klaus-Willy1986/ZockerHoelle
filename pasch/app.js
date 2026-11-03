@@ -186,8 +186,32 @@ function gameHtml() {
     ${recapHtml()}${othersHtml()}`;
 }
 
+let soloKey = '', soloInfo = null;
+function soloResult(g) {
+  const total = P.totalOf(g.players[0]);
+  const key = `${S.room}|${g.round}|${total}`;
+  if (soloKey !== key) {
+    soloKey = key;
+    const prev = sess.get('pasch_best', 0);
+    soloInfo = { total, prev, record: total > prev };
+    if (total > prev) sess.set('pasch_best', total);
+  }
+  return soloInfo;
+}
+
 function overHtml() {
   const g = S.game;
+  if (g.players.length === 1) {
+    const r = soloResult(g);
+    const p = g.players[0];
+    return `${headerHtml()}${lostHtml()}
+      <section class="card over"><div class="trophy">${r.record ? '🏆' : '👏'}</div><h1>${r.total} Punkte!</h1>
+      <p class="center big">${r.record ? 'Neue Bestleistung! 🎉' : `Deine Bestleistung: <b>${r.prev}</b> Punkte`}</p>
+      <button class="btn primary huge" data-act="again">🎲 Noch eine Runde spielen</button>
+      <button class="btn ghost" data-act="leave-now">Zurück zum Anfang</button></section>
+      ${recapHtml()}
+      <section class="card"><h2>Dein Zettel</h2>${sheetTable(p)}</section>`;
+  }
   const rank = P.ranking(g);
   const wins = rank.filter((r) => r.place === 1);
   const medals = { 1: '🏆', 2: '🥈', 3: '🥉' };
@@ -241,6 +265,7 @@ function helpBody() {
 
 // ====================== Bedienung ======================
 const ui = createUI({
+  solo: true, soloText: 'Du füllst deinen Zettel allein aus und kannst deine Bestleistung verbessern.',
   sess, $app,
   title: 'Pasch & Straße', icon: '🎲', sub: 'Würfel-Zettelspiel – online zusammen spielen',
   helpTitle: 'Die Spielregeln von Pasch & Straße', helpBody: helpBody(),

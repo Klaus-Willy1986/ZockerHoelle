@@ -1,0 +1,32 @@
+/* ===== Barrikade ===== */
+.bk-banner { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bk-banner small { font-size: 1rem; font-weight: 700; }
+.bk-bwho { display: inline-flex; vertical-align: middle; background: #fff; color: #111; border-radius: 999px; padding: 2px 12px 2px 6px; margin-left: 6px; font-size: 1.05rem; }
+.bk-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 1rem; white-space: nowrap; }
+.bk-ico { width: 26px; height: 26px; flex: none; vertical-align: middle; }
+.bk-chip b { font-weight: 800; }
+.bk-dieline { display: flex; align-items: center; gap: 16px; }
+.bk-dieline p { margin: 0 0 .3em; }
+.bk-dieline.small { margin-top: 10px; gap: 10px; }
+.bk-dieline.small .die { width: 40px; height: 40px; padding: 4px; }
+.bk-die.die { width: 72px; height: 72px; padding: 8px; flex: none; }
+.bk-spin { animation: bkwob .18s infinite alternate; }
+@keyframes bkwob { from { transform: rotate(-12deg) translateY(-3px); } to { transform: rotate(12deg) translateY(2px); } }
+.bk-key { font-weight: 700; margin: 6px 0; }
+.bk-k { padding: 1px 8px; border-radius: 8px; color: #fff; font-weight: 800; }
+.bk-k.free { background: #1b7a2b; } .bk-k.cap { background: #c62828; } .bk-k.bar { background: #7b1fa2; }
+.bk-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.bk-tools .btn { flex: 1 1 30%; margin: 0; min-height: 52px; padding: 8px 6px; font-size: .9rem; }
+.bk-scroll { overflow: auto; max-height: max(420px, 78vh); border: 3px solid #7a6a3a; border-radius: 16px; background: #f3e3a3; touch-action: pan-x pan-y; }
+@media (min-width: 780px) { .bk-scroll { max-height: none; } }
+.bk-board { display: block; margin: 0 auto; max-width: none; height: auto; }
+.bk-hit { cursor: pointer; outline: none; }
+.bk-hit:focus-visible circle:first-child { stroke: #000; stroke-width: 6; }
+.bk-pulse { animation: bkpulse 1s ease-in-out infinite; }
+@keyframes bkpulse { 0%, 100% { opacity: 1; stroke-width: 5; } 50% { opacity: .45; stroke-width: 8; } }
+.bk-legend { font-size: .85rem; color: var(--muted); margin: 8px 2px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.bk-legend .bk-ico { width: 22px; height: 22px; }
+.bk-players li { align-items: flex-start; }
+.bk-players .bk-chip { flex: none; min-width: 5.5em; }
+.ranking .bk-chip { vertical-align: middle; }
+@media (prefers-reduced-motion: reduce) { .bk-pulse, .bk-spin { animation: none; } }

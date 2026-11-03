@@ -149,3 +149,52 @@ test('Zufallspartien mit Vorschlags-Hilfe enden immer', () => {
     assert.ok(rk[0].finished);
   }
 });
+
+test('Alleinspiel: 5 Punkte Abzug je Fehlversuch, Spiel endet nach Phase 10', () => {
+  const g = P.createGame([{ id: 'p0', name: 'Solo' }]);
+  assert.equal(g.solo, true);
+  const t = g.turn;
+  // Fehlversuch bei Phase 1
+  t.stage = 'choose'; t.attempt = 3; t.started = true; t.dice = dice(1, 2, 3, 4, 5, 6, 7, 8, 9, 10); t.eval = P.evaluate(t.dice, 1);
+  P.finish(g, 'p0');
+  assert.equal(g.players[0].penalty, 5);
+  assert.equal(P.totalOf(g.players[0]), -5);
+  assert.equal(g.players[0].phaseNo, 1);
+  // Phase 10 gleich beim ersten Mal -> Bonus; Spiel zu Ende
+  const p = g.players[0]; p.phaseNo = 10;
+  g.turn = { stage: 'choose', attempt: 1, dice: dice(4, 4, 4, 4, 4, 2, 2, 2, 1, 1), kept: Array(10).fill(false), eval: null, startPhase: 10, final: false, started: true };
+  g.turn.eval = P.evaluate(g.turn.dice, 10);
+  P.finish(g, 'p0');
+  assert.equal(g.mode, 'over');
+  assert.equal(p.bonus10, 40);
+});
+test('Alleinspiel: Kein 10-Phasen-Bonus nach Fehlversuch bei Phase 10', () => {
+  const g = P.createGame([{ id: 'p0', name: 'Solo' }]);
+  const p = g.players[0]; p.phaseNo = 10;
+  g.turn = { stage: 'choose', attempt: 3, dice: dice(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), kept: Array(10).fill(false), eval: null, startPhase: 10, final: false, started: true };
+  g.turn.eval = P.evaluate(g.turn.dice, 10);
+  P.finish(g, 'p0');
+  assert.equal(p.failed10, true);
+  g.turn = { stage: 'choose', attempt: 2, dice: dice(4, 4, 4, 4, 4, 2, 2, 2, 1, 1), kept: Array(10).fill(false), eval: null, startPhase: 10, final: false, started: true };
+  g.turn.eval = P.evaluate(g.turn.dice, 10);
+  P.finish(g, 'p0');
+  assert.equal(g.mode, 'over');
+  assert.equal(p.bonus10, 0);
+});
+test('Alleinspiel: Zufallspartien enden', () => {
+  for (let n = 0; n < 30; n++) {
+    const g = P.createGame([{ id: 'p0', name: 'Solo' }]);
+    let guard = 0;
+    while (g.mode !== 'over' && guard++ < 50000) {
+      assert.ok(P.roll(g, 'p0', null).ok);
+      while (g.turn.attempt < 3 && !g.turn.eval.ok) {
+        const k = Array(10).fill(false);
+        for (const i of P.suggestKeep(g.turn.dice, P.activePlayer(g).phaseNo)) k[i] = true;
+        if (k.every(Boolean)) k[0] = false;
+        assert.ok(P.roll(g, 'p0', k).ok);
+      }
+      assert.ok(P.finish(g, 'p0', true).ok);
+    }
+    assert.equal(g.mode, 'over');
+  }
+});

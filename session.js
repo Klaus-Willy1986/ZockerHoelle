@@ -150,13 +150,25 @@ export function createSession(cfg) {
 
   function hostStartGame() {
     const players = S.lobby.filter((p) => p.connected);
-    if (players.length < 2) return;
+    if (players.length < (S.room === 'SOLO' ? 1 : 2)) return;
     const n = players.length;
     const shift = H.starterShift++ % n;
     const order = [...players.slice(shift), ...players.slice(0, shift)];
     S.lobby = order.concat(S.lobby.filter((p) => !p.connected));
     S.game = cfg.newGame(order.map((p) => ({ id: p.id, name: p.name })));
     hostBroadcast();
+  }
+
+  // ---------- Allein spielen (ohne Netzwerk) ----------
+  function startSolo(restore) {
+    S.role = 'host';
+    S.room = 'SOLO';
+    S.lobby = restore?.lobby || [{ id: cid, name: S.name, connected: true }];
+    S.game = restore?.game || cfg.newGame([{ id: cid, name: S.name }]);
+    S.screen = 'game';
+    set('session', { role: 'host', room: 'SOLO', ts: Date.now() });
+    hostBroadcast();
+    wakeLock();
   }
 
   // ---------- Gast ----------
@@ -286,7 +298,10 @@ export function createSession(cfg) {
     const sess = get('session');
     const fresh = sess && Date.now() - sess.ts < SESSION_MAX_AGE;
     if (fresh && (!invited || invited === sess.room) && S.name) {
-      if (sess.role === 'host') {
+      if (sess.role === 'host' && sess.room === 'SOLO') {
+        const hs = get('hostState');
+        if (hs && hs.game) { startSolo(hs); return true; }
+      } else if (sess.role === 'host') {
         const hs = get('hostState');
         if (hs && hs.room === sess.room) { startHosting(hs); return true; }
       } else {
@@ -297,5 +312,5 @@ export function createSession(cfg) {
     return false;
   }
 
-  return { S, cid, get, set, link, startHosting, joinGame, hostStartGame, send, leave, boot, Net };
+  return { S, cid, get, set, link, startHosting, startSolo, joinGame, hostStartGame, send, leave, boot, Net };
 }
