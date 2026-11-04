@@ -1,4 +1,5 @@
 import * as P from './engine.js';
+import { chooseAction } from './ai.js';
 import { createSession } from '../session.js';
 import { createUI, esc } from '../ui.js';
 
@@ -13,6 +14,16 @@ const sess = createSession({
     if (msg.t === 'roll') P.roll(state, pid);
     else if (msg.t === 'move') P.move(state, pid, String(msg.piece), msg.to);
     else if (msg.t === 'place') P.place(state, pid, msg.node);
+  },
+  bot: {
+    delay: 900,
+    step: (g, level) => {
+      if (!g || g.phase === 'over') return null;
+      const ap = P.activePlayer(g);
+      if (!ap || !String(ap.id).startsWith('bot')) return null;
+      const msg = chooseAction(g, ap.id, level, Math.random);
+      return msg ? { id: ap.id, msg } : null;
+    },
   },
   render: () => render(),
   onState: () => onStateChanged(),
@@ -333,6 +344,7 @@ const ui = createUI({
   title: 'Barrikade', icon: '🚧', sub: 'Würfeln, ziehen, Sperren versetzen – online zusammen spielen',
   helpTitle: 'Die Spielregeln von Barrikade', helpBody: helpBody(),
   minPlayers: 2,
+  bots: [1, 2, 3], levels: ['Leicht', 'Mittel'],
   renderGame: () => gameHtml(),
   onAct: (act, el) => {
     const g = S.game;
