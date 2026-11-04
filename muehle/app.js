@@ -210,9 +210,10 @@ function controlsHtml(g) {
 function gameHtml() {
   const g = S.game;
   if (g.mode === 'over') return overHtml();
+  // Das Brett steht an fester Stelle; die wechselnde Aufgabe („Setze …“, „Ziehe …“) steht darunter.
   return `${ui.header()}${ui.lost()}${bannerHtml()}
-    <section class="card mh-statcard">${statusHtml(g)}</section>
     <section class="card mh-board-card">${boardHtml(g, true)}${legendHtml(g)}</section>
+    <section class="card mh-statcard">${statusHtml(g)}</section>
     ${playersHtml(g)}
     ${recapHtml(g)}${controlsHtml(g)}`;
 }

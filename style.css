@@ -47,7 +47,7 @@ p { margin: .4em 0; }
 .top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; padding: 4px 0; }
 .room { font-size: 1rem; }
 .topbtns { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px 0; }
-.banner { background: #3b3b42; color: #fff; text-align: center; font-size: 1.4rem; font-weight: 800; padding: 14px; border-radius: var(--radius); margin: 8px 0; }
+.banner { min-height: 4.4rem; display: flex; align-items: center; justify-content: center; background: #3b3b42; color: #fff; text-align: center; font-size: 1.4rem; font-weight: 800; padding: 14px; border-radius: var(--radius); margin: 8px 0; }
 .banner.mine { background: var(--ok); }
 .banner.done { background: #6a3fb5; }
 .lostbar, .notice { background: #fff3cd; border: 2px solid #e0a800; color: #4d3b00; padding: 12px 14px; border-radius: 12px; margin: 8px 0; font-weight: 600; }
@@ -185,3 +185,10 @@ table.block tr.sumrow td { font-weight: 900; border-top: 2px solid #333; font-si
 .coach .btn.mini { align-self: flex-end; margin: 0; }
 .coach-target { outline: 5px solid #ffb300 !important; outline-offset: 3px; animation: pulse 1s infinite; position: relative; z-index: 5; }
 .coachcard { border: 3px solid #ffb300; }
+
+/* ===== Ruhiges Layout ===== */
+.banner-in { display: block; }
+/* Die Anleitung hat immer dieselbe Höhe und läuft oben mit, damit nichts springt */
+.coach { position: sticky; top: 0; z-index: 30; height: 8.6rem; overflow-y: auto; justify-content: space-between; }
+.coach-t { font-size: 1.1rem; }
+.stable-gap { pointer-events: none; }

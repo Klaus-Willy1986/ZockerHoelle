@@ -140,6 +140,29 @@ export function createUI(cfg) {
     if (S.ui.speak && !S.ui.helpOpen && coachNow.text && coachNow.text !== lastCoach) { lastCoach = coachNow.text; say(coachNow.text); }
   }
 
+  // ---------- Spielfeld an fester Stelle halten ----------
+  // Über dem Spielfeld erscheinen und verschwinden Texte und Knöpfe. Damit das Feld nicht auf und ab springt,
+  // merken wir uns, wie weit unten es schon war, und füllen den Platz bei weniger Text mit einer Lücke auf.
+  const STABLE = '#board, .lu-board, .mh-board, .bk-scroll, .fw-wrap, #dice, .pz-sheet';
+  const stab = { key: '', tops: {} };
+  function stabilize() {
+    const key = `${window.innerWidth}|${S.ui.big ? 1 : 0}|${S.screen}|${S.game ? S.game.players.length : 0}`;
+    if (stab.key !== key) { stab.key = key; stab.tops = {}; }
+    $app.querySelectorAll(STABLE).forEach((el) => {
+      const id = el.id || String(el.className && el.className.baseVal !== undefined ? el.className.baseVal : el.className).split(' ')[0];
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      const max = Math.max(stab.tops[id] || 0, top);
+      stab.tops[id] = max;
+      const gap = Math.round(max - top);
+      if (gap > 1 && el.parentNode) {
+        const sp = document.createElement('div');
+        sp.className = 'stable-gap'; sp.setAttribute('aria-hidden', 'true'); sp.style.height = gap + 'px';
+        el.parentNode.insertBefore(sp, el);
+      }
+    });
+  }
+
+  let lastScreenSeen = '';
   function render() {
     document.documentElement.classList.toggle('big', !!S.ui.big);
     let html = '';
@@ -148,10 +171,17 @@ export function createUI(cfg) {
         <button class="btn ghost" data-act="leave-now">Abbrechen</button></div>`;
     else if (S.screen === 'lobby') html = lobbyHtml();
     else if (S.screen === 'game' && S.game) html = coachHtml() + cfg.renderGame();
+    // Beim Wechsel des Bildschirms (Start → Lobby → Spiel) wieder ganz nach oben
+    if (lastScreenSeen !== S.screen) { lastScreenSeen = S.screen; window.scrollTo(0, 0); }
     const ov = $app.querySelector('.overlay');
     const ovTop = ov ? ov.scrollTop : 0;
     $app.innerHTML = html + (S.ui.helpOpen ? helpHtml() : '');
     if (ovTop) { const n = $app.querySelector('.overlay'); if (n) n.scrollTop = ovTop; }
+    if (S.screen === 'game') {
+      // Statuszeilen: Inhalt in einen Block fassen, damit sie gleich hoch bleiben und mittig stehen
+      $app.querySelectorAll('.banner').forEach((b) => { if (!(b.firstElementChild && b.firstElementChild.classList.contains('banner-in'))) b.innerHTML = `<span class="banner-in">${b.innerHTML}</span>`; });
+      stabilize();
+    }
     coachAfterRender();
     announce();
   }

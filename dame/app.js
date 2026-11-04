@@ -184,9 +184,11 @@ function gameHtml() {
   const flip = m.me === 1;
   const top = flip ? 0 : 1; // Gegenüber oben, ich unten
   const bottom = flip ? 1 : 0;
-  return `${headerHtml()}${lostHtml()}${bannerHtml(m)}${drawHtml(m)}${hintHtml(m)}
+  // Das Brett steht an fester Stelle; wechselnde Hinweise (Schlagzwang, Remis, Auswahl) stehen darunter.
+  return `${headerHtml()}${lostHtml()}${bannerHtml(m)}
     ${playerCard(g, m.me >= 0 ? 1 - m.me : top)}
     ${boardHtml(g, { m, flip })}
+    ${drawHtml(m)}${hintHtml(m)}
     ${playerCard(g, m.me >= 0 ? m.me : bottom)}
     ${recapHtml(g)}${m.me >= 0 ? actionsHtml(m) : ''}`;
 }

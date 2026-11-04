@@ -44,3 +44,6 @@ button.dm-sq:focus-visible { outline: 4px solid #ffb300; outline-offset: -4px; z
 .dm-count { display: flex; justify-content: space-between; gap: 8px; }
 .dm-note { font-size: .95rem; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { button.dm-sq.can .dm-pc { animation: none; } .dm-pc { transition: none; } }
+
+/* Spielerkarten gleich hoch halten, damit das Brett nicht springt */
+.dm-pl { min-height: 7.4rem; }
