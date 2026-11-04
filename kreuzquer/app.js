@@ -1,9 +1,9 @@
 import * as E from './engine.js';
+import { chooseAction } from './ai.js';
 import { createSession } from '../session.js';
-import * as Net from '../net.js';
+import { createUI, esc } from '../ui.js';
 
 const $app = document.getElementById('app');
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 const sess = createSession({
   game: 'kq',
@@ -16,11 +16,25 @@ const sess = createSession({
   render: () => render(),
   onState: () => onStateChanged(),
   onLeave: () => { S.ui = { ...S.ui, selected: null, confirmPass: false, rolling: false, lastRollId: 0 }; },
+  bot: {
+    delay: 900,
+    // Der erste Computer, der noch wählen (oder würfeln) muss, ist dran; danach kommt step erneut.
+    step: (g, level) => {
+      if (!g || g.phase === 'over') return null;
+      const ids = g.phase === 'roll' ? [g.players[g.active].id] : E.waitingFor(g);
+      for (const id of ids) {
+        if (!String(id).startsWith('bot')) continue;
+        const msg = chooseAction(g, id, level, Math.random);
+        if (msg) return { id, msg };
+      }
+      return null;
+    },
+  },
 });
 const S = sess.S;
 const cid = sess.cid;
-S.ui = { selected: null, confirmPass: false, rolling: false, lastRollId: 0, helpOpen: false, big: sess.get('big', false) };
-const link = sess.link;
+S.ui = { selected: null, confirmPass: false, rolling: false, lastRollId: 0 };
+
 function doRoll() { sess.send({ t: 'roll' }); }
 function doPick(move) {
   S.ui.selected = null;
@@ -204,20 +218,6 @@ function othersHtml() {
   }).join('')}</section>`;
 }
 
-function headerHtml() {
-  return `<header class="top">
-    <div class="room">Spiel <b>${esc(S.room || '')}</b></div>
-    <div class="topbtns">
-      <button class="btn mini" data-act="bigger" aria-label="Schrift größer oder kleiner">A⁺ Schrift</button>
-      <button class="btn mini" data-act="help">? Regeln</button>
-      <button class="btn mini" data-act="leave">Verlassen</button>
-    </div></header>`;
-}
-
-function lostHtml() {
-  return S.link === 'lost'
-    ? `<div class="lostbar" role="alert">Die Verbindung ist kurz unterbrochen. Bitte nicht weggehen – wir verbinden dich automatisch wieder …</div>` : '';
-}
 
 function gameHtml() {
   const g = S.game;
@@ -225,7 +225,7 @@ function gameHtml() {
   const waiting = E.waitingFor(g);
   const options = me && waiting.includes(cid) && !S.ui.rolling ? E.legalMoves(g, cid) : [];
   if (g.phase === 'over') return overHtml();
-  return `${headerHtml()}${lostHtml()}${bannerHtml()}
+  return `${ui.header()}${ui.lost()}${bannerHtml()}
     <section class="card"><div id="dice">${diceHtml(g, false)}</div></section>
     <section class="card action">${actionHtml()}</section>
     ${recapHtml()}
@@ -249,7 +249,7 @@ function overHtml() {
   const again = S.role === 'host'
     ? `<button class="btn primary huge" data-act="again">🎲 Noch eine Runde spielen</button>`
     : `<p class="muted center">Der Gastgeber kann ein neues Spiel starten. Du bleibst einfach auf dieser Seite.</p>`;
-  return `${headerHtml()}${lostHtml()}
+  return `${ui.header()}${ui.lost()}
     <section class="card over"><div class="trophy">🏆</div><h1>${headline}</h1><p class="center muted">${esc(g.endReason || '')}</p>
     <ol class="ranking">${list}</ol>${again}
     <button class="btn ghost" data-act="leave-now">Zurück zum Anfang</button></section>
@@ -257,57 +257,8 @@ function overHtml() {
     <section class="card"><h2>Alle Spielzettel</h2>${g.players.map((p) => `<details class="other"><summary><b>${esc(p.name)}</b></summary>${sheetHtml(p, { small: true })}</details>`).join('')}</section>`;
 }
 
-function lobbyHtml() {
-  const isHost = S.role === 'host';
-  const list = S.lobby.map((p, i) => `<li><span class="dot ${p.connected ? 'on' : ''}"></span>${esc(p.name)}${p.id === cid ? ' (du)' : ''}${i === 0 ? ' – Gastgeber' : ''}</li>`).join('');
-  const url = S.room ? link() : '';
-  const invite = isHost ? `
-    <section class="card"><h2>1. Lade deine Mitspieler ein</h2>
-      <p class="big">Dein Spiel-Code lautet:</p><div class="code" aria-label="Spiel-Code ${esc(S.room)}">${esc(S.room || '')}</div>
-      <p class="muted">Am einfachsten: Schicke den Einladungs-Link. Wer darauf tippt, ist sofort im Spiel.</p>
-      <a class="btn primary huge" href="https://wa.me/?text=${encodeURIComponent('Komm zu Kreuz & Quer! Tippe hier, um mitzuspielen: ' + url)}" target="_blank" rel="noopener">Per WhatsApp einladen</a>
-      <button class="btn secondary" data-act="copy">Einladungs-Link kopieren</button>
-      ${navigator.share ? `<button class="btn secondary" data-act="share">Anders teilen (E-Mail, SMS …)</button>` : ''}
-      <p class="muted small">Oder: Auf <b>${esc(location.host + location.pathname)}</b> den Code <b>${esc(S.room)}</b> eingeben.</p>
-    </section>` : '';
-  const start = isHost
-    ? `<section class="card"><h2>2. Los geht’s</h2>${S.lobby.filter((p) => p.connected).length < 2
-      ? `<p class="big">Sobald mindestens eine weitere Person da ist, kannst du starten.</p>`
-      : `<button class="btn primary huge" data-act="start">▶ Spiel starten</button>`}</section>`
-    : `<section class="card"><p class="big center">Du bist dabei! 🎉<br>Bitte einen Moment warten, bis der Gastgeber das Spiel startet.</p></section>`;
-  return `${headerHtml()}${lostHtml()}${invite}
-    <section class="card"><h2>Wer ist schon da?</h2><ul class="players">${list}</ul></section>${start}`;
-}
-
-function startHtml() {
-  const params = new URLSearchParams(location.search);
-  const invited = Net.cleanCode(params.get('raum'));
-  const msg = S.message ? `<div class="notice ${S.message.tone}" role="alert">${esc(S.message.text)}</div>` : '';
-  const nameField = `<label class="lbl" for="name">Wie heißt du?</label>
-    <input id="name" class="input" type="text" maxlength="14" autocomplete="given-name" placeholder="Dein Vorname" value="${esc(S.name)}">`;
-  if (invited.length === 4) {
-    return `<div class="hero"><div class="logo">🎲</div><h1>Kreuz &amp; Quer</h1><p class="sub">Du wurdest zu einem Spiel eingeladen!</p></div>
-      <section class="card">${msg}${nameField}
-      <button class="btn primary huge" data-act="join-invited" data-code="${invited}">Mitspielen</button>
-      <button class="btn ghost" data-act="help">Wie funktioniert das Spiel?</button></section>`;
-  }
-  return `<div class="hero"><div class="logo">🎲</div><h1>Kreuz &amp; Quer</h1><p class="sub">Das Würfelspiel – online zusammen spielen</p></div>
-    <section class="card">${msg}${nameField}
-      <button class="btn primary huge" data-act="host">🎲 Neues Spiel eröffnen</button>
-      <p class="muted center">Du bekommst einen Einladungs-Link für deine Mitspieler.</p>
-    </section>
-    <section class="card"><h2>Du hast einen Code bekommen?</h2>
-      <label class="lbl" for="code">Code (4 Buchstaben)</label>
-      <input id="code" class="input code-in" type="text" maxlength="4" autocapitalize="characters" autocomplete="off" placeholder="z. B. KFRT">
-      <button class="btn secondary huge" data-act="join-code">Spiel beitreten</button>
-    </section>
-    <section class="card"><button class="btn ghost" data-act="help">Wie funktioniert das Spiel?</button>
-      <a class="btn ghost" href="../">← Zur Spielauswahl</a></section>`;
-}
-
-function helpHtml() {
-  return `<div class="overlay" data-act="help-close"><div class="modal" role="dialog" aria-modal="true" aria-label="Spielregeln">
-    <h2>Die Spielregeln von Kreuz &amp; Quer</h2>
+function helpBody() {
+  return `
     <p><b>Ziel:</b> Möglichst viele Zahlen auf deinem Spielzettel ankreuzen. Wer am Ende die meisten Punkte hat, gewinnt.</p>
     <h3>Der Spielzettel</h3>
     <p>Es gibt vier farbige Reihen. <b>Rot und Gelb</b> gehen von <b>2 bis 12</b>, <b>Grün und Blau</b> von <b>12 bis 2</b>. Du kreuzt immer <b>von links nach rechts</b> an. Du darfst Zahlen überspringen – aber übersprungene Zahlen sind für immer verloren.</p>
@@ -325,116 +276,40 @@ function helpHtml() {
     <h3>Punkte</h3>
     <p>Je mehr Kreuze in einer Reihe, desto mehr Punkte: 1 Kreuz = 1, 2 = 3, 3 = 6, 4 = 10, 5 = 15, 6 = 21, 7 = 28, 8 = 36, 9 = 45, 10 = 55, 11 = 66, 12 = 78. Davon werden 5 Punkte pro Fehlwurf abgezogen.</p>
     <p class="muted">Keine Sorge: Das Programm zeigt dir nur Möglichkeiten an, die erlaubt sind, und rechnet die Punkte für dich aus.</p>
-    <button class="btn primary huge" data-act="help-close">Alles klar, schließen</button>
-  </div></div>`;
+`;
 }
 
-function render() {
-  document.documentElement.classList.toggle('big', !!S.ui.big);
-  let html = '';
-  if (S.screen === 'start') html = startHtml();
-  else if (S.screen === 'connecting') html = `<div class="hero"><div class="logo spin">🎲</div><h1>Einen Moment …</h1><p class="sub">${esc(S.connectText || '')}</p>
-      <button class="btn ghost" data-act="leave-now">Abbrechen</button></div>`;
-  else if (S.screen === 'lobby') html = lobbyHtml();
-  else if (S.screen === 'game' && S.game) html = gameHtml();
-  $app.innerHTML = html + (S.ui.helpOpen ? helpHtml() : '');
-}
+function render() { ui.render(); }
 
 // ====================== Bedienung ======================
-function readName() {
-  const el = document.getElementById('name');
-  const n = (el ? el.value : S.name).trim().slice(0, 14);
-  return n;
-}
-function needName() {
-  const n = readName();
-  if (!n) {
-    S.message = { tone: 'warn', text: 'Bitte trage zuerst deinen Vornamen ein.' };
-    render();
-    document.getElementById('name')?.focus();
-    return null;
-  }
-  S.name = n; sess.set('name', n);
-  return n;
-}
-
-$app.addEventListener('click', async (ev) => {
-  const el = ev.target.closest('[data-act]');
-  if (!el) return;
-  const act = el.dataset.act;
-  const g = S.game;
-  switch (act) {
-    case 'host':
-      if (!needName()) return;
-      S.message = null;
-      return sess.startHosting(null);
-    case 'join-code': {
-      if (!needName()) return;
-      const code = Net.cleanCode(document.getElementById('code')?.value);
-      if (code.length !== 4) { S.message = { tone: 'warn', text: 'Der Code besteht aus 4 Buchstaben.' }; render(); return; }
-      S.message = null;
-      return sess.joinGame(code);
-    }
-    case 'join-invited':
-      if (!needName()) return;
-      S.message = null;
-      return sess.joinGame(el.dataset.code);
-    case 'start': return sess.hostStartGame();
-    case 'again': return sess.hostStartGame();
-    case 'roll': return doRoll();
-    case 'move': {
-      const m = E.legalMoves(g, cid).find((x) => x.color === el.dataset.color && x.idx === Number(el.dataset.idx));
-      S.ui.selected = m || null; S.ui.confirmPass = false;
-      return render();
-    }
-    case 'cell': {
-      const m = E.legalMoves(g, cid).find((x) => x.color === el.dataset.color && x.idx === Number(el.dataset.idx));
-      S.ui.selected = m || null; S.ui.confirmPass = false;
-      render();
-      document.querySelector('.action')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-    case 'confirm': return S.ui.selected && doPick(S.ui.selected);
-    case 'pass': S.ui.confirmPass = true; S.ui.selected = null; return render();
-    case 'pass-yes': return doPick(null);
-    case 'back': S.ui.selected = null; S.ui.confirmPass = false; return render();
-    case 'help': S.ui.helpOpen = true; return render();
-    case 'help-close':
-      if (el.classList.contains('overlay') && ev.target !== el) return;
-      S.ui.helpOpen = false; return render();
-    case 'bigger': S.ui.big = !S.ui.big; sess.set('big', S.ui.big); return render();
-    case 'leave':
-      if (confirm(S.role === 'host' ? 'Das Spiel wirklich beenden? Für alle Mitspieler endet es dann.' : 'Das Spiel wirklich verlassen?')) {
-        sess.leave(); render();
+const ui = createUI({
+  sess, $app,
+  bots: [1, 2, 3], levels: ['Leicht', 'Mittel'],
+  title: 'Kreuz & Quer', icon: '🎲', sub: 'Das Würfelspiel – online zusammen spielen',
+  helpTitle: 'Die Spielregeln von Kreuz & Quer', helpBody: helpBody(),
+  renderGame: () => gameHtml(),
+  onAct: (act, el) => {
+    const g = S.game;
+    switch (act) {
+      case 'roll': return doRoll();
+      case 'move': {
+        const m = E.legalMoves(g, cid).find((x) => x.color === el.dataset.color && x.idx === Number(el.dataset.idx));
+        S.ui.selected = m || null; S.ui.confirmPass = false;
+        return render();
       }
-      return;
-    case 'leave-now':
-      sess.leave(); render(); return;
-    case 'copy':
-      try { await navigator.clipboard.writeText(link()); el.textContent = '✔ Link kopiert!'; }
-      catch { prompt('Diesen Link bitte kopieren und verschicken:', link()); }
-      return;
-    case 'share':
-      try { await navigator.share({ title: 'Kreuz & Quer', text: 'Komm zu Kreuz & Quer! Tippe hier, um mitzuspielen:', url: link() }); } catch { /* abgebrochen */ }
-      return;
-  }
+      case 'cell': {
+        const m = E.legalMoves(g, cid).find((x) => x.color === el.dataset.color && x.idx === Number(el.dataset.idx));
+        S.ui.selected = m || null; S.ui.confirmPass = false;
+        render();
+        document.querySelector('.action')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return undefined;
+      }
+      case 'confirm': return S.ui.selected && doPick(S.ui.selected);
+      case 'pass': S.ui.confirmPass = true; S.ui.selected = null; return render();
+      case 'pass-yes': return doPick(null);
+      case 'back': S.ui.selected = null; S.ui.confirmPass = false; return render();
+    }
+    return undefined;
+  },
 });
-
-// Enter im Namens-/Code-Feld
-$app.addEventListener('keydown', (ev) => {
-  if (ev.key !== 'Enter') return;
-  if (ev.target.id === 'code') $app.querySelector('[data-act="join-code"]')?.click();
-  else if (ev.target.id === 'name') ($app.querySelector('[data-act="join-invited"]') || $app.querySelector('[data-act="host"]'))?.click();
-});
-$app.addEventListener('input', (ev) => {
-  if (ev.target.id === 'code') ev.target.value = Net.cleanCode(ev.target.value);
-});
-
-// ====================== Start ======================
-(function boot() {
-  if (!window.Peer && !Net.isMock()) {
-    $app.innerHTML = '<div class="notice warn">Die Spielbibliothek konnte nicht geladen werden. Bitte lade die Seite neu.</div>';
-    return;
-  }
-  if (!sess.boot()) render();
-})();
+ui.boot();
