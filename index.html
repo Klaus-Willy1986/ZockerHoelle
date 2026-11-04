@@ -48,6 +48,7 @@
       <span class="go">Spielen</span>
     </a>
     <p class="muted center small">Einfach auf ein Spiel tippen, Vornamen eingeben und den Einladungs-Link an die Mitspieler schicken.</p>
+    <p id="statsnote" class="muted center small" hidden>Diese Seite zählt anonym (ohne Cookies, ohne Namen), wie oft gespielt wird. Spielstände und Namen werden nicht gespeichert oder weitergegeben.</p>
   </main>
   <script>
     // Läuft schon ein Spiel in diesem Browser? Dann direkt "Zurück ins Spiel" anbieten.
@@ -64,6 +65,11 @@
       });
       document.getElementById('resume').innerHTML = html;
     })();
+  </script>
+  <script type="module">
+    import { init, statsEnabled } from './stats.js';
+    init();
+    if (statsEnabled()) document.getElementById('statsnote').hidden = false;
   </script>
 </body>
 </html>

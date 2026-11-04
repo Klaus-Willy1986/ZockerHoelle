@@ -19,3 +19,6 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - Ein Gerät (Gastgeber) verwaltet das Spiel; seine Seite muss offen bleiben. Nach Neuladen/Verbindungsabbruch kehren alle automatisch zurück.
 - Tests: `npm test` (Regeln). Durchspieltests im Browser: `tests/<spiel>.e2e.cjs` (Playwright, siehe Kopf der Datei). Lokaler Test ohne Internet: Spielseite mit `?mock=1` in zwei Tabs desselben Browsers öffnen.
 - Die Phasenliste von Phasenwürfeln steht in `phasen/engine.js` (`PHASES`) und ist dort leicht anzupassen.
+
+## Nutzungszahlen (optional, standardmäßig aus)
+`config.js` enthält `STATS_CODE`. Ist er leer, wird nichts gezählt und nichts an Dritte gesendet. Trägt man den Namen eines kostenlosen [GoatCounter](https://www.goatcounter.com)-Kontos ein, zählt `stats.js` anonym (ohne Cookies, ohne Namen und ohne Spielinhalte): Seitenaufrufe sowie die Ereignisse `raum-eroeffnet/<spiel>`, `gestartet/<spiel>`, `allein-gestartet/<spiel>` und `beendet/<spiel>`. Im Testmodus (`?mock=1`), auf `localhost` und bei „Do Not Track“ wird nicht gezählt. Auf der Startseite erscheint dann ein kurzer Hinweis.

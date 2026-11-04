@@ -2,6 +2,7 @@
 // Gastgeber/Gast, Lobby, Einladung, automatische Wiederverbindung, Speichern im Browser.
 // Ein Gerät (Gastgeber) hält den Spielstand; alle anderen schicken ihm ihre Eingaben.
 import * as Net from './net.js';
+import { init as statsInit, track } from './stats.js';
 
 const KEEPALIVE_MS = 8000;
 const SILENCE_LIMIT_MS = 26000;
@@ -11,6 +12,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 export function createSession(cfg) {
   // cfg: { game, maxPlayers, newGame(players, shift) -> state, onMessage(state, pid, msg), render(), onState(), onLeave?() }
   Net.configure(cfg.game);
+  statsInit();
   const store = Net.isMock() ? sessionStorage : localStorage;
   const GAME_KEYS = new Set(['session', 'hostState']);
   const key = (k) => (GAME_KEYS.has(k) ? `zh.${cfg.game}.${k}` : `zh.${k}`);
@@ -72,6 +74,7 @@ export function createSession(cfg) {
     S.game = restore?.game || null;
     S.screen = S.game ? 'game' : 'lobby';
     set('session', { role: 'host', room: code, ts: Date.now() });
+    if (!restore) track('raum-eroeffnet/' + cfg.game);
     hostBroadcast();
     clearInterval(H.timer);
     H.timer = setInterval(hostBroadcast, KEEPALIVE_MS);
@@ -156,6 +159,7 @@ export function createSession(cfg) {
     const order = [...players.slice(shift), ...players.slice(0, shift)];
     S.lobby = order.concat(S.lobby.filter((p) => !p.connected));
     S.game = cfg.newGame(order.map((p) => ({ id: p.id, name: p.name })));
+    track((S.room === 'SOLO' ? 'allein-gestartet/' : 'gestartet/') + cfg.game);
     hostBroadcast();
   }
 
@@ -165,6 +169,7 @@ export function createSession(cfg) {
     S.room = 'SOLO';
     S.lobby = restore?.lobby || [{ id: cid, name: S.name, connected: true }];
     S.game = restore?.game || cfg.newGame([{ id: cid, name: S.name }]);
+    if (!restore) track('allein-gestartet/' + cfg.game);
     S.screen = 'game';
     set('session', { role: 'host', room: 'SOLO', ts: Date.now() });
     hostBroadcast();
@@ -247,11 +252,16 @@ export function createSession(cfg) {
   // ---------- gemeinsam ----------
   // Nur neu zeichnen, wenn sich wirklich etwas geändert hat (die Lebenszeichen alle paar Sekunden ändern nichts).
   let lastSig = '';
+  let overCounted = false;
   function stateChanged() {
     if (S.screen === 'lobby' || S.screen === 'game') S.screen = S.game ? 'game' : 'lobby';
     const sig = JSON.stringify([S.screen, S.link, S.lobby, S.game]);
     if (sig === lastSig) return;
     lastSig = sig;
+    // Ende einer Partie einmalig zählen (nur beim Gastgeber, damit nichts doppelt gezählt wird)
+    const over = !!(S.game && (S.game.mode === 'over' || S.game.phase === 'over'));
+    if (over && !overCounted && S.role === 'host') track('beendet/' + cfg.game);
+    overCounted = over;
     cfg.onState();
   }
 
