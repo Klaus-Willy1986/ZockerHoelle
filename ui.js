@@ -11,7 +11,7 @@ export function createUI(cfg) {
   const minPlayers = cfg.minPlayers || 2;
   S.ui = Object.assign({ helpOpen: false, big: sess.get('big', false) }, S.ui || {});
 
-  const header = (extra = '') => `<header class="top"><div class="room">${S.room === 'SOLO' ? '<b>Allein spielen</b>' : `Spiel <b>${esc(S.room || '')}</b>`}</div>
+  const header = (extra = '') => `<header class="top"><div class="room">${S.room === 'SOLO' ? `<b>${S.lobby.some((p) => p.bot) ? 'Gegen den Computer' : 'Allein spielen'}</b>` : `Spiel <b>${esc(S.room || '')}</b>`}</div>
     <div class="topbtns">${extra}
       <button class="btn mini" data-act="bigger" aria-label="Schrift größer oder kleiner">A⁺ Schrift</button>
       <button class="btn mini" data-act="help">? Regeln</button>
@@ -40,6 +40,10 @@ export function createUI(cfg) {
       ${cfg.solo ? `<section class="card"><h2>Lieber allein spielen?</h2>
         <p class="muted">Kein Einladungs-Link nötig. ${esc(cfg.soloText || 'Du spielst für dich und kannst deine Bestleistung verbessern.')}</p>
         <button class="btn secondary huge" data-act="solo">🙋 Allein spielen</button></section>` : ''}
+      ${cfg.bots ? `<section class="card"><h2>Lieber gegen den Computer?</h2>
+        <p class="muted">Kein Einladungs-Link nötig. Der Computer spielt direkt auf diesem Gerät mit.</p>
+        ${cfg.bots.map((n) => (cfg.levels || ['']).map((lv, i) => `<button class="btn secondary huge" data-act="bot" data-n="${n}" data-level="${i}">🤖 Gegen ${n === 1 ? 'den Computer' : n + ' Computer'}${lv ? ' (' + esc(lv) + ')' : ''}</button>`).join('')).join('')}
+      </section>` : ''}
       <section class="card"><h2>Du hast einen Code bekommen?</h2>
         <label class="lbl" for="code">Code (4 Buchstaben)</label>
         <input id="code" class="input code-in" type="text" maxlength="4" autocapitalize="characters" autocomplete="off" placeholder="z. B. KFRT">
@@ -128,6 +132,10 @@ export function createUI(cfg) {
           if (!needName()) return;
           S.message = null;
           return sess.startSolo();
+        case 'bot':
+          if (!needName()) return;
+          S.message = null;
+          return sess.startSolo(null, { bots: Number(el.dataset.n) || 1, level: Number(el.dataset.level) || 0 });
         case 'start': case 'again': return sess.hostStartGame();
         case 'help': S.ui.helpOpen = true; return render();
         case 'help-close':

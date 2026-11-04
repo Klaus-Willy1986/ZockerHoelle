@@ -147,8 +147,21 @@ export function createSession(cfg) {
   function hostBroadcast() {
     const snap = { t: 'state', room: S.room, lobby: S.lobby, game: S.game };
     for (const c of H.conns.values()) c.send(snap);
-    set('hostState', { room: S.room, lobby: S.lobby, game: S.game });
+    set('hostState', { room: S.room, lobby: S.lobby, game: S.game, level: S.level });
     stateChanged();
+    scheduleBot();
+  }
+
+  // Computergegner (nur im Alleinspiel): Das Spiel liefert cfg.bot.step(game, level) -> { id, msg } oder null.
+  let botTimer = null;
+  function scheduleBot() {
+    clearTimeout(botTimer);
+    if (S.room !== 'SOLO' || !cfg.bot || !S.game) return;
+    botTimer = setTimeout(() => {
+      if (S.room !== 'SOLO' || !S.game) return;
+      const act = cfg.bot.step(S.game, S.level || 0);
+      if (act && act.msg) hostHandle(act.id, act.msg);
+    }, cfg.bot.delay || 900);
   }
 
   function hostStartGame() {
@@ -159,17 +172,22 @@ export function createSession(cfg) {
     const order = [...players.slice(shift), ...players.slice(0, shift)];
     S.lobby = order.concat(S.lobby.filter((p) => !p.connected));
     S.game = cfg.newGame(order.map((p) => ({ id: p.id, name: p.name })));
-    track((S.room === 'SOLO' ? 'allein-gestartet/' : 'gestartet/') + cfg.game);
+    track((S.room === 'SOLO' ? (S.lobby.some((p) => p.bot) ? 'gegen-computer/' : 'allein-gestartet/') : 'gestartet/') + cfg.game);
     hostBroadcast();
   }
 
   // ---------- Allein spielen (ohne Netzwerk) ----------
-  function startSolo(restore) {
+  function startSolo(restore, opts = {}) {
     S.role = 'host';
     S.room = 'SOLO';
-    S.lobby = restore?.lobby || [{ id: cid, name: S.name, connected: true }];
-    S.game = restore?.game || cfg.newGame([{ id: cid, name: S.name }]);
-    if (!restore) track('allein-gestartet/' + cfg.game);
+    const bots = Math.max(0, opts.bots || 0);
+    S.level = restore ? (restore.level || 0) : (opts.level || 0);
+    S.lobby = restore?.lobby || [
+      { id: cid, name: S.name, connected: true },
+      ...Array.from({ length: bots }, (_, i) => ({ id: 'bot' + (i + 1), name: bots > 1 ? 'Computer ' + (i + 1) : 'Computer', connected: true, bot: true })),
+    ];
+    S.game = restore?.game || cfg.newGame(S.lobby.map((p) => ({ id: p.id, name: p.name })));
+    if (!restore) track((bots ? 'gegen-computer/' : 'allein-gestartet/') + cfg.game);
     S.screen = 'game';
     set('session', { role: 'host', room: 'SOLO', ts: Date.now() });
     hostBroadcast();
@@ -278,7 +296,8 @@ export function createSession(cfg) {
     for (const c of H.conns.values()) { try { c.close(); } catch { /* egal */ } }
     H.conns.clear(); H.handle = null; G.conn = null;
     del('session'); del('hostState');
-    S.screen = 'start'; S.role = null; S.room = null; S.game = null; S.lobby = []; S.link = 'ok';
+    S.screen = 'start'; S.role = null; S.room = null; S.game = null; S.lobby = []; S.link = 'ok'; S.level = 0;
+    clearTimeout(botTimer);
     lastSig = '';
     cfg.onLeave?.();
   }
