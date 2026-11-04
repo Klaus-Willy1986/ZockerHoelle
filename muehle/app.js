@@ -1,4 +1,5 @@
 import * as M from './engine.js';
+import { chooseAction } from './ai.js';
 import { createSession } from '../session.js';
 import { createUI, esc } from '../ui.js';
 
@@ -12,6 +13,17 @@ const sess = createSession({
   render: () => render(),
   onState: () => onStateChanged(),
   onLeave: () => resetUi(),
+  bot: {
+    delay: 900,
+    // Der Computer handelt, wenn er am Zug ist oder auf ein Remis-Angebot antworten muss
+    step: (g, level) => {
+      if (!g || g.mode !== 'play') return null;
+      const bot = g.players.find((p) => String(p.id).startsWith('bot'));
+      if (!bot) return null;
+      const msg = chooseAction(g, bot.id, level);
+      return msg ? { id: bot.id, msg } : null;
+    },
+  },
 });
 const S = sess.S;
 const cid = sess.cid;
@@ -292,6 +304,7 @@ function tap(p) {
 
 const ui = createUI({
   sess, $app,
+  bots: [1], levels: ['Leicht', 'Mittel'],
   title: 'Mühle', icon: '⚫', sub: 'Das klassische Brettspiel für zwei – online',
   helpTitle: 'Die Spielregeln von Mühle', helpBody: helpBody(),
   renderGame: () => gameHtml(),
