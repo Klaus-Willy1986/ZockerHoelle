@@ -1,4 +1,5 @@
 import * as P from './engine.js';
+import { chooseAction } from './ai.js';
 import { createSession } from '../session.js';
 import { createUI, esc } from '../ui.js';
 
@@ -14,6 +15,16 @@ const sess = createSession({
   render: () => render(),
   onState: () => onStateChanged(),
   onLeave: () => { S.ui = { ...S.ui, ...freshUi() }; },
+  bot: {
+    delay: 900,
+    step: (g, level) => {
+      if (!g || g.mode !== 'play') return null;
+      const ap = P.activePlayer(g);
+      if (!ap || !String(ap.id).startsWith('bot')) return null;
+      const msg = chooseAction(g, ap.id, level, Math.random);
+      return msg ? { id: ap.id, msg } : null;
+    },
+  },
 });
 const S = sess.S;
 const cid = sess.cid;
@@ -289,6 +300,7 @@ function helpBody() {
 // ====================== Bedienung ======================
 const ui = createUI({
   sess, $app,
+  bots: [1, 2, 3], levels: ['Leicht', 'Mittel'],
   title: 'Ludo', icon: '🏁', sub: 'Das Würfel-Brettspiel – online zusammen spielen',
   helpTitle: 'Die Spielregeln von Ludo', helpBody: helpBody(),
   renderGame: () => gameHtml(),

@@ -1,4 +1,5 @@
 import * as P from './engine.js';
+import { chooseAction } from './ai.js';
 import { createSession } from '../session.js';
 import { createUI, esc } from '../ui.js';
 
@@ -14,6 +15,14 @@ const sess = createSession({
   render: () => render(),
   onState: () => onStateChanged(),
   onLeave: () => { Object.assign(S.ui, freshUi()); },
+  bot: {
+    delay: 900,
+    step: (g, level) => {
+      const bot = g && g.players.find((p) => p.id.startsWith('bot'));
+      const msg = bot && chooseAction(g, bot.id, level);
+      return msg ? { id: bot.id, msg } : null;
+    },
+  },
 });
 const S = sess.S;
 const cid = sess.cid;
@@ -254,6 +263,7 @@ const ui = createUI({
   sess, $app,
   title: 'Dame', icon: '♛', sub: 'Das klassische Brettspiel für zwei – online zusammen spielen',
   helpTitle: 'Die Spielregeln von Dame', helpBody: helpBody(),
+  bots: [1], levels: ['Leicht', 'Mittel'],
   renderGame: () => gameHtml(),
   onAct: (act, el) => {
     switch (act) {
