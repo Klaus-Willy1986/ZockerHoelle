@@ -1,6 +1,7 @@
 import * as E from './engine.js';
 import { createSession } from '../session.js';
 import { createUI, esc } from '../ui.js';
+import { coach } from './tutorial.js';
 
 const $app = document.getElementById('app');
 const ZOOMS = [24, 30, 34, 42, 52, 64];
@@ -498,6 +499,7 @@ const ui = createUI({
   title: 'Farbenwürfeln', icon: '🎨', sub: 'Würfel-Ankreuzspiel – online zusammen spielen',
   helpTitle: 'Die Spielregeln von Farbenwürfeln', helpBody: helpBody(),
   renderGame: () => gameHtml(),
+  tutorial: { bots: 0, coach },
   onAct: (act, el) => {
     const pk = S.ui.pick;
     const g = S.game;

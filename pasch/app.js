@@ -1,6 +1,7 @@
 import * as P from './engine.js';
 import { createSession } from '../session.js';
 import { createUI, esc } from '../ui.js';
+import { coach } from './tutorial.js';
 
 const $app = document.getElementById('app');
 const freshUi = () => ({ keep: Array(5).fill(false), rolling: false, lastRollId: 0, sig: '', pick: null });
@@ -270,6 +271,7 @@ const ui = createUI({
   title: 'Pasch & Straße', icon: '🎲', sub: 'Würfel-Zettelspiel – online zusammen spielen',
   helpTitle: 'Die Spielregeln von Pasch & Straße', helpBody: helpBody(),
   renderGame: () => gameHtml(),
+  tutorial: { bots: 0, coach },
   onAct: (act, el) => {
     switch (act) {
       case 'roll': return sess.send({ t: 'roll' });

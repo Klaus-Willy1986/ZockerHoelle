@@ -1,6 +1,7 @@
 import * as P from './engine.js';
 import { createSession } from '../session.js';
 import { createUI, esc } from '../ui.js';
+import { coach } from './tutorial.js';
 
 const $app = document.getElementById('app');
 
@@ -261,6 +262,7 @@ const ui = createUI({
   title: 'Phasenwürfeln', icon: '🎯', sub: 'Zehn Phasen schaffen – online zusammen spielen',
   helpTitle: 'Die Spielregeln von Phasenwürfeln', helpBody: helpBody(),
   renderGame: () => gameHtml(),
+  tutorial: { bots: 0, coach },
   onAct: (act, el) => {
     const g = S.game;
     switch (act) {
