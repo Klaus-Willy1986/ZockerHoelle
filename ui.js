@@ -136,7 +136,7 @@ export function createUI(cfg) {
   }
   function coachAfterRender() {
     if (!coachNow) return;
-    if (coachNow.target) { try { $app.querySelectorAll(coachNow.target).forEach((n, i) => { if (i < 12) n.classList.add('coach-target'); }); } catch { /* ungültiger Selektor */ } }
+    if (coachNow.target) { try { $app.querySelectorAll(coachNow.target).forEach((n, i) => { if (i < 60) n.classList.add('coach-target'); }); } catch { /* ungültiger Selektor */ } }
     if (S.ui.speak && !S.ui.helpOpen && coachNow.text && coachNow.text !== lastCoach) { lastCoach = coachNow.text; say(coachNow.text); }
   }
 

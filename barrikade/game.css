@@ -30,3 +30,8 @@
 .bk-players .bk-chip { flex: none; min-width: 5.5em; }
 .ranking .bk-chip { vertical-align: middle; }
 @media (prefers-reduced-motion: reduce) { .bk-pulse, .bk-spin { animation: none; } }
+
+/* Lernrunde: Pulsieren auch bei SVG-Elementen (Umriss und Kasten gelten dort nicht) */
+svg .coach-target { outline: none !important; animation: bk-coach 1s ease-in-out infinite; }
+@keyframes bk-coach { 50% { filter: drop-shadow(0 0 8px #ff8f00); } }
+@media (prefers-reduced-motion: reduce) { svg .coach-target { animation: none; filter: drop-shadow(0 0 6px #ff8f00); } }

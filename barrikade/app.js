@@ -1,5 +1,6 @@
 import * as P from './engine.js';
 import { chooseAction } from './ai.js';
+import { coach } from './tutorial.js';
 import { createSession } from '../session.js';
 import { createUI, esc } from '../ui.js';
 
@@ -345,6 +346,7 @@ const ui = createUI({
   helpTitle: 'Die Spielregeln von Barrikade', helpBody: helpBody(),
   minPlayers: 2,
   bots: [1, 2, 3], levels: ['Leicht', 'Mittel'],
+  tutorial: { bots: 1, coach },
   renderGame: () => gameHtml(),
   onAct: (act, el) => {
     const g = S.game;

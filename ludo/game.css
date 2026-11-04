@@ -44,3 +44,9 @@
 .ranking .rn .lu-icon { vertical-align: middle; }
 @media (min-width: 600px) { .lu-boardcard { margin-left: 0; margin-right: 0; padding: 10px; } }
 @media (prefers-reduced-motion: reduce) { .lu-ring { animation: none; } }
+
+/* Lernrunde: Pulsieren auch bei SVG-Elementen (Umriss und Kasten gelten dort nicht) */
+.lu-can.coach-target .lu-ring { stroke: #ff6f00; stroke-width: 8; }
+.lu-can.coach-target { animation: lu-coach 1s ease-in-out infinite; }
+@keyframes lu-coach { 50% { filter: drop-shadow(0 0 7px #ff8f00); } }
+@media (prefers-reduced-motion: reduce) { .lu-can.coach-target { animation: none; filter: drop-shadow(0 0 6px #ff8f00); } }

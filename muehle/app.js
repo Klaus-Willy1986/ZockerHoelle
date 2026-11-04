@@ -1,5 +1,6 @@
 import * as M from './engine.js';
 import { chooseAction } from './ai.js';
+import { coach } from './tutorial.js';
 import { createSession } from '../session.js';
 import { createUI, esc } from '../ui.js';
 
@@ -107,8 +108,9 @@ function boardHtml(g, interactive) {
   const hits = COORD.map(([x, y], p) => {
     const act = o.free.has(p) || o.can.has(p) || o.targets.has(p) || o.rem.has(p) || (sel === p);
     const c = g.board[p];
+    const hint = o.rem.has(p) ? 'rem' : o.free.has(p) ? 'free' : o.targets.has(p) ? 'target' : sel === p ? 'sel' : o.can.has(p) ? 'can' : '';
     const label = c === null ? 'freier Punkt' : `${M.COLOR_NAMES[c]}er Stein`.replace('Weißer', 'weißer').replace('Schwarzer', 'schwarzer');
-    return `<circle class="mh-hit${act ? ' act' : ''}" data-act="${interactive ? 'pt' : 'noop'}" data-p="${p}" cx="${x}" cy="${y}" r="21"${act ? ` tabindex="0" role="button" aria-label="Punkt ${p + 1}, ${label}"` : ''}/>`;
+    return `<circle class="mh-hit${act ? ' act' : ''}" data-act="${interactive ? 'pt' : 'noop'}" data-p="${p}"${hint ? ` data-hint="${hint}"` : ''} cx="${x}" cy="${y}" r="21"${act ? ` tabindex="0" role="button" aria-label="Punkt ${p + 1}, ${label}"` : ''}/>`;
   }).join('');
   return `<svg class="mh-board${g.mode === 'over' ? ' mh-ended' : ''}" id="mh-board" viewBox="0 0 300 300" role="group" aria-label="Spielbrett">${lines}${dots}${marks}${hl}${stones}${hits}</svg>`;
 }
@@ -305,6 +307,7 @@ function tap(p) {
 const ui = createUI({
   sess, $app,
   bots: [1], levels: ['Leicht', 'Mittel'],
+  tutorial: { bots: 1, coach },
   title: 'Mühle', icon: '⚫', sub: 'Das klassische Brettspiel für zwei – online',
   helpTitle: 'Die Spielregeln von Mühle', helpBody: helpBody(),
   renderGame: () => gameHtml(),

@@ -1,5 +1,6 @@
 import * as P from './engine.js';
 import { chooseAction } from './ai.js';
+import { coach } from './tutorial.js';
 import { createSession } from '../session.js';
 import { createUI, esc } from '../ui.js';
 
@@ -301,6 +302,7 @@ function helpBody() {
 const ui = createUI({
   sess, $app,
   bots: [1, 2, 3], levels: ['Leicht', 'Mittel'],
+  tutorial: { bots: 1, coach },
   title: 'Ludo', icon: '🏁', sub: 'Das Würfel-Brettspiel – online zusammen spielen',
   helpTitle: 'Die Spielregeln von Ludo', helpBody: helpBody(),
   renderGame: () => gameHtml(),

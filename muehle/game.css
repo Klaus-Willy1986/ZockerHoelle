@@ -44,3 +44,7 @@
 .mh-reason { display: inline-block; background: #eef3fc; border-radius: 999px; padding: 6px 16px; font-weight: 800; font-size: 1.05rem; }
 .mh-board.mh-ended { opacity: .85; }
 @media (max-width: 380px) { .mh-pl { padding: 8px; } .mh-pl .mh-n { font-size: .95rem; } }
+
+/* Lernrunde: Hervorhebung der anzutippenden Punkte (die Punkte sind SVG-Kreise, daher kein outline) */
+.mh-hit.coach-target { fill: rgba(255, 179, 0, .35); stroke: #ffb300; stroke-width: 5; outline: none !important; animation: mh-pulse 1s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .mh-hit.coach-target { animation: none; } }
