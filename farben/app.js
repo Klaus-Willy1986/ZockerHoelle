@@ -2,6 +2,7 @@ import * as E from './engine.js';
 import { createSession } from '../session.js';
 import { createUI, esc } from '../ui.js';
 import { coach } from './tutorial.js';
+import { chooseAction } from './ai.js';
 
 const $app = document.getElementById('app');
 const ZOOMS = [24, 30, 34, 42, 52, 64];
@@ -23,6 +24,19 @@ const sess = createSession({
   render: () => render(),
   onState: () => onStateChanged(),
   onLeave: () => { Object.assign(S.ui, freshUi()); },
+  bot: {
+    delay: 900,
+    // Der erste Computer, der noch etwas tun muss (würfeln oder wählen), ist dran.
+    step: (g, level) => {
+      if (!g || g.mode !== 'play') return null;
+      const isBot = (id) => String(id).startsWith('bot');
+      const ids = g.phase === 'roll' ? [E.activePlayer(g).id] : E.waitingFor(g);
+      const id = ids.find(isBot);
+      if (!id) return null;
+      const msg = chooseAction(g, id, level, Math.random);
+      return msg ? { id, msg } : null;
+    },
+  },
 });
 const S = sess.S;
 const cid = sess.cid;
@@ -499,6 +513,7 @@ const ui = createUI({
   title: 'Farbenwürfeln', icon: '🎨', sub: 'Würfel-Ankreuzspiel – online zusammen spielen',
   helpTitle: 'Die Spielregeln von Farbenwürfeln', helpBody: helpBody(),
   renderGame: () => gameHtml(),
+  bots: [1, 2, 3], levels: ['Leicht', 'Mittel'],
   tutorial: { bots: 0, coach },
   onAct: (act, el) => {
     const pk = S.ui.pick;
