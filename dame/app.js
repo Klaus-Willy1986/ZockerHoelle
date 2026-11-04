@@ -1,5 +1,6 @@
 import * as P from './engine.js';
 import { chooseAction } from './ai.js';
+import { coach } from './tutorial.js';
 import { createSession } from '../session.js';
 import { createUI, esc } from '../ui.js';
 
@@ -264,6 +265,7 @@ const ui = createUI({
   title: 'Dame', icon: '♛', sub: 'Das klassische Brettspiel für zwei – online zusammen spielen',
   helpTitle: 'Die Spielregeln von Dame', helpBody: helpBody(),
   bots: [1], levels: ['Leicht', 'Mittel'],
+  tutorial: { bots: 1, coach },
   renderGame: () => gameHtml(),
   onAct: (act, el) => {
     switch (act) {
