@@ -147,7 +147,7 @@ export function createSession(cfg) {
   function hostBroadcast() {
     const snap = { t: 'state', room: S.room, lobby: S.lobby, game: S.game };
     for (const c of H.conns.values()) c.send(snap);
-    set('hostState', { room: S.room, lobby: S.lobby, game: S.game, level: S.level });
+    set('hostState', { room: S.room, lobby: S.lobby, game: S.game, level: S.level, learn: S.learn });
     stateChanged();
     scheduleBot();
   }
@@ -182,12 +182,13 @@ export function createSession(cfg) {
     S.room = 'SOLO';
     const bots = Math.max(0, opts.bots || 0);
     S.level = restore ? (restore.level || 0) : (opts.level || 0);
+    S.learn = restore ? !!restore.learn : !!opts.learn;
     S.lobby = restore?.lobby || [
       { id: cid, name: S.name, connected: true },
       ...Array.from({ length: bots }, (_, i) => ({ id: 'bot' + (i + 1), name: bots > 1 ? 'Computer ' + (i + 1) : 'Computer', connected: true, bot: true })),
     ];
     S.game = restore?.game || cfg.newGame(S.lobby.map((p) => ({ id: p.id, name: p.name })));
-    if (!restore) track((bots ? 'gegen-computer/' : 'allein-gestartet/') + cfg.game);
+    if (!restore) track((opts.learn ? 'lernrunde/' : bots ? 'gegen-computer/' : 'allein-gestartet/') + cfg.game);
     S.screen = 'game';
     set('session', { role: 'host', room: 'SOLO', ts: Date.now() });
     hostBroadcast();
@@ -273,7 +274,7 @@ export function createSession(cfg) {
   let overCounted = false;
   function stateChanged() {
     if (S.screen === 'lobby' || S.screen === 'game') S.screen = S.game ? 'game' : 'lobby';
-    const sig = JSON.stringify([S.screen, S.link, S.lobby, S.game]);
+    const sig = JSON.stringify([S.screen, S.link, S.lobby, S.game, S.learn]);
     if (sig === lastSig) return;
     lastSig = sig;
     // Ende einer Partie einmalig zählen (nur beim Gastgeber, damit nichts doppelt gezählt wird)
@@ -296,7 +297,7 @@ export function createSession(cfg) {
     for (const c of H.conns.values()) { try { c.close(); } catch { /* egal */ } }
     H.conns.clear(); H.handle = null; G.conn = null;
     del('session'); del('hostState');
-    S.screen = 'start'; S.role = null; S.room = null; S.game = null; S.lobby = []; S.link = 'ok'; S.level = 0;
+    S.screen = 'start'; S.role = null; S.room = null; S.game = null; S.lobby = []; S.link = 'ok'; S.level = 0; S.learn = false;
     clearTimeout(botTimer);
     lastSig = '';
     cfg.onLeave?.();
@@ -341,5 +342,6 @@ export function createSession(cfg) {
     return false;
   }
 
-  return { S, cid, get, set, link, startHosting, startSolo, joinGame, hostStartGame, send, leave, boot, Net };
+  const setLearn = (on) => { S.learn = !!on; hostBroadcast(); };
+  return { S, cid, get, set, link, setLearn, startHosting, startSolo, joinGame, hostStartGame, send, leave, boot, Net };
 }

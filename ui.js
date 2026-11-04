@@ -38,7 +38,7 @@ export function createUI(cfg) {
     return (cfg.helpTitle || 'Die Spielregeln') + '. ' + d.textContent;
   }
   function announce() {
-    if (!S.ui.speak || S.ui.helpOpen || S.ui.rolling || S.screen !== 'game') return;
+    if (!S.ui.speak || S.ui.helpOpen || S.ui.rolling || S.screen !== 'game' || (S.learn && coachNow)) return;
     const banner = $app.querySelector('.banner');
     const hint = $app.querySelector('.action p.big, .action .big, .action h2');
     const text = clean([banner && banner.innerText, hint && hint.innerText].filter(Boolean).join('. '));
@@ -77,6 +77,9 @@ export function createUI(cfg) {
       ${cfg.solo ? `<section class="card"><h2>Lieber allein spielen?</h2>
         <p class="muted">Kein Einladungs-Link nötig. ${esc(cfg.soloText || 'Du spielst für dich und kannst deine Bestleistung verbessern.')}</p>
         <button class="btn secondary huge" data-act="solo">🙋 Allein spielen</button></section>` : ''}
+      ${cfg.tutorial ? `<section class="card coachcard"><h2>🎓 Neu hier? Lernrunde</h2>
+        <p class="muted">Eine Übungsrunde, in der dir das Spiel Schritt für Schritt zeigt, was zu tun ist – ohne Lesen, auf Wunsch mit Vorlesen.</p>
+        <button class="btn primary huge" data-act="learn">🎓 Lernrunde starten</button></section>` : ''}
       ${cfg.bots ? `<section class="card"><h2>Lieber gegen den Computer?</h2>
         <p class="muted">Kein Einladungs-Link nötig. Der Computer spielt direkt auf diesem Gerät mit.</p>
         ${cfg.bots.map((n) => (cfg.levels || ['']).map((lv, i) => `<button class="btn secondary huge" data-act="bot" data-n="${n}" data-level="${i}">🤖 Gegen ${n === 1 ? 'den Computer' : n + ' Computer'}${lv ? ' (' + esc(lv) + ')' : ''}</button>`).join('')).join('')}
@@ -120,6 +123,23 @@ export function createUI(cfg) {
     ${cfg.helpBody}
     <button class="btn primary huge" data-act="help-close">Alles klar, schließen</button></div></div>`;
 
+  // ---------- Lernrunde: Anleitung oben im Spiel ----------
+  let lastCoach = '';
+  let coachNow = null;
+  function coachHtml() {
+    coachNow = null;
+    if (!S.learn || !cfg.tutorial || !S.game) return '';
+    coachNow = cfg.tutorial.coach(S.game, { id: sess.cid, S, ui: S.ui });
+    const text = coachNow && coachNow.text ? esc(coachNow.text) : 'Weiter geht’s – du machst das schon!';
+    return `<div class="coach" role="status"><div class="coach-t">🎓 <span>${text}</span></div>
+      <button class="btn mini" data-act="learn-stop">Lernrunde beenden</button></div>`;
+  }
+  function coachAfterRender() {
+    if (!coachNow) return;
+    if (coachNow.target) { try { $app.querySelectorAll(coachNow.target).forEach((n, i) => { if (i < 12) n.classList.add('coach-target'); }); } catch { /* ungültiger Selektor */ } }
+    if (S.ui.speak && !S.ui.helpOpen && coachNow.text && coachNow.text !== lastCoach) { lastCoach = coachNow.text; say(coachNow.text); }
+  }
+
   function render() {
     document.documentElement.classList.toggle('big', !!S.ui.big);
     let html = '';
@@ -127,11 +147,12 @@ export function createUI(cfg) {
     else if (S.screen === 'connecting') html = `<div class="hero"><div class="logo spin">🎲</div><h1>Einen Moment …</h1><p class="sub">${esc(S.connectText || '')}</p>
         <button class="btn ghost" data-act="leave-now">Abbrechen</button></div>`;
     else if (S.screen === 'lobby') html = lobbyHtml();
-    else if (S.screen === 'game' && S.game) html = cfg.renderGame();
+    else if (S.screen === 'game' && S.game) html = coachHtml() + cfg.renderGame();
     const ov = $app.querySelector('.overlay');
     const ovTop = ov ? ov.scrollTop : 0;
     $app.innerHTML = html + (S.ui.helpOpen ? helpHtml() : '');
     if (ovTop) { const n = $app.querySelector('.overlay'); if (n) n.scrollTop = ovTop; }
+    coachAfterRender();
     announce();
   }
 
@@ -173,6 +194,13 @@ export function createUI(cfg) {
           if (!needName()) return;
           S.message = null;
           return sess.startSolo();
+        case 'learn':
+          if (!needName()) return;
+          S.message = null;
+          S.ui.speak = speechOk;
+          lastSpoken = ''; lastCoach = '';
+          return sess.startSolo(null, { bots: cfg.tutorial.bots === undefined ? 1 : cfg.tutorial.bots, level: 0, learn: true });
+        case 'learn-stop': sess.setLearn(false); lastCoach = ''; return;
         case 'bot':
           if (!needName()) return;
           S.message = null;
