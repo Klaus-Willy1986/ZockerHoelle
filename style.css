@@ -176,3 +176,5 @@ table.block tr.sumrow td { font-weight: 900; border-top: 2px solid #333; font-si
 .gamecard p { margin: 0; color: var(--muted); }
 .gamecard .go { display: block; clear: both; margin-top: 12px; background: var(--primary); color: #fff; text-align: center; font-weight: 800; font-size: 1.2rem; padding: 14px; border-radius: 12px; }
 .resume { background: #fff3cd; border: 2px solid #e0a800; }
+
+.readrow { display: flex; gap: 10px; flex-wrap: wrap; } .readrow .btn { flex: 1 1 140px; margin: 6px 0; }

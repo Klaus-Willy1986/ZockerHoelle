@@ -11,8 +11,45 @@ export function createUI(cfg) {
   const minPlayers = cfg.minPlayers || 2;
   S.ui = Object.assign({ helpOpen: false, big: sess.get('big', false) }, S.ui || {});
 
+  // ---------- Vorlesen (Sprachausgabe des Browsers) ----------
+  const speechOk = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+  S.ui.speak = speechOk && !!sess.get('speak', false);
+  let lastSpoken = '';
+  const clean = (t) => String(t).replace(/[\u{1F000}-\u{1FFFF}\u{2190}-\u{2BFF}\u{FE0F}]/gu, '').replace(/\s+/g, ' ').trim();
+  function say(text, { queue = false } = {}) {
+    if (!speechOk || !text) return;
+    const synth = window.speechSynthesis;
+    if (!queue) synth.cancel();
+    const voice = (synth.getVoices() || []).find((v) => /^de/i.test(v.lang));
+    for (const part of clean(text).match(/[^.!?:]+[.!?:]?/g) || []) {
+      if (!part.trim()) continue;
+      const ut = new SpeechSynthesisUtterance(part.trim());
+      ut.lang = 'de-DE'; ut.rate = 0.95;
+      if (voice) ut.voice = voice;
+      synth.speak(ut);
+    }
+  }
+  const stopSpeech = () => { if (speechOk) window.speechSynthesis.cancel(); };
+  function helpText() {
+    const d = document.createElement('div');
+    d.innerHTML = cfg.helpBody;
+    d.querySelectorAll('h3').forEach((h) => { h.textContent = h.textContent + '.'; });
+    d.querySelectorAll('li').forEach((li) => { li.textContent = li.textContent.trim().replace(/([^.!?:])$/, '$1.'); });
+    return (cfg.helpTitle || 'Die Spielregeln') + '. ' + d.textContent;
+  }
+  function announce() {
+    if (!S.ui.speak || S.ui.helpOpen || S.ui.rolling || S.screen !== 'game') return;
+    const banner = $app.querySelector('.banner');
+    const hint = $app.querySelector('.action p.big, .action .big, .action h2');
+    const text = clean([banner && banner.innerText, hint && hint.innerText].filter(Boolean).join('. '));
+    if (!text || text === lastSpoken) return;
+    lastSpoken = text;
+    say(text);
+  }
+
   const header = (extra = '') => `<header class="top"><div class="room">${S.room === 'SOLO' ? `<b>${S.lobby.some((p) => p.bot) ? 'Gegen den Computer' : 'Allein spielen'}</b>` : `Spiel <b>${esc(S.room || '')}</b>`}</div>
     <div class="topbtns">${extra}
+      ${speechOk ? `<button class="btn mini" data-act="speak-toggle" aria-pressed="${S.ui.speak ? 'true' : 'false'}">🔊 Ansagen: ${S.ui.speak ? 'an' : 'aus'}</button>` : ''}
       <button class="btn mini" data-act="bigger" aria-label="Schrift größer oder kleiner">A⁺ Schrift</button>
       <button class="btn mini" data-act="help">? Regeln</button>
       <button class="btn mini" data-act="leave">Verlassen</button>
@@ -77,7 +114,10 @@ export function createUI(cfg) {
   };
 
   const helpHtml = () => `<div class="overlay" data-act="help-close"><div class="modal" role="dialog" aria-modal="true" aria-label="Spielregeln">
-    <h2>${esc(cfg.helpTitle || 'Die Spielregeln')}</h2>${cfg.helpBody}
+    <h2>${esc(cfg.helpTitle || 'Die Spielregeln')}</h2>
+    ${speechOk ? `<div class="readrow"><button class="btn secondary" data-act="help-read">🔊 Regeln vorlesen</button><button class="btn ghost" data-act="help-stop">⏹ Stopp</button></div>
+    <p class="muted small">Tipp: Wenn du nicht lesen magst, tippe auf „Regeln vorlesen“ und höre zu.</p>` : ''}
+    ${cfg.helpBody}
     <button class="btn primary huge" data-act="help-close">Alles klar, schließen</button></div></div>`;
 
   function render() {
@@ -92,6 +132,7 @@ export function createUI(cfg) {
     const ovTop = ov ? ov.scrollTop : 0;
     $app.innerHTML = html + (S.ui.helpOpen ? helpHtml() : '');
     if (ovTop) { const n = $app.querySelector('.overlay'); if (n) n.scrollTop = ovTop; }
+    announce();
   }
 
   function needName() {
@@ -138,8 +179,18 @@ export function createUI(cfg) {
           return sess.startSolo(null, { bots: Number(el.dataset.n) || 1, level: Number(el.dataset.level) || 0 });
         case 'start': case 'again': return sess.hostStartGame();
         case 'help': S.ui.helpOpen = true; return render();
+        case 'help-read': return say(helpText());
+        case 'help-stop': return stopSpeech();
+        case 'speak-toggle':
+          S.ui.speak = !S.ui.speak;
+          sess.set('speak', S.ui.speak);
+          lastSpoken = '';
+          if (!S.ui.speak) stopSpeech();
+          else say('Ansagen sind jetzt eingeschaltet.', { queue: false });
+          return render();
         case 'help-close':
           if (el.classList.contains('overlay') && ev.target !== el) return; // Klick ins Fenster schließt nicht
+          stopSpeech();
           S.ui.helpOpen = false; return render();
         case 'bigger': S.ui.big = !S.ui.big; sess.set('big', S.ui.big); return render();
         case 'leave':
