@@ -5,6 +5,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Kreuz & Quer** (`kreuzquer/`): Würfeln und in vier Farbreihen Zahlen ankreuzen.
 - **Phasenwürfeln** (`phasen/`): Zehn Phasen mit Würfelkombinationen schaffen.
 - **Pasch & Straße** (`pasch/`): Fünf Würfel, 13 Felder auf dem Zettel füllen (auch allein).
+- **Farbenwürfeln** (`farben/`): Farb- und Zahlenwürfel kombinieren, Kästchen auf dem Blatt ankreuzen (1–6 Personen, auch allein).
 - **Ludo** (`ludo/`): Würfeln, ziehen, Figuren rauswerfen (2–4 Personen).
 - **Barrikade** (`barrikade/`): Wettlauf zum Ziel mit Sperren (2–4 Personen).
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.

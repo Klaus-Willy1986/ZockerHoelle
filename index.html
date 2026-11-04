@@ -27,6 +27,11 @@
       <p>Fünf Würfel, drei Würfe, dreizehn Felder füllen: Full House, Straße, Pasch. Für 1 bis 5 Personen, auch allein.</p>
       <span class="go">Spielen</span>
     </a>
+    <a class="gamecard" href="farben/">
+      <div class="gh"><span class="gi">🎨</span><h2>Farbenwürfeln</h2></div>
+      <p>Farben und Zahlen würfeln und zusammenhängende Kästchen auf dem Blatt ankreuzen. Für 1 bis 6 Personen, auch allein.</p>
+      <span class="go">Spielen</span>
+    </a>
     <a class="gamecard" href="ludo/">
       <div class="gh"><span class="gi">🏁</span><h2>Ludo</h2></div>
       <p>Würfeln, ziehen, Figuren rauswerfen – wer zuerst alle im Ziel hat, gewinnt. Für 2 bis 4 Personen.</p>
@@ -53,7 +58,7 @@
   <script>
     // Läuft schon ein Spiel in diesem Browser? Dann direkt "Zurück ins Spiel" anbieten.
     (function () {
-      var games = [['kq', 'kreuzquer/', 'Kreuz & Quer'], ['p10', 'phasen/', 'Phasenwürfeln'], ['pasch', 'pasch/', 'Pasch & Straße'], ['ludo', 'ludo/', 'Ludo'], ['muehle', 'muehle/', 'Mühle'], ['dame', 'dame/', 'Dame'], ['bk', 'barrikade/', 'Barrikade']];
+      var games = [['kq', 'kreuzquer/', 'Kreuz & Quer'], ['p10', 'phasen/', 'Phasenwürfeln'], ['pasch', 'pasch/', 'Pasch & Straße'], ['ludo', 'ludo/', 'Ludo'], ['muehle', 'muehle/', 'Mühle'], ['dame', 'dame/', 'Dame'], ['bk', 'barrikade/', 'Barrikade'], ['fw', 'farben/', 'Farbenwürfeln']];
       var html = '';
       games.forEach(function (g) {
         try {
