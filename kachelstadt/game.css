@@ -1,0 +1,69 @@
+/* ===== Kachelstadt ===== */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* Vorschau des gezogenen Plättchens: feste Höhe, damit nichts springt */
+.ks-prev { display: grid; grid-template-columns: 124px 1fr; gap: 12px; align-items: center; height: 12.6rem; padding: 10px 12px; margin: 8px 0; overflow: hidden; }
+.ks-prev-l { display: flex; align-items: center; justify-content: center; }
+.ks-prev-tile { display: block; width: 116px; height: 116px; border-radius: 6px; box-shadow: 0 3px 8px rgba(0,0,0,.35); border: 3px solid #1d1d1f; background: #8dc24a; }
+.ks-prev-r { min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px; height: 100%; overflow: hidden; }
+.ks-who { font-size: 1.05rem; font-weight: 800; }
+.ks-rot { margin: 2px 0; height: 4.3rem; min-height: 0; font-size: 1.2rem; }
+.btn.ks-rot.secondary { font-size: 1.02rem; padding: 8px 10px; line-height: 1.2; }
+.ks-small { font-size: .8rem; color: var(--muted); margin: 0; height: 2.5em; overflow: hidden; line-height: 1.25; }
+.ks-wait { font-size: 1.05rem; font-weight: 700; margin: 2px 0; height: 6.8rem; display: flex; align-items: center; }
+.ks-left { font-size: .95rem; font-weight: 600; color: var(--ink); }
+
+/* Brett im scrollbaren Rahmen */
+.ks-boardcard { padding: 8px; }
+.ks-scroll { display: flex; overflow: auto; height: clamp(300px, calc(100vh - 480px), 640px); border: 3px solid #5d6b2a; border-radius: 14px; background: #d9e8b8; touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.ks-board { display: block; margin: auto; flex: none; max-width: none; }
+.ks-last { fill: none; stroke: #1f5fbf; stroke-width: 7; stroke-dasharray: 14 8; pointer-events: none; }
+.ks-cand { fill: rgba(46, 160, 67, .30); stroke: #17802f; stroke-width: 6; cursor: pointer; animation: ks-pulse 1.3s ease-in-out infinite; }
+.ks-cand.alt { fill: rgba(255, 255, 255, .38); stroke: #5fae6e; stroke-dasharray: 12 7; }
+.ks-alt-t { font-size: 44px; font-weight: 900; fill: #17802f; pointer-events: none; }
+[data-act="cell"], [data-act="mp"] { cursor: pointer; outline: none; }
+[data-act="cell"]:focus-visible .ks-cand, [data-act="mp"]:focus-visible .ks-mt-c { stroke: #000; stroke-width: 9; }
+.ks-mt-c { fill: rgba(255, 255, 255, .92); stroke: #1f5fbf; stroke-width: 4; animation: ks-pulse 1.3s ease-in-out infinite; }
+.ks-mt-n { font-size: 20px; font-weight: 900; fill: #123b7a; pointer-events: none; }
+.ks-mp { pointer-events: none; }
+@keyframes ks-pulse { 50% { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) { .ks-cand, .ks-mt-c, .ks-cand.coach-target, .ks-mt-c.coach-target { animation: none; } }
+.ks-zoom { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.ks-zoom .btn { margin: 0; min-height: 56px; background: #fff; border-color: #5d6b2a; color: var(--ink); }
+.ks-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .8rem; color: var(--muted); margin: 8px 2px 0; }
+.ks-legend span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; border: 3px solid; }
+.ks-legend .l-fit::before { border-color: #17802f; background: rgba(46,160,67,.3); }
+.ks-legend .l-alt::before { border-color: #5fae6e; border-style: dashed; background: #fff; }
+.ks-legend .l-last::before { border-color: #1f5fbf; border-style: dashed; }
+
+/* Hinweise unter dem Brett */
+.ks-status { min-height: 14.5rem; padding: 12px 14px; margin: 8px 0; }
+.ks-status .big { font-weight: 700; margin: 2px 0 6px; }
+.ks-opts { display: grid; gap: 6px; }
+.ks-opt { margin: 2px 0; text-align: left; display: flex; align-items: center; gap: 12px; min-height: 60px; }
+.ks-num { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 2rem; height: 2rem; border-radius: 50%; background: #1f5fbf; color: #fff; font-weight: 900; }
+.ks-hint { background: #fff3cd; border: 2px solid #e0a800; border-radius: 12px; padding: 10px 12px; margin: 8px 0 0; font-weight: 600; color: #4d3b00; }
+
+/* Punktetafel */
+.ks-players h2 { margin-bottom: .3em; }
+.ks-pl { border: 3px solid var(--line); border-radius: 14px; padding: 8px 10px; margin: 8px 0; background: #fff; }
+.ks-pl.turn { border-color: var(--ok); background: #f1f8f2; }
+.ks-pl-top { display: flex; align-items: center; gap: 10px; }
+.ks-pl-n { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ks-pl-n b { font-size: 1.1rem; word-break: break-word; }
+.ks-pl-n span { font-size: .85rem; color: var(--muted); }
+.ks-pl-s { text-align: right; line-height: 1.1; }
+.ks-pl-s b { display: block; font-size: 1.7rem; }
+.ks-pl-s span { font-size: .8rem; color: var(--muted); }
+.ks-pl-h { margin-top: 4px; font-size: .85rem; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; }
+.ks-dots { display: inline-flex; gap: 4px; }
+.ks-dot { width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--c); background: #fff; box-shadow: 0 0 0 1.5px #fff, 0 0 0 2.5px #444; box-sizing: border-box; }
+.ks-dot.on { background: var(--c); border-color: #111; }
+.ks-ico { flex: none; vertical-align: middle; }
+.ks-over h1 { font-size: 1.8rem; }
+.ks-over .rn { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Lernrunde: Hervorhebung der anzutippenden Felder (SVG-Formen, daher kein outline) */
+.ks-cand.coach-target { outline: none !important; fill: rgba(255, 179, 0, .35); stroke: #ff9800; stroke-width: 9; animation: ks-pulse 1s ease-in-out infinite; }
+.ks-mt-c.coach-target { outline: none !important; fill: rgba(255, 224, 130, .95); stroke: #ff9800; stroke-width: 9; animation: ks-pulse 1s ease-in-out infinite; }
+@media (max-width: 380px) { .ks-prev { grid-template-columns: 108px 1fr; } .ks-prev-tile { width: 100px; height: 100px; } }
