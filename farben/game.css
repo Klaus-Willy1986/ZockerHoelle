@@ -105,3 +105,14 @@ button.fw-die { cursor: pointer; }
 .fw-sb.two { background: #e6e6e6; }
 .over .rd { margin-top: 4px; }
 @media (prefers-reduced-motion: reduce) { .fw-cell.opt, .fw-die.spin { animation: none; } }
+
+/* Mitlaufende Würfelleiste am Zettel */
+.fw-sticky { position: sticky; top: var(--sticky-top, 0px); z-index: 25; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin: -18px -18px 12px; padding: 8px 12px; background: rgba(255,255,255,.97); border-radius: 22px 22px 0 0; box-shadow: 0 6px 12px rgba(20,20,40,.14); }
+.fw-sticky-t { font-weight: 800; font-size: .9rem; margin-right: 2px; }
+.fw-sep { width: 8px; }
+.fw-mini { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 9px; border: 2px solid #333; font-weight: 900; font-size: 1rem; background: #fff; color: #111; }
+.fw-mini.gone { opacity: .35; text-decoration: line-through; }
+.fw-mini.sel { outline: 4px solid #ffb300; outline-offset: 1px; }
+.fw-minihint { margin-left: auto; font-weight: 800; font-size: .85rem; background: #fff3c4; padding: 4px 10px; border-radius: 999px; }
+.fw-bottompad { min-height: 60vh; }

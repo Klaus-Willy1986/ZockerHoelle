@@ -7,7 +7,7 @@ import { chooseAction } from './ai.js';
 const $app = document.getElementById('app');
 const ZOOMS = [24, 30, 34, 42, 52, 64];
 const freshPick = () => ({ ci: null, ni: null, jc: null, jn: null, ask: null, cells: [], pass: false });
-const freshUi = () => ({ rolling: false, lastRollId: 0, sig: '', pick: freshPick(), pend: null, scroll: null, fit: false, zoom: Number(sess.get('fw_zoom', 0)) || null });
+const freshUi = () => ({ padExtra: 0, rolling: false, lastRollId: 0, sig: '', pick: freshPick(), pend: null, scroll: null, fit: false, zoom: Number(sess.get('fw_zoom', 0)) || null });
 
 const sess = createSession({
   game: 'fw',
@@ -116,6 +116,27 @@ function dieHtml(kind, i, face, o) {
       <span class="fw-tag${selected ? ' on' : ''}">${selected ? '✔ ' : ''}${nope ? 'kein Joker mehr' : (blocked ? 'passt nicht' : tag)}</span></div>`;
   }
   return `<div class="fw-dcol"><div class="${cls}" role="img" aria-label="${label}">${inner}</div><span class="fw-tag">${tag}</span></div>`;
+}
+
+// Kleine Würfelleiste, die beim Scrollen zum Zettel sichtbar bleibt
+function miniDice(g) {
+  if (!g.dice) return '';
+  const pk = S.ui.pick;
+  const c = g.dice.c.map((f, i) => {
+    const gone = g.gone.c[i]; const sel = pk.ci === i;
+    const lab = f === 'X' ? 'Joker-Farbwürfel' : `${E.COLOR_NAMES[f]}er Farbwürfel`;
+    return `<span class="fw-mini fw-mc ${f === 'X' ? 'fc-X' : 'fc-' + f}${gone ? ' gone' : ''}${sel ? ' sel' : ''}" role="img" aria-label="${lab}${gone ? ', weg' : ''}">${f === 'X' ? '✖' : f}</span>`;
+  }).join('');
+  const n = g.dice.n.map((f, i) => {
+    const gone = g.gone.n[i]; const sel = pk.ni === i;
+    return `<span class="fw-mini fw-mn${gone ? ' gone' : ''}${sel ? ' sel' : ''}" role="img" aria-label="${f === '?' ? 'Joker-Zahlenwürfel' : 'Zahlenwürfel ' + f}${gone ? ', weg' : ''}">${f}</span>`;
+  }).join('');
+  let hint = '';
+  if (pk.ci != null && pk.ni != null && !pk.pass && !pk.ask) {
+    const color = colorOfPick(); const num = numOfPick();
+    if (color && num) hint = `<span class="fw-minihint">${num} × ${E.COLOR_NAMES[color]} ${pk.cells.length}/${num}</span>`;
+  }
+  return `<div class="fw-sticky" aria-label="Deine gewürfelten Würfel"><span class="fw-sticky-t">Würfel:</span>${c}<span class="fw-sep"></span>${n}${hint}</div>`;
 }
 
 function diceHtml(g, o = {}) {
@@ -359,7 +380,7 @@ function mySheetCard() {
     }
   }
   const strikes = g.solo ? soloStrikes() : '';
-  return `<section class="card" id="fw-mine"><h2>Dein Spielblatt</h2>${task}
+  return `<section class="card" id="fw-mine">${miniDice(g)}<h2>Dein Spielblatt</h2>${task}
     <div class="fw-tools"><button class="btn secondary" data-act="zoom-out" aria-label="Blatt kleiner">🔍− Blatt kleiner</button>
     <button class="btn secondary" data-act="zoom-in" aria-label="Blatt größer">🔍+ Blatt größer</button>
     <button class="btn secondary" data-act="zoom-fit" aria-label="Ganzes Blatt zeigen">▣ Ganzes Blatt</button></div>
@@ -406,7 +427,8 @@ function gameHtml() {
   const head = showDice ? `<p class="fw-rollno">${g.phase === 'roll' ? `Letzter Wurf (Nr. ${g.throwNo}${g.solo ? ' von ' + E.SOLO_THROWS : ''})` : `Wurf ${g.throwNo}${g.solo ? ' von ' + E.SOLO_THROWS : ''}`}</p>` : '';
   return `${ui.header()}${ui.lost()}${bannerHtml()}
     <section class="card action">${actionHtml()}${head}${dice}</section>
-    ${mySheetCard()}${recapHtml()}${othersHtml()}`;
+    ${mySheetCard()}${recapHtml()}${othersHtml()}
+    <div class="fw-bottompad" aria-hidden="true" style="height: calc(60vh + ${S.ui.padExtra || 0}px)"></div>`;
 }
 
 // ====================== Ende ======================
@@ -579,19 +601,36 @@ function afterDice() {
   render();
 }
 
+// Nach dem Zoomen: Seitenhöhe gleich halten (sonst rutscht der Zettel beim Verkleinern nach unten)
+// und den Zettel an derselben Stelle auf dem Bildschirm lassen.
+function keepSheetInPlace(top0, h0) {
+  const docH = () => document.documentElement.scrollHeight;
+  if (h0 != null && docH() !== h0) {
+    S.ui.padExtra = Math.max(0, (S.ui.padExtra || 0) + (h0 - docH()));
+    render();
+  }
+  const sc2 = document.getElementById('fw-scroll');
+  if (!sc2 || top0 == null) return;
+  const d = sc2.getBoundingClientRect().top - top0;
+  if (Math.abs(d) > 1) window.scrollBy(0, d);
+}
+
 function zoom(act) {
   const sc = document.getElementById('fw-scroll');
   const cell = sc && sc.querySelector('.fw-cell');
   if (!sc || !cell) return;
+  const top0 = sc.getBoundingClientRect().top; // Lage des Zettels auf dem Bildschirm merken
+  const h0 = document.documentElement.scrollHeight;
   const cur = cell.getBoundingClientRect().width;
   const frac = (sc.scrollLeft + sc.clientWidth / 2) / sc.scrollWidth;
-  if (act === 'zoom-fit') { S.ui.fit = true; S.ui.pend = { frac }; return render(); }
+  if (act === 'zoom-fit') { S.ui.fit = true; S.ui.pend = { frac }; render(); keepSheetInPlace(top0, h0); return; }
   S.ui.fit = false;
   const next = act === 'zoom-in' ? ZOOMS.find((z) => z > cur + 1) : [...ZOOMS].reverse().find((z) => z < cur - 1);
   S.ui.zoom = next || (act === 'zoom-in' ? ZOOMS[ZOOMS.length - 1] : ZOOMS[0]);
   sess.set('fw_zoom', S.ui.zoom);
   S.ui.pend = { frac };
-  return render();
+  render();
+  keepSheetInPlace(top0, h0);
 }
 
 function render() { ui.render(); }

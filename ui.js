@@ -245,6 +245,7 @@ export function createUI(cfg) {
       $app.querySelectorAll('.banner').forEach((b) => { if (!(b.firstElementChild && b.firstElementChild.classList.contains('banner-in'))) b.innerHTML = `<span class="banner-in">${b.innerHTML}</span>`; });
       stabilize();
     }
+    document.documentElement.style.setProperty('--sticky-top', coachNow ? '10.4rem' : '0px');
     maybeCelebrate();
     coachAfterRender();
     announce();

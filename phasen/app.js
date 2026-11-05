@@ -140,7 +140,7 @@ function actionHtml() {
     html += `<p class="big">Versuch ${t.attempt} von ${P.MAX_ATTEMPTS}. Tippe auf die Würfel, die du <b>behalten</b> willst. Alle anderen werden neu gewürfelt.</p>`;
   }
   if (canRoll) {
-    html += `<button class="btn ${ev.ok ? 'secondary' : 'primary'} huge" data-act="reroll" ${rest === 0 ? 'disabled' : ''}>🎲 ${rest} Würfel neu würfeln (Versuch ${t.attempt + 1} von 3)</button>`;
+    html += `<button class="btn ${ev.ok ? 'secondary' : 'primary'} huge" data-act="reroll" ${rest === 0 ? 'disabled' : ''}>🎲 ${rest} Würfel neu würfeln (${t.attempt + 1}. Wurf von 3)</button>`;
   }
   if (ev.ok && !t.final) {
     html += S.ui.confirmSkip
@@ -184,8 +184,12 @@ function gameHtml() {
   const me = g.players[myIndex()];
   const showPhase = ap.id === cid || !me ? ap : me;
   const interactive = ap.id === cid && t.stage === 'choose' && t.attempt < P.MAX_ATTEMPTS && !S.ui.rolling;
+  // Zählung der Würfe immer gut sichtbar über den Würfeln
+  const left = P.MAX_ATTEMPTS - t.attempt;
+  const wurf = t.dice && t.stage === 'choose'
+    ? `<p class="p10-wurf${left === 0 ? ' last' : ''}">Wurf <b>${t.attempt}</b> von ${P.MAX_ATTEMPTS} · ${left > 0 ? `noch <b>${left}</b> ${left === 1 ? 'Wurf' : 'Würfe'} übrig` : 'das war der letzte Wurf'}</p>` : '';
   const dice = t.dice
-    ? `<section class="card"><div id="dice">${diceHtml(g, { interactive })}</div></section>` : '';
+    ? `<section class="card">${wurf}<div id="dice">${diceHtml(g, { interactive })}</div></section>` : '';
   return `${headerHtml()}${lostHtml()}${bannerHtml()}
     <section class="card">${phaseBox(ap)}</section>
     ${dice}

@@ -307,3 +307,7 @@ main.hubmain { max-width: 1000px; }
   .hero .logo, .hubhead .logo, .trophy, .banner.mine { animation: none; }
   .btn, .hubcard { transition: none; }
 }
+
+/* Phasenwürfeln: Zählung der Würfe */
+.p10-wurf { text-align: center; font-size: 1.1rem; margin: 0 0 10px; padding: 8px 12px; background: #eef3ff; border-radius: 14px; }
+.p10-wurf.last { background: #fff1cc; }
