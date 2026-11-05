@@ -29,3 +29,6 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 
 ## Nutzungszahlen (optional, standardmäßig aus)
 `config.js` enthält `STATS_CODE`. Ist er leer, wird nichts gezählt und nichts an Dritte gesendet. Trägt man den Namen eines kostenlosen [GoatCounter](https://www.goatcounter.com)-Kontos ein, zählt `stats.js` anonym (ohne Cookies, ohne Namen und ohne Spielinhalte): Seitenaufrufe sowie die Ereignisse `raum-eroeffnet/<spiel>`, `gestartet/<spiel>`, `allein-gestartet/<spiel>` und `beendet/<spiel>`. Im Testmodus (`?mock=1`), auf `localhost` und bei „Do Not Track“ wird nicht gezählt. Auf der Startseite erscheint dann ein kurzer Hinweis.
+
+## Passwortschutz (optional)
+`node tools/passwort.mjs "dein passwort"` einschalten, `node tools/passwort.mjs ""` ausschalten, danach committen und pushen. Das Passwort wird pro Gerät gemerkt. Es hält Neugierige fern, ist aber kein Tresor.
