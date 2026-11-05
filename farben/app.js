@@ -380,11 +380,11 @@ function mySheetCard() {
     }
   }
   const strikes = g.solo ? soloStrikes() : '';
-  return `<section class="card" id="fw-mine">${miniDice(g)}<h2>Dein Spielblatt</h2>${task}
+  return `<section class="card" id="fw-mine">${miniDice(g)}<h2>Dein Spielblatt</h2>
     <div class="fw-tools"><button class="btn secondary" data-act="zoom-out" aria-label="Blatt kleiner">🔍− Blatt kleiner</button>
     <button class="btn secondary" data-act="zoom-in" aria-label="Blatt größer">🔍+ Blatt größer</button>
     <button class="btn secondary" data-act="zoom-fit" aria-label="Ganzes Blatt zeigen">▣ Ganzes Blatt</button></div>
-    ${sheetHtml(me, { opt, sel: waiting ? pk.cells : [] })}${confirm}
+    ${sheetHtml(me, { opt, sel: waiting ? pk.cells : [] })}${task}${confirm}
     <p class="muted small">Startspalte ist <b>H</b>. Obere Zahl unter einer Spalte: Punkte für die erste Person, die sie füllt. Untere Zahl: Punkte für alle, die später fertig werden. ★ = Sternfeld (−2 Punkte, wenn am Ende nicht angekreuzt).</p>
     ${colorBars(me)}${jokerHtml(me)}${scoreChips(me)}${strikes}</section>`;
 }

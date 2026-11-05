@@ -206,7 +206,7 @@ export function createUI(cfg) {
   // ---------- Spielfeld an fester Stelle halten ----------
   // Über dem Spielfeld erscheinen und verschwinden Texte und Knöpfe. Damit das Feld nicht auf und ab springt,
   // merken wir uns, wie weit unten es schon war, und füllen den Platz bei weniger Text mit einer Lücke auf.
-  const STABLE = '#board, .lu-board, .mh-board, .bk-scroll, .fw-wrap, #dice, .pz-sheet';
+  const STABLE = '#board, .lu-board, .mh-board, .bk-scroll, #dice, .pz-sheet';
   const stab = { key: '', tops: {} };
   function stabilize() {
     const key = `${window.innerWidth}|${prefs.big ? 1 : 0}|${S.screen}|${S.game ? S.game.players.length : 0}`;
