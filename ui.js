@@ -63,6 +63,17 @@ export function createUI(cfg) {
     const msg = S.message ? `<div class="notice ${S.message.tone}" role="alert">${esc(S.message.text)}</div>` : '';
     const nameField = `<label class="lbl" for="name">Wie heißt du?</label>
       <input id="name" class="input" type="text" maxlength="14" autocomplete="given-name" placeholder="Dein Vorname" value="${esc(S.name)}">`;
+    if (cfg.soloOnly) {
+      return `<div class="hero"><div class="logo">${cfg.icon}</div><h1>${esc(cfg.title)}</h1><p class="sub">${esc(cfg.sub)}</p></div>
+        <section class="card">${msg}
+          <button class="btn primary huge" data-act="solo">▶ Spielen</button>
+        </section>
+        ${cfg.tutorial ? `<section class="card coachcard"><h2>🎓 Neu hier? Lernrunde</h2>
+          <p class="muted">Eine Übungsrunde, in der dir das Spiel Schritt für Schritt zeigt, was zu tun ist – ohne Lesen, auf Wunsch mit Vorlesen.</p>
+          <button class="btn primary huge" data-act="learn">🎓 Lernrunde starten</button></section>` : ''}
+        <section class="card"><button class="btn ghost" data-act="help">Wie funktioniert das Spiel?</button>
+          <a class="btn ghost" href="${cfg.backLink || '../'}">← Zur Spielauswahl</a></section>`;
+    }
     if (invited.length === 4) {
       return `<div class="hero"><div class="logo">${cfg.icon}</div><h1>${esc(cfg.title)}</h1><p class="sub">Du wurdest zu einem Spiel eingeladen!</p></div>
         <section class="card">${msg}${nameField}
@@ -221,11 +232,11 @@ export function createUI(cfg) {
           S.message = null;
           return sess.joinGame(el.dataset.code);
         case 'solo':
-          if (!needName()) return;
+          if (cfg.soloOnly) { if (!S.name) { S.name = 'Du'; } } else if (!needName()) return;
           S.message = null;
           return sess.startSolo();
         case 'learn':
-          if (!needName()) return;
+          if (cfg.soloOnly) { if (!S.name) { S.name = 'Du'; } } else if (!needName()) return;
           S.message = null;
           S.ui.speak = speechOk;
           lastSpoken = ''; lastCoach = '';
