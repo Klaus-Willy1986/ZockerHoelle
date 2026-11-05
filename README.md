@@ -8,6 +8,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Farbenwürfeln** (`farben/`): Farb- und Zahlenwürfel kombinieren, Kästchen auf dem Blatt ankreuzen (1–6 Personen, auch allein).
 - **Ludo** (`ludo/`): Würfeln, ziehen, Figuren rauswerfen (2–4 Personen).
 - **Barrikade** (`barrikade/`): Wettlauf zum Ziel mit Sperren (2–4 Personen).
+- **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
 **Spielen:** Startseite öffnen → Spiel wählen → Vornamen eingeben → „Neues Spiel eröffnen“ → Einladungs-Link per WhatsApp schicken → Mitspielerin tippt auf den Link → „Spiel starten“.

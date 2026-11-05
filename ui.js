@@ -10,11 +10,13 @@ export function createUI(cfg) {
   const S = sess.S;
   const minPlayers = cfg.minPlayers || 2;
   if (sess.setOptionDefs) sess.setOptionDefs(cfg.options);
-  S.ui = Object.assign({ helpOpen: false, big: sess.get('big', false) }, S.ui || {});
+  S.ui = Object.assign({ helpOpen: false }, S.ui || {});
+  // Einstellungen des Geräts (Schrift, Ansagen) liegen außerhalb von S.ui, damit sie beim Verlassen/Neustart nicht verloren gehen
+  const prefs = { big: !!sess.get('big', false), speak: false };
 
   // ---------- Vorlesen (Sprachausgabe des Browsers) ----------
   const speechOk = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
-  S.ui.speak = speechOk && !!sess.get('speak', false);
+  prefs.speak = speechOk && !!sess.get('speak', false);
   let lastSpoken = '';
   const clean = (t) => String(t).replace(/[\u{1F000}-\u{1FFFF}\u{2190}-\u{2BFF}\u{FE0F}]/gu, '').replace(/\s+/g, ' ').trim();
   function say(text, { queue = false } = {}) {
@@ -39,7 +41,7 @@ export function createUI(cfg) {
     return (cfg.helpTitle || 'Die Spielregeln') + '. ' + d.textContent;
   }
   function announce() {
-    if (!S.ui.speak || S.ui.helpOpen || S.ui.rolling || S.screen !== 'game' || (S.learn && coachNow)) return;
+    if (!prefs.speak || S.ui.helpOpen || S.ui.rolling || S.screen !== 'game' || (S.learn && coachNow)) return;
     const banner = $app.querySelector('.banner');
     const hint = $app.querySelector('.action p.big, .action .big, .action h2');
     const text = clean([banner && banner.innerText, hint && hint.innerText].filter(Boolean).join('. '));
@@ -50,7 +52,7 @@ export function createUI(cfg) {
 
   const header = (extra = '') => `<header class="top"><div class="room">${S.room === 'SOLO' ? `<b>${S.lobby.some((p) => p.bot) ? 'Gegen den Computer' : 'Allein spielen'}</b>` : `Spiel <b>${esc(S.room || '')}</b>`}</div>
     <div class="topbtns">${extra}
-      ${speechOk ? `<button class="btn mini" data-act="speak-toggle" aria-pressed="${S.ui.speak ? 'true' : 'false'}">🔊 Ansagen: ${S.ui.speak ? 'an' : 'aus'}</button>` : ''}
+      ${speechOk ? `<button class="btn mini" data-act="speak-toggle" aria-pressed="${prefs.speak ? 'true' : 'false'}">🔊 Ansagen: ${prefs.speak ? 'an' : 'aus'}</button>` : ''}
       <button class="btn mini" data-act="bigger" aria-label="Schrift größer oder kleiner">A⁺ Schrift</button>
       <button class="btn mini" data-act="help">? Regeln</button>
       <button class="btn mini" data-act="leave">Verlassen</button>
@@ -158,7 +160,7 @@ export function createUI(cfg) {
   function coachAfterRender() {
     if (!coachNow) return;
     if (coachNow.target) { try { $app.querySelectorAll(coachNow.target).forEach((n, i) => { if (i < 60) n.classList.add('coach-target'); }); } catch { /* ungültiger Selektor */ } }
-    if (S.ui.speak && !S.ui.helpOpen && coachNow.text && coachNow.text !== lastCoach) { lastCoach = coachNow.text; say(coachNow.text); }
+    if (prefs.speak && !S.ui.helpOpen && coachNow.text && coachNow.text !== lastCoach) { lastCoach = coachNow.text; say(coachNow.text); }
   }
 
   // ---------- Spielfeld an fester Stelle halten ----------
@@ -167,7 +169,7 @@ export function createUI(cfg) {
   const STABLE = '#board, .lu-board, .mh-board, .bk-scroll, .fw-wrap, #dice, .pz-sheet';
   const stab = { key: '', tops: {} };
   function stabilize() {
-    const key = `${window.innerWidth}|${S.ui.big ? 1 : 0}|${S.screen}|${S.game ? S.game.players.length : 0}`;
+    const key = `${window.innerWidth}|${prefs.big ? 1 : 0}|${S.screen}|${S.game ? S.game.players.length : 0}`;
     if (stab.key !== key) { stab.key = key; stab.tops = {}; }
     $app.querySelectorAll(STABLE).forEach((el) => {
       const id = el.id || String(el.className && el.className.baseVal !== undefined ? el.className.baseVal : el.className).split(' ')[0];
@@ -185,7 +187,7 @@ export function createUI(cfg) {
 
   let lastScreenSeen = '';
   function render() {
-    document.documentElement.classList.toggle('big', !!S.ui.big);
+    document.documentElement.classList.toggle('big', !!prefs.big);
     let html = '';
     if (S.screen === 'start') html = startHtml();
     else if (S.screen === 'connecting') html = `<div class="hero"><div class="logo spin">🎲</div><h1>Einen Moment …</h1><p class="sub">${esc(S.connectText || '')}</p>
@@ -242,13 +244,13 @@ export function createUI(cfg) {
           S.message = null;
           return sess.joinGame(el.dataset.code);
         case 'solo':
-          if (cfg.soloOnly) { if (!S.name) { S.name = 'Du'; } } else if (!needName()) return;
+          if (cfg.soloOnly) { if (!S.name) S.name = 'Du'; sess.set('name', S.name); } else if (!needName()) return;
           S.message = null;
           return sess.startSolo();
         case 'learn':
-          if (cfg.soloOnly) { if (!S.name) { S.name = 'Du'; } } else if (!needName()) return;
+          if (cfg.soloOnly) { if (!S.name) S.name = 'Du'; sess.set('name', S.name); } else if (!needName()) return;
           S.message = null;
-          S.ui.speak = speechOk;
+          prefs.speak = speechOk;
           lastSpoken = ''; lastCoach = '';
           return sess.startSolo(null, { bots: cfg.tutorial.bots === undefined ? 1 : cfg.tutorial.bots, level: 0, learn: true });
         case 'learn-stop': sess.setLearn(false); lastCoach = ''; return;
@@ -261,17 +263,17 @@ export function createUI(cfg) {
         case 'help-read': return say(helpText());
         case 'help-stop': return stopSpeech();
         case 'speak-toggle':
-          S.ui.speak = !S.ui.speak;
-          sess.set('speak', S.ui.speak);
+          prefs.speak = !prefs.speak;
+          sess.set('speak', prefs.speak);
           lastSpoken = '';
-          if (!S.ui.speak) stopSpeech();
+          if (!prefs.speak) stopSpeech();
           else say('Ansagen sind jetzt eingeschaltet.', { queue: false });
           return render();
         case 'help-close':
           if (el.classList.contains('overlay') && ev.target !== el) return; // Klick ins Fenster schließt nicht
           stopSpeech();
           S.ui.helpOpen = false; return render();
-        case 'bigger': S.ui.big = !S.ui.big; sess.set('big', S.ui.big); return render();
+        case 'bigger': prefs.big = !prefs.big; sess.set('big', prefs.big); return render();
         case 'leave':
           if (confirm(S.role === 'host' ? 'Das Spiel wirklich beenden? Für alle Mitspieler endet es dann.' : 'Das Spiel wirklich verlassen?')) { sess.leave(); render(); }
           return;

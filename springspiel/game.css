@@ -1,0 +1,45 @@
+/* ===== Springspiel ===== */
+.sp-stats { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 10px 16px; margin: 8px 0; }
+.sp-stat { font-size: 1.3rem; font-weight: 700; white-space: nowrap; }
+.sp-stat b { font-size: 1.7rem; font-weight: 900; }
+.sp-boardcard { padding: 8px; margin: 8px 0; }
+.sp-board { display: block; width: 100%; max-width: 560px; margin: 0 auto; height: auto; aspect-ratio: 1 / 1; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.sp-edge { fill: #5b4121; }
+.sp-wood { fill: #ecd9ae; }
+.sp-hole { fill: #7d5c30; stroke: #4d3519; stroke-width: 2.5; }
+.sp-st { fill: #a51c1c; stroke: #ffe9d6; stroke-width: 3.5; }
+.sp-shine { fill: rgba(255, 255, 255, .38); }
+.sp-can { fill: none; stroke: #e07b00; stroke-width: 5; animation: sp-pulse 1.4s ease-in-out infinite; }
+.sp-sel { stroke: #1f5fbf; stroke-width: 7; animation: none; }
+.sp-tgt { fill: rgba(46, 139, 61, .6); stroke: #14591f; stroke-width: 4; animation: sp-pulse 1.4s ease-in-out infinite; }
+.sp-last-from { fill: none; stroke: #1f5fbf; stroke-width: 3.5; stroke-dasharray: 6 5; }
+.sp-last-over { stroke: #c4201a; stroke-width: 5; stroke-linecap: round; fill: none; }
+.sp-last-to { fill: none; stroke: #1f5fbf; stroke-width: 3.5; }
+.sp-ended .sp-st { opacity: .92; }
+.sp-hit { fill: transparent; cursor: default; outline: none; }
+.sp-hit.act { cursor: pointer; }
+.sp-hit.act:focus-visible { stroke: #1f5fbf; stroke-width: 4; }
+@keyframes sp-pulse { 50% { opacity: .5; } }
+
+.sp-actions { margin: 8px 0; }
+.sp-hint { min-height: 5.6em; margin: 0 0 6px; font-weight: 700; }
+.sp-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .8rem; color: var(--muted); margin: 0 2px 6px; }
+.sp-legend span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; border: 3px solid; }
+.sp-legend .l-can::before { border-color: #e07b00; }
+.sp-legend .l-tgt::before { border-color: #14591f; background: rgba(46, 139, 61, .6); }
+.sp-legend .l-last::before { border-color: #1f5fbf; border-style: dashed; }
+.sp-btnrow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sp-btnrow .btn { margin: 4px 0; background: #fff; border-color: var(--primary); color: var(--primary); font-size: 1rem; padding: 10px 6px; }
+.sp-btnrow .btn:disabled { border: 2px dashed #8b8b93; color: #55555c; background: #f1efe9; cursor: default; }
+.sp-confirm { margin: 8px 0 0; }
+.sp-confirm .btn { margin: 8px 0; }
+.sp-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sp-segbtn { margin: 4px 0; background: #fff; border-color: var(--line); color: var(--ink); line-height: 1.2; }
+.sp-segbtn small { display: block; font-weight: 500; color: var(--muted); font-size: .8rem; }
+.sp-segbtn[aria-pressed=true] { border: 3px solid var(--primary); background: #e8f0fd; color: var(--primary-d); }
+.sp-over h1 { font-size: 1.9rem; }
+.sp-ex { display: block; width: 180px; max-width: 100%; height: auto; margin: 6px 0 10px; }
+
+/* Lernrunde: Hervorhebung der anzutippenden Löcher (SVG-Kreise, daher kein outline) */
+.sp-hit.coach-target { fill: rgba(255, 179, 0, .4); stroke: #e07b00; stroke-width: 6; outline: none !important; animation: sp-pulse 1s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .sp-can, .sp-tgt, .sp-hit.coach-target { animation: none; } }
