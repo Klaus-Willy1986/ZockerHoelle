@@ -192,3 +192,8 @@ table.block tr.sumrow td { font-weight: 900; border-top: 2px solid #333; font-si
 .coach { position: sticky; top: 0; z-index: 30; height: 8.6rem; overflow-y: auto; justify-content: space-between; }
 .coach-t { font-size: 1.1rem; }
 .stable-gap { pointer-events: none; }
+
+/* ===== Regel-Optionen ===== */
+.opt { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; font-size: 1.05rem; cursor: pointer; }
+.opt input { width: 28px; height: 28px; flex: none; margin-top: 2px; accent-color: var(--primary); }
+.opt small { display: block; color: var(--muted); font-size: .8rem; margin-top: 2px; }

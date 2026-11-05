@@ -14,7 +14,7 @@ export function createSession(cfg) {
   Net.configure(cfg.game);
   statsInit();
   const store = Net.isMock() ? sessionStorage : localStorage;
-  const GAME_KEYS = new Set(['session', 'hostState']);
+  const GAME_KEYS = new Set(['session', 'hostState', 'opts']);
   const key = (k) => (GAME_KEYS.has(k) ? `zh.${cfg.game}.${k}` : `zh.${k}`);
   const get = (k, d = null) => { try { const v = store.getItem(key(k)); return v == null ? d : JSON.parse(v); } catch { return d; } };
   const set = (k, v) => { try { store.setItem(key(k), JSON.stringify(v)); } catch { /* egal */ } };
@@ -171,7 +171,7 @@ export function createSession(cfg) {
     const shift = H.starterShift++ % n;
     const order = [...players.slice(shift), ...players.slice(0, shift)];
     S.lobby = order.concat(S.lobby.filter((p) => !p.connected));
-    S.game = cfg.newGame(order.map((p) => ({ id: p.id, name: p.name })));
+    S.game = cfg.newGame(order.map((p) => ({ id: p.id, name: p.name })), getOpts());
     track((S.room === 'SOLO' ? (S.lobby.some((p) => p.bot) ? 'gegen-computer/' : 'allein-gestartet/') : 'gestartet/') + cfg.game);
     hostBroadcast();
   }
@@ -187,7 +187,7 @@ export function createSession(cfg) {
       { id: cid, name: S.name, connected: true },
       ...Array.from({ length: bots }, (_, i) => ({ id: 'bot' + (i + 1), name: bots > 1 ? 'Computer ' + (i + 1) : 'Computer', connected: true, bot: true })),
     ];
-    S.game = restore?.game || cfg.newGame(S.lobby.map((p) => ({ id: p.id, name: p.name })));
+    S.game = restore?.game || cfg.newGame(S.lobby.map((p) => ({ id: p.id, name: p.name })), getOpts());
     if (!restore) track((opts.learn ? 'lernrunde/' : bots ? 'gegen-computer/' : 'allein-gestartet/') + cfg.game);
     S.screen = 'game';
     set('session', { role: 'host', room: 'SOLO', ts: Date.now() });
@@ -342,6 +342,16 @@ export function createSession(cfg) {
     return false;
   }
 
+  // Regel-Optionen (z. B. "Ass dreht die Richtung"): gespeichert pro Spiel, Standardwerte aus cfg.options
+  let optDefs = cfg.options || [];
+  const setOptionDefs = (defs) => { optDefs = defs || []; };
+  const getOpts = () => {
+    const saved = get('opts', {}) || {};
+    const o = {};
+    for (const d of optDefs) o[d.id] = d.id in saved ? !!saved[d.id] : !!d.def;
+    return o;
+  };
+  const setOpt = (id, val) => { const o = { ...(get('opts', {}) || {}), [id]: !!val }; set('opts', o); };
   const setLearn = (on) => { S.learn = !!on; hostBroadcast(); };
-  return { S, cid, get, set, link, setLearn, startHosting, startSolo, joinGame, hostStartGame, send, leave, boot, Net };
+  return { S, cid, get, set, link, getOpts, setOpt, setOptionDefs, setLearn, startHosting, startSolo, joinGame, hostStartGame, send, leave, boot, Net };
 }

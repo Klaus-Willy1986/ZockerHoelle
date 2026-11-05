@@ -9,6 +9,7 @@ export function createUI(cfg) {
   const { sess, $app } = cfg;
   const S = sess.S;
   const minPlayers = cfg.minPlayers || 2;
+  if (sess.setOptionDefs) sess.setOptionDefs(cfg.options);
   S.ui = Object.assign({ helpOpen: false, big: sess.get('big', false) }, S.ui || {});
 
   // ---------- Vorlesen (Sprachausgabe des Browsers) ----------
@@ -55,6 +56,13 @@ export function createUI(cfg) {
       <button class="btn mini" data-act="leave">Verlassen</button>
     </div></header>`;
 
+  // Regel-Optionen (Kästchen zum Ankreuzen), z. B. cfg.options = [{ id: 'ace', label: '…', def: false }]
+  const optionsHtml = () => {
+    if (!cfg.options || !cfg.options.length) return '';
+    const cur = sess.getOpts();
+    return `<section class="card optcard"><h2>Spielregeln einstellen</h2>${cfg.options.map((d) => `<label class="opt"><input type="checkbox" data-opt="${esc(d.id)}" ${cur[d.id] ? 'checked' : ''}><span>${esc(d.label)}${d.help ? `<small>${esc(d.help)}</small>` : ''}</span></label>`).join('')}</section>`;
+  };
+
   const lost = () => (S.link === 'lost'
     ? `<div class="lostbar" role="alert">Die Verbindung ist kurz unterbrochen. Bitte nicht weggehen – wir verbinden dich automatisch wieder …</div>` : '');
 
@@ -88,6 +96,7 @@ export function createUI(cfg) {
       ${cfg.solo ? `<section class="card"><h2>Lieber allein spielen?</h2>
         <p class="muted">Kein Einladungs-Link nötig. ${esc(cfg.soloText || 'Du spielst für dich und kannst deine Bestleistung verbessern.')}</p>
         <button class="btn secondary huge" data-act="solo">🙋 Allein spielen</button></section>` : ''}
+      ${optionsHtml()}
       ${cfg.tutorial ? `<section class="card coachcard"><h2>🎓 Neu hier? Lernrunde</h2>
         <p class="muted">Eine Übungsrunde, in der dir das Spiel Schritt für Schritt zeigt, was zu tun ist – ohne Lesen, auf Wunsch mit Vorlesen.</p>
         <button class="btn primary huge" data-act="learn">🎓 Lernrunde starten</button></section>` : ''}
@@ -117,6 +126,7 @@ export function createUI(cfg) {
         ${navigator.share ? `<button class="btn secondary" data-act="share">Anders teilen (E-Mail, SMS …)</button>` : ''}
         <p class="muted small">Oder: Auf <b>${esc(location.host + location.pathname)}</b> den Code <b>${esc(S.room)}</b> eingeben.</p>
       </section>` : '';
+    const optBox = isHost ? optionsHtml() : '';
     const ready = S.lobby.filter((p) => p.connected).length >= minPlayers;
     const start = isHost
       ? `<section class="card"><h2>2. Los geht’s</h2>${ready
@@ -124,7 +134,7 @@ export function createUI(cfg) {
         : `<p class="big">Sobald ${minPlayers === 2 ? 'eine weitere Person' : 'genug Mitspieler'} da ${minPlayers === 2 ? 'ist' : 'sind'}, kannst du starten.</p>`}</section>`
       : `<section class="card"><p class="big center">Du bist dabei! 🎉<br>Bitte einen Moment warten, bis der Gastgeber das Spiel startet.</p></section>`;
     return `${header()}${lost()}${invite}
-      <section class="card"><h2>Wer ist schon da?</h2><ul class="players">${list}</ul></section>${start}`;
+      <section class="card"><h2>Wer ist schon da?</h2><ul class="players">${list}</ul></section>${optBox}${start}`;
   };
 
   const helpHtml = () => `<div class="overlay" data-act="help-close"><div class="modal" role="dialog" aria-modal="true" aria-label="Spielregeln">
@@ -281,6 +291,10 @@ export function createUI(cfg) {
       if (ev.key !== 'Enter') return;
       if (ev.target.id === 'code') $app.querySelector('[data-act="join-code"]')?.click();
       else if (ev.target.id === 'name') ($app.querySelector('[data-act="join-invited"]') || $app.querySelector('[data-act="host"]'))?.click();
+    });
+    $app.addEventListener('change', (ev) => {
+      const t = ev.target;
+      if (t && t.dataset && t.dataset.opt) sess.setOpt(t.dataset.opt, t.checked);
     });
     $app.addEventListener('input', (ev) => { if (ev.target.id === 'code') ev.target.value = Net.cleanCode(ev.target.value); });
   }
