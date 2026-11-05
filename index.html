@@ -9,102 +9,135 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
-    <div class="hero"><div class="logo">🎲</div><h1>Zocker-Hölle</h1><p class="sub">Welches Spiel möchtet ihr spielen?</p></div>
+  <main class="hubmain">
+    <div class="hubhead"><div class="logo">🎲</div><h1>Zocker-Hölle</h1><p class="sub">Welches Spiel möchtet ihr spielen?</p></div>
     <div id="resume"></div>
-    <a class="gamecard" href="kreuzquer/">
-      <div class="gh"><span class="gi">✕</span><h2>Kreuz &amp; Quer</h2></div>
-      <p>Würfeln und Zahlen ankreuzen – in vier Farbreihen. Für 2 bis 5 Personen, etwa 15 Minuten.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="phasen/">
-      <div class="gh"><span class="gi">🎯</span><h2>Phasenwürfeln</h2></div>
-      <p>Zehn Phasen mit Würfelkombinationen schaffen. Für 1 bis 5 Personen, auch allein.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="pasch/">
-      <div class="gh"><span class="gi">🎲</span><h2>Pasch &amp; Straße</h2></div>
-      <p>Fünf Würfel, drei Würfe, dreizehn Felder füllen: Full House, Straße, Pasch. Für 1 bis 5 Personen, auch allein.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="farben/">
-      <div class="gh"><span class="gi">🎨</span><h2>Farbenwürfeln</h2></div>
-      <p>Farben und Zahlen würfeln und zusammenhängende Kästchen auf dem Blatt ankreuzen. Für 1 bis 6 Personen, auch allein.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="ludo/">
-      <div class="gh"><span class="gi">🏁</span><h2>Ludo</h2></div>
-      <p>Würfeln, ziehen, Figuren rauswerfen – wer zuerst alle im Ziel hat, gewinnt. Für 2 bis 4 Personen.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="barrikade/">
-      <div class="gh"><span class="gi">🚧</span><h2>Barrikade</h2></div>
-      <p>Mit Würfelglück zum Ziel oben in der Mitte – aber die Sperren stehen im Weg. Für 2 bis 4 Personen.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="springspiel/">
-      <div class="gh"><span class="gi">🔴</span><h2>Springspiel</h2></div>
-      <p>Steine überspringen und wegnehmen, bis nur noch einer übrig ist. Zum Alleinspielen.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="farbcode/">
-      <div class="gh"><span class="gi">🔐</span><h2>Farbcode knacken</h2></div>
-      <p>Einen geheimen Farbcode erraten – allein, gegen den Computer oder zu zweit.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="sudoku/">
-      <div class="gh"><span class="gi">🔢</span><h2>Sudoku</h2></div>
-      <p>Das Zahlenrätsel mit drei Schwierigkeitsstufen. Zum Alleinspielen.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="maumau/">
-      <div class="gh"><span class="gi">🃏</span><h2>Mau-Mau</h2></div>
-      <p>Das beliebte Kartenspiel: Wer zuerst alle Karten los ist, gewinnt. Für 2 bis 6 Personen.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="stapelrennen/">
-      <div class="gh"><span class="gi">🏁</span><h2>Stapelrennen</h2></div>
-      <p>Zahlenkarten von 1 bis 12 auf Stapel legen und den eigenen Stapel zuerst abbauen. Für 2 bis 6 Personen.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="farbkarten/">
-      <div class="gh"><span class="gi">🎴</span><h2>Farbkarten</h2></div>
-      <p>Bunte Karten nach Farbe oder Zahl ablegen, mit Aussetzen, Richtungswechsel und Jokern. Für 2 bis 6 Personen.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="muehle/">
-      <div class="gh"><span class="gi">⚫</span><h2>Mühle</h2></div>
-      <p>Drei Steine in eine Reihe bringen und gegnerische Steine wegnehmen. Für 2 Personen.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <a class="gamecard" href="dame/">
-      <div class="gh"><span class="gi">♛</span><h2>Dame</h2></div>
-      <p>Diagonal ziehen, schlagen und zur Dame werden. Für 2 Personen.</p>
-      <span class="go">Spielen</span>
-    </a>
-    <p class="muted center small">Einfach auf ein Spiel tippen, Vornamen eingeben und den Einladungs-Link an die Mitspieler schicken.</p>
-    <p id="statsnote" class="muted center small" hidden>Diese Seite zählt anonym (ohne Cookies, ohne Namen), wie oft gespielt wird. Spielstände und Namen werden nicht gespeichert oder weitergegeben.</p>
+    <section class="hubsec"><h2><span>🎲</span> Würfelspiele</h2>
+      <div class="hubgrid">
+        <a class="hubcard" href="kreuzquer/" style="--accent:#b91c1c">
+          <div class="hh"><span class="hi">✕</span><h3>Kreuz &amp; Quer</h3></div>
+          <p>Würfeln und Zahlen in vier Farbreihen ankreuzen.</p>
+          <div class="tags"><span class="tg">2–5 Personen</span><span class="tg">🤖 Computer</span></div>
+          <span class="go">Spielen</span>
+        </a>
+        <a class="hubcard" href="phasen/" style="--accent:#6d28d9">
+          <div class="hh"><span class="hi">🎯</span><h3>Phasenwürfeln</h3></div>
+          <p>Zehn Phasen mit Würfelkombinationen schaffen.</p>
+          <div class="tags"><span class="tg">1–5 Personen</span><span class="tg">🤖 Computer</span><span class="tg">🎓 Lernrunde</span><span class="tg">Allein möglich</span></div>
+          <span class="go">Spielen</span>
+        </a>
+        <a class="hubcard" href="pasch/" style="--accent:#0f766e">
+          <div class="hh"><span class="hi">🎲</span><h3>Pasch &amp; Straße</h3></div>
+          <p>Fünf Würfel, drei Würfe, dreizehn Felder füllen.</p>
+          <div class="tags"><span class="tg">1–5 Personen</span><span class="tg">🤖 Computer</span><span class="tg">🎓 Lernrunde</span><span class="tg">Allein möglich</span></div>
+          <span class="go">Spielen</span>
+        </a>
+        <a class="hubcard" href="farben/" style="--accent:#be185d">
+          <div class="hh"><span class="hi">🎨</span><h3>Farbenwürfeln</h3></div>
+          <p>Farben und Zahlen würfeln und Kästchen ankreuzen.</p>
+          <div class="tags"><span class="tg">1–6 Personen</span><span class="tg">🤖 Computer</span><span class="tg">🎓 Lernrunde</span><span class="tg">Allein möglich</span></div>
+          <span class="go">Spielen</span>
+        </a>
+      </div>
+    </section>
+    <section class="hubsec"><h2><span>🧩</span> Brettspiele</h2>
+      <div class="hubgrid">
+        <a class="hubcard" href="ludo/" style="--accent:#15803d">
+          <div class="hh"><span class="hi">🏁</span><h3>Ludo</h3></div>
+          <p>Würfeln, ziehen, Figuren rauswerfen und als Erste ins Ziel.</p>
+          <div class="tags"><span class="tg">2–4 Personen</span><span class="tg">🤖 Computer</span><span class="tg">🎓 Lernrunde</span></div>
+          <span class="go">Spielen</span>
+        </a>
+        <a class="hubcard" href="barrikade/" style="--accent:#b45309">
+          <div class="hh"><span class="hi">🚧</span><h3>Barrikade</h3></div>
+          <p>Zum Ziel oben in der Mitte, aber die Sperren stehen im Weg.</p>
+          <div class="tags"><span class="tg">2–4 Personen</span><span class="tg">🤖 Computer</span><span class="tg">🎓 Lernrunde</span></div>
+          <span class="go">Spielen</span>
+        </a>
+        <a class="hubcard" href="muehle/" style="--accent:#1d4ed8">
+          <div class="hh"><span class="hi">⚫</span><h3>Mühle</h3></div>
+          <p>Drei Steine in eine Reihe bringen und Steine wegnehmen.</p>
+          <div class="tags"><span class="tg">2 Personen</span><span class="tg">🤖 Computer</span><span class="tg">🎓 Lernrunde</span></div>
+          <span class="go">Spielen</span>
+        </a>
+        <a class="hubcard" href="dame/" style="--accent:#7e22ce">
+          <div class="hh"><span class="hi">♛</span><h3>Dame</h3></div>
+          <p>Schräg ziehen, schlagen und zur Dame werden.</p>
+          <div class="tags"><span class="tg">2 Personen</span><span class="tg">🤖 Computer</span><span class="tg">🎓 Lernrunde</span></div>
+          <span class="go">Spielen</span>
+        </a>
+      </div>
+    </section>
+    <section class="hubsec"><h2><span>🃏</span> Kartenspiele</h2>
+      <div class="hubgrid">
+        <a class="hubcard" href="maumau/" style="--accent:#be123c">
+          <div class="hh"><span class="hi">🃏</span><h3>Mau-Mau</h3></div>
+          <p>Wer zuerst alle Karten los ist, gewinnt.</p>
+          <div class="tags"><span class="tg">2–6 Personen</span><span class="tg">🤖 Computer</span><span class="tg">🎓 Lernrunde</span></div>
+          <span class="go">Spielen</span>
+        </a>
+        <a class="hubcard" href="stapelrennen/" style="--accent:#0e7490">
+          <div class="hh"><span class="hi">🏁</span><h3>Stapelrennen</h3></div>
+          <p>Zahlen von 1 bis 12 stapeln und den eigenen Stapel abbauen.</p>
+          <div class="tags"><span class="tg">2–6 Personen</span><span class="tg">🤖 Computer</span><span class="tg">🎓 Lernrunde</span></div>
+          <span class="go">Spielen</span>
+        </a>
+        <a class="hubcard" href="farbkarten/" style="--accent:#c2410c">
+          <div class="hh"><span class="hi">🎴</span><h3>Farbkarten</h3></div>
+          <p>Bunte Karten ablegen, mit Aussetzen und Jokern.</p>
+          <div class="tags"><span class="tg">2–6 Personen</span><span class="tg">🤖 Computer</span><span class="tg">🎓 Lernrunde</span></div>
+          <span class="go">Spielen</span>
+        </a>
+      </div>
+    </section>
+    <section class="hubsec"><h2><span>🧠</span> Rätsel und Alleinspiele</h2>
+      <div class="hubgrid">
+        <a class="hubcard" href="sudoku/" style="--accent:#2563eb">
+          <div class="hh"><span class="hi">🔢</span><h3>Sudoku</h3></div>
+          <p>Das Zahlenrätsel in drei Stufen.</p>
+          <div class="tags"><span class="tg">Allein</span><span class="tg">🎓 Lernrunde</span></div>
+          <span class="go">Spielen</span>
+        </a>
+        <a class="hubcard" href="springspiel/" style="--accent:#a21caf">
+          <div class="hh"><span class="hi">🔴</span><h3>Springspiel</h3></div>
+          <p>Steine überspringen, bis nur noch einer übrig ist.</p>
+          <div class="tags"><span class="tg">Allein</span><span class="tg">🎓 Lernrunde</span></div>
+          <span class="go">Spielen</span>
+        </a>
+        <a class="hubcard" href="farbcode/" style="--accent:#0f766e">
+          <div class="hh"><span class="hi">🔐</span><h3>Farbcode knacken</h3></div>
+          <p>Einen geheimen Farbcode erraten.</p>
+          <div class="tags"><span class="tg">Allein oder zu zweit</span><span class="tg">🤖 Computer</span><span class="tg">🎓 Lernrunde</span></div>
+          <span class="go">Spielen</span>
+        </a>
+      </div>
+    </section>
+    <div class="hubfoot">
+      <p class="muted center small">Einfach auf ein Spiel tippen, Vornamen eingeben und den Einladungs-Link an die Mitspieler schicken. In jedem Spiel gibt es oben rechts „? Regeln“ mit Vorlesen.</p>
+      <p id="statsnote" class="muted center small" hidden>Diese Seite zählt anonym (ohne Cookies, ohne Namen), wie oft gespielt wird. Spielstände und Namen werden nicht gespeichert oder weitergegeben.</p>
+    </div>
   </main>
+  <script type="module">
+    import { init, statsEnabled } from './stats.js';
+    init();
+    if (statsEnabled()) document.getElementById('statsnote').hidden = false;
+  </script>
   <script>
     // Läuft schon ein Spiel in diesem Browser? Dann direkt "Zurück ins Spiel" anbieten.
     (function () {
-      var games = [['kq', 'kreuzquer/', 'Kreuz & Quer'], ['p10', 'phasen/', 'Phasenwürfeln'], ['pasch', 'pasch/', 'Pasch & Straße'], ['ludo', 'ludo/', 'Ludo'], ['muehle', 'muehle/', 'Mühle'], ['dame', 'dame/', 'Dame'], ['bk', 'barrikade/', 'Barrikade'], ['fw', 'farben/', 'Farbenwürfeln'], ['sp', 'springspiel/', 'Springspiel'], ['sd', 'sudoku/', 'Sudoku'], ['fc', 'farbcode/', 'Farbcode knacken'], ['mm', 'maumau/', 'Mau-Mau'], ['sr', 'stapelrennen/', 'Stapelrennen'], ['fk', 'farbkarten/', 'Farbkarten']];
+      var games = [["kq", "kreuzquer/", "Kreuz & Quer"], ["p10", "phasen/", "Phasenwürfeln"], ["pasch", "pasch/", "Pasch & Straße"], ["fw", "farben/", "Farbenwürfeln"], ["ludo", "ludo/", "Ludo"], ["bk", "barrikade/", "Barrikade"], ["muehle", "muehle/", "Mühle"], ["dame", "dame/", "Dame"], ["mm", "maumau/", "Mau-Mau"], ["sr", "stapelrennen/", "Stapelrennen"], ["fk", "farbkarten/", "Farbkarten"], ["sd", "sudoku/", "Sudoku"], ["sp", "springspiel/", "Springspiel"], ["fc", "farbcode/", "Farbcode knacken"]];
       var html = '';
       games.forEach(function (g) {
         try {
           var s = JSON.parse(localStorage.getItem('zh.' + g[0] + '.session'));
           if (s && Date.now() - s.ts < 8 * 3600 * 1000) {
-            html += '<a class="gamecard resume" href="' + g[1] + '"><h2>Zurück ins laufende Spiel</h2><p>' + g[2] + ' (Raum ' + s.room + ')</p><span class="go">Weiterspielen</span></a>';
+            var label = s.room === 'SOLO' ? 'allein' : 'Raum ' + s.room;
+            html += '<a class="hubcard resume" href="' + g[1] + '" style="--accent:#b45309"><div class="hh"><span class="hi">▶</span><h3>Zurück ins laufende Spiel</h3></div><p>' + g[2] + ' (' + label + ')</p><span class="go">Weiterspielen</span></a>';
           }
         } catch (e) { /* egal */ }
       });
-      document.getElementById('resume').innerHTML = html;
+      document.getElementById('resume').innerHTML = html ? '<div class="hubgrid" style="margin-top:14px">' + html + '</div>' : '';
     })();
-  </script>
-  <script type="module">
-    import { init, statsEnabled } from './stats.js';
-    init();
-    if (statsEnabled()) document.getElementById('statsnote').hidden = false;
   </script>
 </body>
 </html>

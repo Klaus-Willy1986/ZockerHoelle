@@ -197,3 +197,113 @@ table.block tr.sumrow td { font-weight: 900; border-top: 2px solid #333; font-si
 .opt { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; font-size: 1.05rem; cursor: pointer; }
 .opt input { width: 28px; height: 28px; flex: none; margin-top: 2px; accent-color: var(--primary); }
 .opt small { display: block; color: var(--muted); font-size: .8rem; margin-top: 2px; }
+
+/* =====================================================================
+   Modernes Aussehen (überschreibt die Grundgestaltung weiter oben)
+   ===================================================================== */
+:root {
+  --bg: #f8f4ed; --primary: #2563d6; --primary-d: #1b4cb0; --radius: 22px;
+  --shadow-1: 0 1px 2px rgba(20,20,40,.06), 0 8px 22px rgba(20,20,40,.08);
+  --shadow-2: 0 2px 4px rgba(20,20,40,.08), 0 14px 32px rgba(20,20,40,.14);
+}
+body {
+  background:
+    radial-gradient(1100px 520px at 6% -8%, #ffe3bd 0%, rgba(255,227,189,0) 62%),
+    radial-gradient(900px 520px at 104% 2%, #d2e7ff 0%, rgba(210,231,255,0) 58%),
+    #f8f4ed;
+  background-attachment: fixed;
+  font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+h1, h2, h3 { letter-spacing: -.01em; }
+
+/* Karten */
+.card { border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-1); border: 1px solid rgba(20,20,40,.05); }
+.card h2 { font-weight: 800; }
+
+/* Eingabefelder */
+.input { border: 2px solid #b9bdc9; border-radius: 16px; background: #fff; box-shadow: inset 0 1px 2px rgba(20,20,40,.06); }
+.input:focus { outline: 4px solid rgba(37,99,214,.28); border-color: var(--primary); }
+
+/* Knöpfe */
+.btn { border-radius: 18px; transition: transform .12s ease, box-shadow .12s ease, background .12s ease; }
+.btn:active { transform: translateY(1px) scale(.992); }
+.btn.primary { background: linear-gradient(180deg, #3b7bee 0%, var(--primary) 55%, var(--primary-d) 100%); box-shadow: 0 6px 14px rgba(37,99,214,.34), inset 0 1px 0 rgba(255,255,255,.28); }
+.btn.primary:hover { background: linear-gradient(180deg, #4a87f4 0%, #2a6be0 55%, #1d51bb 100%); transform: translateY(-1px); box-shadow: 0 9px 18px rgba(37,99,214,.4), inset 0 1px 0 rgba(255,255,255,.3); }
+.btn.secondary { background: #fff; border-color: rgba(37,99,214,.55); box-shadow: 0 2px 6px rgba(20,20,40,.08); }
+.btn.secondary:hover { background: #f3f7ff; transform: translateY(-1px); }
+.btn.ghost { background: rgba(255,255,255,.55); border-color: rgba(20,20,40,.14); }
+.btn.mini { border-radius: 999px; background: #fff; border-color: rgba(20,20,40,.1); box-shadow: 0 1px 4px rgba(20,20,40,.1); }
+.btn.mini:hover { background: #f3f7ff; }
+
+/* Kopfzeile */
+.top { padding: 8px 0 4px; }
+.room { font-weight: 700; color: #3b3f52; }
+
+/* Statuszeile */
+.banner { border-radius: 20px; background: linear-gradient(135deg, #4b5066 0%, #2f3346 100%); box-shadow: var(--shadow-1); text-shadow: 0 1px 1px rgba(0,0,0,.18); }
+.banner.mine { background: linear-gradient(135deg, #34b36a 0%, #1d8a4c 100%); animation: glowpulse 2.4s ease-in-out infinite; }
+.banner.done { background: linear-gradient(135deg, #8a5be0 0%, #5b34b0 100%); }
+.banner.final { background: linear-gradient(135deg, #e07a3a 0%, #b3541e 100%); }
+@keyframes glowpulse { 0%, 100% { box-shadow: var(--shadow-1), 0 0 0 0 rgba(52,179,106,.45); } 50% { box-shadow: var(--shadow-1), 0 0 0 9px rgba(52,179,106,0); } }
+
+/* Hinweise */
+.lostbar, .notice { border-radius: 16px; }
+.confirm { border-radius: 18px; }
+.recap { background: rgba(255,255,255,.9); }
+.chip { box-shadow: inset 0 0 0 1px rgba(20,20,40,.06); }
+
+/* Startseite eines Spiels */
+.hero { padding: 26px 0 10px; }
+.hero .logo { width: 6.4rem; height: 6.4rem; display: grid; place-items: center; margin: 0 auto 8px; font-size: 3.5rem; line-height: 1;
+  background: linear-gradient(145deg, #ffffff 0%, #ffe9c9 100%); border-radius: 32px; box-shadow: var(--shadow-2); animation: floaty 4.5s ease-in-out infinite; }
+.hero .logo.spin { animation: spin 1.2s linear infinite; }
+@keyframes floaty { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-7px) rotate(2deg); } }
+.hero h1 { font-weight: 900; font-size: 2.35rem; color: #1f3a8a;
+  background: linear-gradient(90deg, #d9381e 0%, #e69a00 33%, #1f9d55 66%, #2563d6 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.hero .sub { color: #5a5f73; }
+
+/* Gewinn-Bildschirm */
+.trophy { filter: drop-shadow(0 6px 10px rgba(0,0,0,.18)); animation: floaty 3.2s ease-in-out infinite; }
+.ranking li { border-radius: 18px; }
+.ranking li.win { background: linear-gradient(135deg, #fff6d6 0%, #ffe9a3 100%); border-color: #e0a800; }
+.confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 80; }
+
+/* Würfel */
+.die { box-shadow: 0 3px 6px rgba(20,20,40,.28), inset 0 -3px 0 rgba(0,0,0,.08); }
+
+/* Hilfe-Fenster */
+.overlay { background: rgba(20,24,44,.6); backdrop-filter: blur(3px); }
+.modal { border-radius: 26px; box-shadow: var(--shadow-2); }
+
+/* Lernrunde */
+.coach { border-radius: 20px; background: linear-gradient(135deg, #fff9e0 0%, #ffefb5 100%); box-shadow: var(--shadow-2); }
+
+/* ===== Startseite „Zocker-Hölle“ ===== */
+main.hubmain { max-width: 1000px; }
+.hubhead { text-align: center; padding: 28px 0 6px; }
+.hubhead .logo { width: 7rem; height: 7rem; display: grid; place-items: center; margin: 0 auto 8px; font-size: 3.9rem; background: linear-gradient(145deg, #fff, #ffe5c1); border-radius: 36px; box-shadow: var(--shadow-2); animation: floaty 4.5s ease-in-out infinite; }
+.hubhead h1 { font-size: 2.7rem; font-weight: 900; margin: .1em 0;
+  background: linear-gradient(90deg, #d9381e 0%, #e69a00 33%, #1f9d55 66%, #2563d6 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.hubhead .sub { font-size: 1.15rem; color: #5a5f73; }
+.hubsec h2 { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 800; margin: 30px 4px 10px; color: #2d3148; }
+.hubsec h2::after { content: ""; flex: 1; height: 3px; border-radius: 3px; background: linear-gradient(90deg, rgba(45,49,72,.18), rgba(45,49,72,0)); }
+.hubgrid { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .hubgrid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 980px) { .hubgrid { grid-template-columns: 1fr 1fr 1fr; } }
+.hubcard { --accent: #2563d6; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 16px 16px 14px 24px; background: #fff; border-radius: 24px; text-decoration: none; color: inherit; box-shadow: var(--shadow-1); border: 1px solid rgba(20,20,40,.06); transition: transform .15s ease, box-shadow .15s ease; }
+.hubcard::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 9px; background: var(--accent); }
+.hubcard:hover, .hubcard:focus-visible { transform: translateY(-3px); box-shadow: var(--shadow-2); outline: none; }
+.hubcard:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.hubcard .hh { display: flex; align-items: center; gap: 14px; }
+.hubcard .hi { flex: none; width: 3.4rem; height: 3.4rem; border-radius: 18px; display: grid; place-items: center; font-size: 1.9rem; background: #eef1fb; background: color-mix(in srgb, var(--accent) 15%, #fff); }
+.hubcard h3 { margin: 0; font-size: 1.3rem; font-weight: 800; }
+.hubcard p { margin: 0; color: #55596b; font-size: .95rem; line-height: 1.35; }
+.hubcard .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.hubcard .tg { font-size: .72rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #f0f2f8; color: #3b3f52; }
+.hubcard .go { margin-top: auto; align-self: flex-start; background: var(--accent); color: #fff; font-weight: 800; padding: 10px 22px; border-radius: 999px; box-shadow: 0 4px 10px rgba(20,20,40,.22); }
+.hubcard.resume { background: linear-gradient(135deg, #fff8dc, #ffefb5); border-color: #e0a800; }
+.hubfoot { margin-top: 34px; }
+@media (prefers-reduced-motion: reduce) {
+  .hero .logo, .hubhead .logo, .trophy, .banner.mine { animation: none; }
+  .btn, .hubcard { transition: none; }
+}

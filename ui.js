@@ -163,6 +163,46 @@ export function createUI(cfg) {
     if (prefs.speak && !S.ui.helpOpen && coachNow.text && coachNow.text !== lastCoach) { lastCoach = coachNow.text; say(coachNow.text); }
   }
 
+  // ---------- Konfetti beim Sieg ----------
+  let celebrated = false;
+  function confetti() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const cv = document.createElement('canvas');
+    cv.className = 'confetti'; cv.setAttribute('aria-hidden', 'true');
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = Math.round(window.innerWidth * dpr); cv.height = Math.round(window.innerHeight * dpr);
+    document.body.appendChild(cv);
+    const ctx = cv.getContext('2d');
+    if (!ctx) { cv.remove(); return; }
+    const colors = ['#e53935', '#fdd835', '#43a047', '#1e88e5', '#8e24aa', '#fb8c00'];
+    const parts = Array.from({ length: 140 }, () => ({
+      x: Math.random() * cv.width, y: -Math.random() * cv.height * 0.4, w: (6 + Math.random() * 8) * dpr, h: (8 + Math.random() * 10) * dpr,
+      vx: (Math.random() - 0.5) * 3 * dpr, vy: (2.2 + Math.random() * 3.2) * dpr, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.3, c: colors[Math.floor(Math.random() * colors.length)],
+    }));
+    const t0 = performance.now();
+    (function frame(now) {
+      const t = now - t0;
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      for (const p of parts) {
+        p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.globalAlpha = Math.max(0, 1 - t / 3600);
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore();
+      }
+      if (t < 3600) requestAnimationFrame(frame); else cv.remove();
+    })(t0);
+  }
+  // Feiern, wenn der Siegerbildschirm erscheint und du gewonnen hast (oder allein ein Rätsel/Ziel geschafft hast)
+  function maybeCelebrate() {
+    const tro = $app.querySelector('.trophy');
+    if (!tro) { celebrated = false; return; }
+    if (celebrated) return;
+    window.scrollTo(0, 0); // Ergebnis steht oben: dorthin springen
+    const trophy = tro.textContent || '';
+    const head = ($app.querySelector('.over h1, h1') || {}).textContent || '';
+    const mine = /(^|\s)Du\s|Glückwunsch|Geschafft|Bestleistung|Punkte!/.test(head) || (S.name && head.includes(S.name + ' hat'));
+    if (/🏆/.test(trophy) && mine) { celebrated = true; confetti(); } else { celebrated = true; }
+  }
+
   // ---------- Spielfeld an fester Stelle halten ----------
   // Über dem Spielfeld erscheinen und verschwinden Texte und Knöpfe. Damit das Feld nicht auf und ab springt,
   // merken wir uns, wie weit unten es schon war, und füllen den Platz bei weniger Text mit einer Lücke auf.
@@ -205,6 +245,7 @@ export function createUI(cfg) {
       $app.querySelectorAll('.banner').forEach((b) => { if (!(b.firstElementChild && b.firstElementChild.classList.contains('banner-in'))) b.innerHTML = `<span class="banner-in">${b.innerHTML}</span>`; });
       stabilize();
     }
+    maybeCelebrate();
     coachAfterRender();
     announce();
   }
