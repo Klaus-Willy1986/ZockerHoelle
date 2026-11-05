@@ -1,0 +1,100 @@
+/* ===== Mau-Mau ===== */
+/* Karten: Größe über font-size steuerbar (1em = 1/6 der Kartenbreite). Normal 72 x 104 px. */
+.mm-card { --c: #111; position: relative; display: block; box-sizing: border-box; flex: none; font: inherit; font-size: 12px; width: 6em; height: 8.667em; padding: 0; border-radius: .75em; background: #fff; color: var(--c); border: 2px solid #4a4a52; box-shadow: 0 2px 4px rgba(0,0,0,.28); text-align: center; overflow: hidden; }
+.mm-card.red { --c: #c62828; }
+.mm-card.lg { font-size: 15px; }
+.mm-card .tl { position: absolute; top: .25em; left: .3em; display: flex; flex-direction: column; align-items: center; line-height: 1; font-weight: 900; }
+.mm-card .rk { font-size: 2em; letter-spacing: -.02em; }
+.mm-card .ss { font-size: 1.5em; margin-top: .05em; }
+.mm-card .mid { position: absolute; left: 0; right: 0; top: .72em; font-size: 3.1em; line-height: 1.1; }
+.mm-card .nm { position: absolute; left: 0; right: 0; bottom: .35em; font-size: .95em; font-weight: 800; line-height: 1; }
+/* Rot/Schwarz zusätzlich durch Rand-Muster: Rot = gestrichelte Innenlinie */
+.mm-card.red::after { content: ""; position: absolute; inset: 3px; border: 2px dashed rgba(198,40,40,.35); border-radius: .55em; pointer-events: none; }
+
+.mm-card.back { background: repeating-linear-gradient(45deg, #1f5fbf 0 6px, #174a96 6px 12px); border-color: #0d2f66; }
+.mm-card.back::before { content: ""; position: absolute; inset: .55em; border: 2px solid rgba(255,255,255,.75); border-radius: .5em; }
+
+button.mm-card { cursor: pointer; }
+.mm-card.can { border: 4px solid var(--ok); box-shadow: 0 0 0 3px #bfe8c5, 0 4px 8px rgba(0,0,0,.3); transform: translateY(-4px); }
+.mm-card.can:hover { background: #f1fbf2; }
+button.mm-card:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.mm-card.dim { opacity: .42; filter: grayscale(.7); box-shadow: none; }
+.mm-card.sel { border-color: #ffb300; box-shadow: 0 0 0 4px #ffe08a, 0 4px 8px rgba(0,0,0,.3); }
+.mm-card.fresh::before { content: "neu"; position: absolute; top: 0; right: 0; background: #1f5fbf; color: #fff; font-size: .8em; font-weight: 800; padding: .15em .45em; border-bottom-left-radius: .5em; z-index: 1; }
+
+/* Spielfläche */
+.mm-board { padding: 12px; }
+.mm-opps { list-style: none; margin: 0 0 10px; padding: 0; display: grid; grid-template-columns: 1fr; gap: 8px; }
+.mm-opp { display: flex; align-items: center; gap: 8px; height: 58px; padding: 4px 10px; border-radius: 12px; background: #f1efe8; border: 3px solid transparent; overflow: hidden; }
+.mm-opp.act { border-color: var(--primary); background: #e8f0fd; }
+.mm-nm { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1rem; }
+.mm-ct { flex: none; font-weight: 800; font-size: .9rem; white-space: nowrap; }
+.mm-backs { flex: none; display: flex; align-items: center; height: 36px; }
+.mm-backs .mm-card { margin-left: -2.4em; font-size: 4px; border-width: 1px; box-shadow: none; }
+.mm-backs .mm-card::before { inset: .4em; border-width: 1px; }
+.mm-backs .mm-card:first-child { margin-left: 0; }
+.mm-backs .more { margin-left: 6px; font-weight: 800; font-size: .8rem; }
+
+.mm-center { min-height: 10rem; display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 10px; align-items: start; }
+.mm-pilecol, .mm-disccol { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.mm-lbl { font-size: .85rem; font-weight: 800; color: var(--muted); }
+.mm-pile { position: relative; display: block; padding: 0; margin: 0; border: 0; background: none; font: inherit; }
+button.mm-pile { cursor: pointer; border-radius: 14px; }
+button.mm-pile .mm-card { border: 4px solid var(--ok); box-shadow: 0 0 0 3px #bfe8c5; }
+button.mm-pile:focus-visible { outline: 4px solid #ffb300; outline-offset: 3px; }
+.mm-pile .mm-card { font-size: 13px; }
+.mm-count { position: absolute; left: 50%; bottom: .45em; transform: translateX(-50%); background: #fff; color: #111; font-weight: 900; font-size: 1.15rem; min-width: 2.1em; padding: .1em .35em; border-radius: 999px; border: 2px solid #0d2f66; z-index: 2; }
+.mm-info { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.mm-dir { font-weight: 800; font-size: .85rem; line-height: 1.2; height: 4.9rem; overflow: hidden; }
+.mm-dir b { display: block; font-size: 2rem; line-height: 1.05; }
+.mm-wish { display: flex; flex-direction: column; justify-content: center; height: 5rem; box-sizing: border-box; overflow: hidden; padding: 6px 10px; border-radius: 12px; background: #f1efe8; border: 3px dashed #bdb8a8; font-weight: 700; font-size: .85rem; line-height: 1.2; }
+.mm-wish.on { border-style: solid; border-color: #ffb300; background: #fff4cc; color: #111; }
+.mm-wish.on.red { color: #c62828; }
+.mm-wish b { font-size: 1.25rem; line-height: 1.15; }
+
+/* Hinweis- und Knopfbereich: feste Höhe, damit nichts springt */
+.mm-action { min-height: 12rem; display: flex; flex-direction: column; justify-content: center; }
+.mm-action p { margin: 0 0 8px; }
+.mm-action .btn { margin: 6px 0; }
+.mm-mau { background: #b3261e; color: #fff; font-size: 1.7rem; min-height: 80px; box-shadow: 0 0 0 4px #ffd0cc; animation: mmpulse 1.1s infinite; }
+.mm-mau:hover { background: #8e1d17; }
+.mm-wishes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 6px 0; }
+.mm-wishes .btn { margin: 0; padding: 6px 2px; min-height: 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: #fff; border-color: #4a4a52; color: #111; }
+.mm-wishes .btn.red { color: #c62828; }
+.mm-wishes .btn span { font-size: 2.1rem; line-height: 1; }
+.mm-wishes .btn small { font-size: .85rem; font-weight: 800; }
+@keyframes mmpulse { 50% { box-shadow: 0 0 0 9px #ffd0cc; } }
+
+/* Hand */
+.mm-handcard { padding: 12px; }
+.mm-handcard h2 { margin: 0 0 8px; font-size: 1.1rem; }
+.mm-hand { display: flex; flex-wrap: wrap; gap: 12px 8px; padding-top: 6px; justify-content: flex-start; }
+
+/* Spielstand */
+.mm-table { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
+.mm-table th { text-align: left; font-size: .85rem; color: var(--muted); padding: 4px 6px; }
+.mm-table td { padding: 8px 6px; border-top: 1px solid var(--line); }
+.mm-table td.n, .mm-table th.n { text-align: right; font-weight: 800; white-space: nowrap; }
+.mm-table tr.lead td { background: #fff6d6; }
+.mm-table td.add { color: var(--muted); font-weight: 600; font-size: .9rem; }
+
+/* Rundenende */
+.mm-over h1 { text-align: center; margin: 4px 0 6px; font-size: 1.6rem; }
+.mm-left { margin: 10px 0; }
+.mm-left h3 { margin: 12px 0 4px; font-size: 1rem; }
+.mm-left .mm-hand { gap: 6px; }
+.mm-btns { display: grid; gap: 4px; margin-top: 10px; }
+
+@media (min-width: 700px) {
+  .mm-card { font-size: 14px; }
+  .mm-card.lg { font-size: 18px; }
+  .mm-opps { grid-template-columns: 1fr 1fr; }
+  .mm-opps.one { grid-template-columns: 1fr; }
+  .mm-center { gap: 28px; justify-content: center; grid-template-columns: auto auto minmax(180px, 260px); }
+  .mm-hand { gap: 14px 10px; }
+  .mm-handcard .mm-card { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .mm-mau { animation: none; } }
+
+/* Statusbanner: immer gleich hoch (auch bei zwei Zeilen), damit das Spielfeld nicht springt */
+.banner { box-sizing: border-box; height: 5.2rem; min-height: 0; overflow: hidden; font-size: 1.35rem; line-height: 1.25; }
