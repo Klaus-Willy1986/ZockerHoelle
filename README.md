@@ -8,6 +8,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Farbenwürfeln** (`farben/`): Farb- und Zahlenwürfel kombinieren, Kästchen auf dem Blatt ankreuzen (1–6 Personen, auch allein).
 - **Ludo** (`ludo/`): Würfeln, ziehen, Figuren rauswerfen (2–4 Personen).
 - **Barrikade** (`barrikade/`): Wettlauf zum Ziel mit Sperren (2–4 Personen).
+- **Farbkarten** (`farbkarten/`): Ablegespiel mit bunten Karten (2–6 Personen).
 - **Stapelrennen** (`stapelrennen/`): Zahlenkarten-Stapelspiel (2–6 Personen).
 - **Mau-Mau** (`maumau/`): Kartenspiel mit Sonderkarten (Ass als Option).
 - **Farbcode knacken** (`farbcode/`): Code-Rate-Spiel (allein, gegen den Computer oder zu zweit).
