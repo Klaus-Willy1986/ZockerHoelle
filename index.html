@@ -47,6 +47,11 @@
       <p>Steine überspringen und wegnehmen, bis nur noch einer übrig ist. Zum Alleinspielen.</p>
       <span class="go">Spielen</span>
     </a>
+    <a class="gamecard" href="sudoku/">
+      <div class="gh"><span class="gi">🔢</span><h2>Sudoku</h2></div>
+      <p>Das Zahlenrätsel mit drei Schwierigkeitsstufen. Zum Alleinspielen.</p>
+      <span class="go">Spielen</span>
+    </a>
     <a class="gamecard" href="muehle/">
       <div class="gh"><span class="gi">⚫</span><h2>Mühle</h2></div>
       <p>Drei Steine in eine Reihe bringen und gegnerische Steine wegnehmen. Für 2 Personen.</p>
@@ -63,7 +68,7 @@
   <script>
     // Läuft schon ein Spiel in diesem Browser? Dann direkt "Zurück ins Spiel" anbieten.
     (function () {
-      var games = [['kq', 'kreuzquer/', 'Kreuz & Quer'], ['p10', 'phasen/', 'Phasenwürfeln'], ['pasch', 'pasch/', 'Pasch & Straße'], ['ludo', 'ludo/', 'Ludo'], ['muehle', 'muehle/', 'Mühle'], ['dame', 'dame/', 'Dame'], ['bk', 'barrikade/', 'Barrikade'], ['fw', 'farben/', 'Farbenwürfeln'], ['sp', 'springspiel/', 'Springspiel']];
+      var games = [['kq', 'kreuzquer/', 'Kreuz & Quer'], ['p10', 'phasen/', 'Phasenwürfeln'], ['pasch', 'pasch/', 'Pasch & Straße'], ['ludo', 'ludo/', 'Ludo'], ['muehle', 'muehle/', 'Mühle'], ['dame', 'dame/', 'Dame'], ['bk', 'barrikade/', 'Barrikade'], ['fw', 'farben/', 'Farbenwürfeln'], ['sp', 'springspiel/', 'Springspiel'], ['sd', 'sudoku/', 'Sudoku']];
       var html = '';
       games.forEach(function (g) {
         try {

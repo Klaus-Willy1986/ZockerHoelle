@@ -1,0 +1,54 @@
+/* ===== Sudoku ===== */
+.sd-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; margin: 4px 0; font-weight: 800; font-size: 1.05rem; }
+.sd-lvl { background: #3b3b42; color: #fff; padding: 4px 14px; border-radius: 999px; }
+.sd-clock { font-variant-numeric: tabular-nums; }
+.sd-left { color: var(--muted); font-size: .95rem; text-align: right; }
+
+.sd-board { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); grid-template-rows: repeat(9, minmax(0, 1fr)); width: 100%; max-width: 560px; aspect-ratio: 1; margin: 6px auto; border: 3px solid #111; background: #fff; }
+.sd-c { position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; margin: 0; padding: 0; border: 1px solid #8a8a93; border-radius: 0; background: #fff; color: #111; font: inherit; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.sd-c.bl { border-left: 3px solid #111; }
+.sd-c.bt { border-top: 3px solid #111; }
+div.sd-c { cursor: default; }
+.sd-c:focus-visible { outline: 4px solid #ffb300; outline-offset: -4px; z-index: 3; }
+.sd-v { font-size: clamp(1.2rem, 7vw, 2.1rem); font-weight: 700; line-height: 1; }
+.sd-c.given { background: #ecebe6; color: #111; }
+.sd-c.given .sd-v { font-weight: 900; }
+.sd-c.mine { color: var(--primary); }
+.sd-c.rev { color: #1b6e2b; background: #e8f4ea; }
+.sd-c.rev .sd-v { font-weight: 900; }
+.sd-c.peer { background: #e3ecfb; }
+.sd-c.given.peer { background: #d6dff0; }
+.sd-c.same { background: #b5cff6; }
+.sd-c.bad { background: #fde1e1; color: #c01f1f; }
+.sd-c.bad .sd-v { font-weight: 900; }
+.sd-c.wrong { background: #f6b4b4; color: #7d0f0f; }
+.sd-c.sel { background: #ffe08a; box-shadow: inset 0 0 0 3px #d98200; z-index: 2; }
+.sd-n { display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); width: 100%; height: 100%; padding: 1px; }
+.sd-n i { font-style: normal; font-size: clamp(.55rem, 2.7vw, .8rem); font-weight: 800; line-height: 1; color: #33333b; display: flex; align-items: center; justify-content: center; }
+
+.sd-msg { display: flex; align-items: center; min-height: 4.1rem; margin: 6px 0; padding: 8px 12px; border: 2px solid var(--line); border-radius: 12px; background: #fff; font-size: 1.05rem; font-weight: 600; }
+.sd-msg.warn { background: #fde7e7; border-color: var(--warn); color: #6b1410; }
+.sd-msg.ok { background: #e4f4e7; border-color: var(--ok); color: #124d1c; }
+
+.sd-keys { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 8px 0; }
+.sd-key { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 64px; padding: 4px 2px; border: 2px solid var(--primary); border-radius: 12px; background: #fff; color: var(--primary); font: inherit; cursor: pointer; touch-action: manipulation; }
+.sd-key b { font-size: 1.8rem; line-height: 1.1; }
+.sd-key small { font-size: .72rem; font-weight: 700; color: var(--muted); line-height: 1.1; }
+.sd-key:hover { background: #eef3fc; }
+.sd-key:focus-visible, .sd-tool:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.sd-key.done { opacity: .4; }
+.sd-key.nt { border-style: dashed; background: #fff8dc; }
+.sd-key.del { color: var(--warn); border-color: var(--warn); }
+.sd-key.del b { font-size: 1.5rem; }
+
+.sd-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+.sd-tool.btn { margin: 0; background: #fff; color: var(--primary); border-color: var(--primary); font-size: .95rem; padding: 8px 6px; }
+.sd-tool.btn.ghost { color: var(--muted); border-color: var(--line); }
+.sd-tool.btn.on { background: #fff4cc; border-color: #b8860b; color: #4d3b00; }
+.sd-tool.btn[disabled] { opacity: .45; cursor: not-allowed; }
+
+.sd-lvlbtn.btn { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; }
+.sd-lvlbtn b { font-size: 1.5rem; }
+.sd-lvlbtn small { font-size: .8rem; font-weight: 600; opacity: .95; }
+.over .sd-clock { font-size: 1rem; }
+@media (min-width: 560px) { .sd-key { min-height: 72px; } .sd-key b { font-size: 2rem; } }
