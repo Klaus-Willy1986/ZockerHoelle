@@ -62,6 +62,11 @@
       <p>Das beliebte Kartenspiel: Wer zuerst alle Karten los ist, gewinnt. Für 2 bis 6 Personen.</p>
       <span class="go">Spielen</span>
     </a>
+    <a class="gamecard" href="stapelrennen/">
+      <div class="gh"><span class="gi">🏁</span><h2>Stapelrennen</h2></div>
+      <p>Zahlenkarten von 1 bis 12 auf Stapel legen und den eigenen Stapel zuerst abbauen. Für 2 bis 6 Personen.</p>
+      <span class="go">Spielen</span>
+    </a>
     <a class="gamecard" href="muehle/">
       <div class="gh"><span class="gi">⚫</span><h2>Mühle</h2></div>
       <p>Drei Steine in eine Reihe bringen und gegnerische Steine wegnehmen. Für 2 Personen.</p>
@@ -78,7 +83,7 @@
   <script>
     // Läuft schon ein Spiel in diesem Browser? Dann direkt "Zurück ins Spiel" anbieten.
     (function () {
-      var games = [['kq', 'kreuzquer/', 'Kreuz & Quer'], ['p10', 'phasen/', 'Phasenwürfeln'], ['pasch', 'pasch/', 'Pasch & Straße'], ['ludo', 'ludo/', 'Ludo'], ['muehle', 'muehle/', 'Mühle'], ['dame', 'dame/', 'Dame'], ['bk', 'barrikade/', 'Barrikade'], ['fw', 'farben/', 'Farbenwürfeln'], ['sp', 'springspiel/', 'Springspiel'], ['sd', 'sudoku/', 'Sudoku'], ['fc', 'farbcode/', 'Farbcode knacken'], ['mm', 'maumau/', 'Mau-Mau']];
+      var games = [['kq', 'kreuzquer/', 'Kreuz & Quer'], ['p10', 'phasen/', 'Phasenwürfeln'], ['pasch', 'pasch/', 'Pasch & Straße'], ['ludo', 'ludo/', 'Ludo'], ['muehle', 'muehle/', 'Mühle'], ['dame', 'dame/', 'Dame'], ['bk', 'barrikade/', 'Barrikade'], ['fw', 'farben/', 'Farbenwürfeln'], ['sp', 'springspiel/', 'Springspiel'], ['sd', 'sudoku/', 'Sudoku'], ['fc', 'farbcode/', 'Farbcode knacken'], ['mm', 'maumau/', 'Mau-Mau'], ['sr', 'stapelrennen/', 'Stapelrennen']];
       var html = '';
       games.forEach(function (g) {
         try {
