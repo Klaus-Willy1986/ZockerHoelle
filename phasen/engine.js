@@ -1,5 +1,5 @@
 // Phasenwürfeln – reine Spiellogik (keine Oberfläche, kein Netzwerk).
-// Regeln nach der Ravensburger-Anleitung "Phase 10 Würfel".
+// Phasenwürfeln – Regeln dieses Würfelspiels.
 
 export const COLORS = ['B', 'R', 'O', 'G'];
 export const COLOR_NAMES = { B: 'Blau', R: 'Rot', O: 'Orange', G: 'Grün' };

@@ -9,7 +9,7 @@ const EXPECTED = {
   ones: 2.1, twos: 5.3, threes: 8.6, fours: 12.2, fives: 15.7, sixes: 19.2,
   three: 21.7, four: 13.1, full: 22.6, small: 29.5, large: 32.7, five: 16.8, chance: 22,
 };
-// Wie ungern ein Feld mit 0 gestrichen wird (Kniffel und Straßen nicht leichtfertig streichen).
+// Wie ungern ein Feld mit 0 gestrichen wird (Pasch und Straßen nicht leichtfertig streichen).
 const STRIKE_COST = { ones: 1.2, five: 0.9, large: 1.0, small: 1.0 };
 
 // Mittel: Wert, den es hat, dieses Feld mit diesen Würfeln zu belegen.

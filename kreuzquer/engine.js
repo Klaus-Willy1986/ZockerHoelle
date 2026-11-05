@@ -1,4 +1,4 @@
-// Qwixx – reine Spiellogik (keine Oberfläche, kein Netzwerk).
+// Kreuz & Quer – reine Spiellogik (keine Oberfläche, kein Netzwerk).
 // Wird im Browser (ES-Modul) und in Node (Tests) verwendet.
 
 export const COLORS = ['red', 'yellow', 'green', 'blue'];
