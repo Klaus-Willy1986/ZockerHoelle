@@ -129,7 +129,7 @@ export function createGame(playerList, opts = {}, rng = Math.random) {
     game: 'fk',
     gid: Math.floor(rng() * 1e9),
     mode: 'play', // 'play' | 'round' (Runde zu Ende) | 'over' (Serie zu Ende)
-    opts: { stack: !!o.stack, auto: !!o.auto },
+    opts: { stack: !!o.stack, auto: !!o.auto, hints: !!o.hints },
     players: playerList.map((p) => ({ id: p.id, name: p.name, hand: [], total: 0 })),
     round: 1,
     history: [], // [{ round, winner, points }]

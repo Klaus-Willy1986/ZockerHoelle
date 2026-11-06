@@ -152,7 +152,7 @@ function handHtml(g) {
   const me = g.players[i];
   const mine = g.mode === 'play' && g.active === i && g.stage === 'play';
   const legal = mine ? E.legalCards(g, i) : [];
-  const cards = me.hand.map((c) => handCardHtml(c, { ok: mine && legal.includes(c), dim: mine && !legal.includes(c), fresh: mine && g.drawn === c }));
+  const cards = me.hand.map((c) => handCardHtml(c, { ok: mine && (g.opts.hints || S.learn) && legal.includes(c), dim: mine && (g.opts.hints || S.learn) && !legal.includes(c), fresh: mine && g.drawn === c }));
   return `<div class="fk-hand" aria-label="Deine Karten (${me.hand.length})">${cards.join('') || '<p class="muted center">Keine Karten mehr.</p>'}</div>`;
 }
 
@@ -327,6 +327,7 @@ const ui = createUI({
   tutorial: { bots: 1, coach },
   options: [
     { id: 'stack', label: 'Zwei ziehen und Vier ziehen dürfen weitergegeben werden', help: 'Wer eine Strafe bekommt, darf statt zu ziehen eine gleiche Karte darauf legen. Dann wird die Strafe größer.', def: false },
+    { id: 'hints', label: 'Spielbare Karten anzeigen', help: 'Zeigt dir, welche Karten gerade gelegt werden dürfen. Ohne diese Hilfe musst du selbst schauen, was passt.', def: false },
     { id: 'auto', label: 'Ruf „Letzte Karte“ automatisch', help: 'Das Spiel ruft für dich, wenn du nur noch eine Karte hast.', def: false },
   ],
   title: 'Farbkarten', icon: '🎴', sub: 'Das bunte Kartenspiel – online zusammen spielen',

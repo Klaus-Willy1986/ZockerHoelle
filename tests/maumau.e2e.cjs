@@ -74,6 +74,7 @@ async function startBot(browser, n, level, label, vp) {
   const { ctx, page } = await newPage(browser, label, vp);
   await page.goto(BASE);
   await page.fill('#name', 'Anna');
+  await page.check('[data-opt=hints]');
   await page.screenshot({ path: path.join(SHOTS, `${label}-start.png`), fullPage: true });
   await page.click(`[data-act=bot][data-n="${n}"][data-level="${level}"]`);
   await page.waitForSelector('#board');
@@ -137,6 +138,7 @@ async function startBot(browser, n, level, label, vp) {
     await page.fill('#name', 'Anna');
     await page.check('[data-opt=ace]');
     await page.check('[data-opt=auto]');
+    await page.check('[data-opt=hints]');
     await shot(page, 'optionen');
     await page.click('[data-act=bot][data-n="2"][data-level="0"]');
     await page.waitForSelector('#board');
@@ -208,6 +210,7 @@ async function startBot(browser, n, level, label, vp) {
     const code = (await A.textContent('.code')).trim();
     if (!(await A.locator('[data-opt=ace]').count())) errors.push('Optionen fehlen in der Lobby');
     await A.check('[data-opt=ace]');
+    await A.check('[data-opt=hints]');
     const B = await ctx.newPage(); watch(B, 'B');
     await B.goto(BASE + '?mock=1&raum=' + code);
     await B.fill('#name', 'Bernd');

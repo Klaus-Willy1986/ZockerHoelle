@@ -43,7 +43,7 @@ test('createGame: ungültige Spielerzahl wirft, Optionen werden normalisiert, ho
   assert.throws(() => M.createGame(players(7)));
   assert.throws(() => M.createGame('x'));
   const g = M.createGame(players(2), { ace: 1, auto: 0, foo: 3 }, seeded(2), 'p1');
-  assert.deepEqual(g.opts, { ace: true, auto: false });
+  assert.deepEqual(g.opts, { ace: true, auto: false, hints: false });
   assert.equal(g.hostId, 'p1');
   assert.equal(M.createGame(players(2), undefined, seeded(2)).hostId, 'p0');
 });

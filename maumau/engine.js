@@ -136,7 +136,7 @@ export function createGame(playerList, opts = {}, rng = Math.random, hostId = nu
   const g = {
     game: 'mm',
     gid: Math.floor(rng() * 1e9),
-    opts: { ace: !!o.ace, auto: !!o.auto },
+    opts: { ace: !!o.ace, auto: !!o.auto, hints: !!o.hints },
     hostId: hostId === null || hostId === undefined ? String(playerList[0].id) : String(hostId),
     players: playerList.map((p) => ({ id: String(p.id), name: String(p.name), hand: [], wins: 0, points: 0 })),
     decks: playerList.length >= 5 ? 2 : 1,

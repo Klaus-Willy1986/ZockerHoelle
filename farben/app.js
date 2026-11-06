@@ -7,7 +7,7 @@ import { chooseAction } from './ai.js';
 const $app = document.getElementById('app');
 const ZOOMS = [24, 30, 34, 42, 52, 64];
 const freshPick = () => ({ ci: null, ni: null, jc: null, jn: null, ask: null, cells: [], pass: false });
-const freshUi = () => ({ padExtra: 0, rolling: false, lastRollId: 0, sig: '', pick: freshPick(), pend: null, scroll: null, fit: false, zoom: Number(sess.get('fw_zoom', 0)) || null });
+const freshUi = () => ({ actMin: 0, actKey: '', padExtra: 0, rolling: false, lastRollId: 0, sig: '', pick: freshPick(), pend: null, scroll: null, fit: false, zoom: Number(sess.get('fw_zoom', 0)) || null });
 
 const sess = createSession({
   game: 'fw',
@@ -136,7 +136,9 @@ function miniDice(g) {
     const color = colorOfPick(); const num = numOfPick();
     if (color && num) hint = `<span class="fw-minihint">${num} × ${E.COLOR_NAMES[color]} ${pk.cells.length}/${num}</span>`;
   }
-  return `<div class="fw-sticky" aria-label="Deine gewürfelten Würfel"><span class="fw-sticky-t">Würfel:</span>${c}<span class="fw-sep"></span>${n}${hint}</div>`;
+  const rollBtn = g.phase === 'roll' && !S.ui.rolling && E.activePlayer(g).id === cid
+    ? '<button class="btn primary fw-minirollbtn" data-act="roll">🎲 Würfeln</button>' : '';
+  return `<div class="fw-sticky" aria-label="Deine gewürfelten Würfel"><span class="fw-sticky-t">Würfel:</span>${c}<span class="fw-sep"></span>${n}${hint}${rollBtn}</div>`;
 }
 
 function diceHtml(g, o = {}) {
@@ -346,7 +348,7 @@ function actionHtml() {
   let info = '';
   if (step) info = `<p class="big">${step}</p>`;
   else if (groupsNow().length === 0) {
-    info = `<div class="confirm bad"><p class="big"><b>Mit dieser Kombination kannst du nichts ankreuzen.</b></p><p>Wähle andere Würfel oder tippe auf „Nichts ankreuzen“.</p><button class="btn secondary" data-act="reset-dice">Andere Würfel wählen</button></div>`;
+    info = `<p class="big"><b>Mit dieser Kombination geht nichts.</b> Weiter unten kannst du andere Würfel wählen.</p>`;
   }
   return `${head}${info}<button class="btn secondary" data-act="pass">Nichts ankreuzen</button>`;
 }
@@ -378,6 +380,9 @@ function mySheetCard() {
       }
       task += `<div class="fw-taskbtns"><button class="btn secondary" data-act="reset-dice">Andere Würfel wählen</button>${pk.cells.length && !valid ? '<button class="btn ghost" data-act="clear-cells">Felder neu wählen</button>' : ''}</div>`;
     }
+  }
+  if (waiting && !task && pk.ci != null && pk.ni != null && !pk.ask && !pk.pass && groupsNow().length === 0) {
+    task = `<div class="confirm bad"><p class="big"><b>Mit dieser Kombination kannst du nichts ankreuzen.</b></p><p>Wähle andere Würfel oder tippe oben auf „Nichts ankreuzen“.</p><button class="btn secondary" data-act="reset-dice">Andere Würfel wählen</button></div>`;
   }
   const strikes = g.solo ? soloStrikes() : '';
   return `<section class="card" id="fw-mine">${miniDice(g)}<h2>Dein Spielblatt</h2>
@@ -426,7 +431,7 @@ function gameHtml() {
     : '';
   const head = showDice ? `<p class="fw-rollno">${g.phase === 'roll' ? `Letzter Wurf (Nr. ${g.throwNo}${g.solo ? ' von ' + E.SOLO_THROWS : ''})` : `Wurf ${g.throwNo}${g.solo ? ' von ' + E.SOLO_THROWS : ''}`}</p>` : '';
   return `${ui.header()}${ui.lost()}${bannerHtml()}
-    <section class="card action">${actionHtml()}${head}${dice}</section>
+    <section class="card action"${S.ui.actMin ? ` style="min-height:${S.ui.actMin}px"` : ''}>${actionHtml()}${head}${dice}</section>
     ${mySheetCard()}${recapHtml()}${othersHtml()}
     <div class="fw-bottompad" aria-hidden="true" style="height: calc(60vh + ${S.ui.padExtra || 0}px)"></div>`;
 }
@@ -577,13 +582,11 @@ const ui = createUI({
         if (g.dice.n[pk.ni] === '?') msg.num = pk.jn;
         S.ui.pick = freshPick();
         sess.send(msg);
-        render();
-        window.scrollTo({ top: 0 });
-        return undefined;
+        return render();
       }
       case 'pass': pk.pass = true; return render();
       case 'pass-no': pk.pass = false; return render();
-      case 'pass-yes': S.ui.pick = freshPick(); sess.send({ t: 'pass' }); render(); window.scrollTo({ top: 0 }); return undefined;
+      case 'pass-yes': S.ui.pick = freshPick(); sess.send({ t: 'pass' }); return render();
       case 'zoom-in': case 'zoom-out': case 'zoom-fit': return zoom(act);
       default: return undefined;
     }
@@ -641,7 +644,21 @@ $app.addEventListener('scroll', (ev) => {
   if (t && t.id === 'fw-scroll') S.ui.scroll = t.scrollLeft;
 }, true);
 
+// Der Bereich über dem Blatt (Würfel, Hinweise) soll nie schrumpfen, sonst rutscht das Blatt auf und ab.
+// Wir merken uns die größte Höhe der üblichen Zustände (Ausnahmen wie Joker-Frage zählen nicht).
+function holdActionHeight() {
+  const el = document.querySelector('.card.action');
+  if (!el || !S.game || !S.game.dice) return;
+  const key = `${window.innerWidth}|${document.documentElement.classList.contains('big') ? 1 : 0}`;
+  if (S.ui.actKey !== key) { S.ui.actKey = key; S.ui.actMin = 0; }
+  const pk = S.ui.pick;
+  if (pk.ask || pk.pass || el.querySelector('.confirm')) return;
+  const h = Math.ceil(el.getBoundingClientRect().height);
+  if (h > S.ui.actMin) S.ui.actMin = h;
+}
+
 new MutationObserver(() => {
+  holdActionHeight();
   const sc = document.getElementById('fw-scroll');
   if (!sc) return;
   const f = S.ui.pend;

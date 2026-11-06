@@ -68,6 +68,7 @@ const newState = (skipCalls = 0) => ({ plays: 0, draws: 0, keeps: 0, colors: 0, 
 async function startBot(page, n, level, label, stack = false) {
   await page.goto(BASE);
   await page.fill('#name', 'Anna');
+  await page.check('input[data-opt=hints]');
   if (stack) await page.check('input[data-opt=stack]');
   await page.screenshot({ path: path.join(SHOTS, `${label}-start.png`), fullPage: true });
   await page.click(`[data-act=bot][data-n="${n}"][data-level="${level}"]`);
@@ -234,6 +235,7 @@ async function online(browser) {
   await a.waitForSelector('.code');
   const code = (await a.textContent('.code')).trim();
   await a.check('input[data-opt=auto]');
+  await a.check('input[data-opt=hints]');
   await b.goto(BASE + '?mock=1&raum=' + code);
   await b.fill('#name', 'Bernd');
   await b.click('[data-act=join-invited]');

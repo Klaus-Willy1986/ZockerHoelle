@@ -8,6 +8,7 @@ const $app = document.getElementById('app');
 
 const OPTIONS = [
   { id: 'ace', label: 'Ass dreht die Spielrichtung', help: 'Wer ein Ass legt, ändert die Richtung. Bei nur 2 Personen hat das keine Wirkung.', def: false },
+  { id: 'hints', label: 'Spielbare Karten anzeigen', help: 'Zeigt dir, welche Karten gerade gelegt werden dürfen. Ohne diese Hilfe musst du selbst schauen, was passt.', def: false },
   { id: 'auto', label: 'Rufe automatisch', help: '„Mau!“ und „Mau Mau!“ werden für alle automatisch gerufen. Niemand muss daran denken.', def: false },
 ];
 const MAU_WAIT = 6000; // so lange wartet der Computer, bis du „Mau!“ gerufen hast
@@ -198,12 +199,13 @@ function handHtml(g) {
   const drawn = g.turn.drew ? g.turn.drawn : null;
   let freshDone = false;
   const cards = p.hand.map((c) => {
+    const hints = !!g.opts.hints || !!S.learn;
     const ok = myTurn && M.playable(g, c);
     let cls = '';
-    if (myTurn) cls = ok ? 'can' : 'dim';
+    if (myTurn && hints) cls = ok ? 'can' : 'dim';
     if (sel && !selDone && sameC(sel.card, c)) { selDone = true; cls += ' sel'; }
     if (drawn && !freshDone && sameC(drawn, c)) { freshDone = true; cls += ' fresh'; }
-    if (ok) {
+    if (ok || (myTurn && !hints)) {
       return cardHtml(c, { cls, tag: 'button', attrs: `data-act="card" data-s="${c.s}" data-r="${c.r}"`, verb: ', legen' });
     }
     return cardHtml(c, { cls });
