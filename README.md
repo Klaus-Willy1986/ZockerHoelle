@@ -23,6 +23,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Haus & Hof – Marburg** (`haus/`): Würfel-Grundstückshandel auf dem Marburger Brett für 2–6 Personen, mit Computer und Lernrunde (Kurzspiel nach 30 Runden).
 - **Schafskopp** (`schaf/`): Stapel aufdecken und anlegen, übersehene Karten kosten Strafkarten, für 2–6 Personen, mit Computer und Lernrunde.
 - **Reihen & Gruppen** (`reihen/`): Zahlensteine-Legespiel für 2–4 Personen, nur per Tippen, mit Computer und Lernrunde.
+- **Elf voran** (`elf/`): Anlegekartenspiel um die Elf für 2–6 Personen, mit Computer und Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 

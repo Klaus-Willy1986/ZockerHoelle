@@ -1,0 +1,81 @@
+/* ===== Elf voran ===== */
+/* Farben: Rot, Blau, Gelb, Grün – jeweils mit hohem Kontrast zur Schrift; zusätzlich Zeichen ● ■ ▲ ◆ */
+:root {
+  --ev0: #c62828; --ev0t: #fff; --ev0l: #fbe3e1;
+  --ev1: #1565c0; --ev1t: #fff; --ev1l: #deeafa;
+  --ev2: #ffd54f; --ev2t: #111; --ev2l: #fff4cc;
+  --ev3: #2e7d32; --ev3t: #fff; --ev3l: #dff0e0;
+}
+.s0 { --c: var(--ev0); --ct: var(--ev0t); --cl: var(--ev0l); --cd: #8e1c1c; }
+.s1 { --c: var(--ev1); --ct: var(--ev1t); --cl: var(--ev1l); --cd: #0d47a1; }
+.s2 { --c: var(--ev2); --ct: var(--ev2t); --cl: var(--ev2l); --cd: #7a5c00; }
+.s3 { --c: var(--ev3); --ct: var(--ev3t); --cl: var(--ev3l); --cd: #1b5e20; }
+
+/* Tisch: vier Reihen mit je 21 Feldern. Das Band wischt in sich, die Seite bleibt ruhig. */
+.ev-board { padding: 12px 10px; }
+.ev-scroll { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; padding-bottom: 6px; border-radius: 10px; }
+.ev-scroll:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.ev-rows { display: flex; flex-direction: column; gap: 6px; width: max-content; }
+.ev-row { display: flex; gap: 2px; align-items: stretch; height: 46px; }
+.ev-tag { position: sticky; left: 0; z-index: 2; flex: none; width: 34px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; border-radius: 8px; background: var(--c); color: var(--ct); border: 2px solid var(--cd); }
+.ev-t { flex: none; width: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; font-weight: 800; border-radius: 6px; box-sizing: border-box; background: var(--cl); color: var(--cd); border: 2px dashed var(--c); opacity: .85; }
+.s2 .ev-t:not(.on) { border-color: #c9a200; }
+.ev-t.mid:not(.on) { border-style: solid; }
+.ev-t.on { background: var(--c); color: var(--ct); border: 2px solid var(--cd); opacity: 1; font-size: 1.25rem; }
+.ev-t.new { outline: 4px solid #111; outline-offset: -1px; box-shadow: 0 0 0 2px #fff inset; }
+.ev-swipe { font-size: .8rem; margin: 6px 0 4px; height: 1.2em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ev-sum { list-style: none; margin: 4px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ev-chip { height: 3.1rem; box-sizing: border-box; padding: 4px 8px; display: flex; align-items: center; gap: 4px; font-size: .9rem; line-height: 1.15; border-radius: 10px; background: var(--cl); color: #111; border: 2px solid var(--c); overflow: hidden; }
+.ev-chip .sy { color: var(--cd); font-size: 1.2rem; font-weight: 900; }
+.ev-chip b { font-weight: 800; }
+
+/* Mitspielende */
+.ev-players { padding: 10px; }
+.ev-opps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 6px; }
+.ev-opp { display: flex; align-items: center; gap: 10px; height: 58px; padding: 4px 10px; border-radius: 12px; background: #f1efe8; border: 3px solid transparent; overflow: hidden; }
+.ev-opp.act { border-color: var(--primary); background: #e8f0fd; }
+.ev-nm { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .95rem; }
+.ev-st { flex: none; width: 4.1rem; display: flex; flex-direction: column; align-items: center; line-height: 1.05; }
+.ev-st b { font-size: 1.3rem; }
+.ev-st small { font-size: .68rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+
+/* Hinweis- und Knopfbereich: feste Höhe, damit nichts springt */
+.ev-action { min-height: 11rem; display: flex; flex-direction: column; justify-content: center; }
+.ev-action p { margin: 0 0 8px; }
+.ev-action .btn { margin: 6px 0; }
+.ev-note { color: #b3261e; font-weight: 800; }
+
+/* Hand: nach Farbe geordnet, nach Zahl sortiert */
+.ev-handcard { padding: 12px; }
+.ev-handcard h2 { margin: 0 0 6px; font-size: 1.15rem; }
+.ev-group { margin: 0 0 10px; }
+.ev-gl { margin: 6px 0 6px; font-size: 1rem; display: inline-block; padding: 2px 10px; border-radius: 999px; background: var(--c); color: var(--ct); }
+.ev-cards { display: flex; flex-wrap: wrap; gap: 12px 10px; padding: 6px 6px 4px; }
+.ev-card { position: relative; flex: none; box-sizing: border-box; width: 58px; height: 78px; padding: 0; font: inherit; border-radius: 10px; background: var(--c); color: var(--ct); border: 3px solid var(--cd); box-shadow: 0 2px 4px rgba(0,0,0,.3); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; line-height: 1; }
+.ev-card .n { font-size: 1.65rem; font-weight: 900; letter-spacing: -.02em; }
+.ev-card .y { font-size: 1.15rem; font-weight: 900; }
+button.ev-card { cursor: pointer; }
+button.ev-card:focus-visible { outline: 4px solid #ffb300; outline-offset: 3px; }
+.ev-card.can { transform: translateY(-4px); box-shadow: 0 0 0 3px #fff, 0 0 0 7px #111, 0 6px 10px rgba(0,0,0,.35); }
+.ev-card.dim { opacity: .4; filter: grayscale(.6); box-shadow: none; }
+
+/* Spielstand und Rundenende */
+.ev-table { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
+.ev-table th { text-align: left; font-size: .8rem; color: var(--muted); padding: 4px 6px; }
+.ev-table td { padding: 8px 6px; border-top: 1px solid var(--line); }
+.ev-table td.n, .ev-table th.n { text-align: right; font-weight: 800; white-space: nowrap; }
+.ev-table tr.lead td { background: #fff6d6; }
+.ev-table td.add { color: var(--muted); font-weight: 700; font-size: .95rem; }
+.ev-over h1 { text-align: center; margin: 4px 0 6px; font-size: 1.6rem; }
+.ev-left ul { margin: 0; padding-left: 1.2rem; }
+.ev-left li { margin: 4px 0; }
+.ev-btns { display: grid; gap: 4px; margin-top: 10px; }
+
+@media (min-width: 700px) {
+  .ev-opps { grid-template-columns: 1fr 1fr; }
+  .ev-card { width: 64px; height: 86px; }
+  .ev-card .n { font-size: 1.8rem; }
+}
+
+/* Statusbanner: immer gleich hoch (auch bei zwei Zeilen), damit das Spielfeld nicht springt */
+.banner { box-sizing: border-box; height: 5.2rem; min-height: 0; overflow: hidden; font-size: 1.35rem; line-height: 1.25; }
