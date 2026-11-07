@@ -1,5 +1,5 @@
 // Haus & Hof – reine Spiellogik (keine Oberfläche, kein Netzwerk).
-// Würfel-Grundstückshandelsspiel für 2–6 Personen auf einem Ring aus 40 Feldern der erfundenen Stadt "Birkenau".
+// Würfel-Grundstückshandelsspiel für 2–6 Personen auf einem Ring aus 40 Feldern der Stadt Marburg.
 // Zufall (Würfel, Kartenstapel) nur über `rng`. Alle Texte deutsch, Zustand JSON-sicher.
 //
 // ===== API-Überblick =====
@@ -43,16 +43,16 @@
 //   Geldbilanz: JEDE Bargeldänderung läuft über state.bank mit; Invariante: Summe(cash) + bank === Personen * startMoney.
 //
 // ===== Brett (SQUARES) =====
-//    0 Startfeld (Durchgang +200)        10 Gefängnis / Besuch                20 Ferienwiese (nichts)           30 Gehe ins Gefängnis
-//    1 Lindenweg (braun)                 11 Schmiedegasse (rosa)              21 Eichenring (rot)               31 Burgwall (grün)
-//    2 Ereignis                          12 Wasserwerk (Versorger)            22 Ereignis                       32 Kapellenhang (grün)
-//    3 Mühlgasse (braun)                 13 Weidenpfad (rosa)                 23 Tuchmachergasse (rot)          33 Ereignis
-//    4 Einkommensabgabe 200              14 Fährstieg (rosa)                  24 Rosengang (rot)                34 Zunftplatz (grün)
-//    5 Bahnhof Nordtor                   15 Bahnhof Ostwiesen                 25 Bahnhof Südhang                35 Bahnhof Westmoor
-//    6 Brunnenplatz (himmel)             16 Bäckerzeile (orange)              26 Falkenhöhe (gelb)              36 Ereignis
-//    7 Ereignis                          17 Ereignis                          27 Lerchenstieg (gelb)            37 Weiherterrasse (blau)
-//    8 Kirschallee (himmel)              18 Hopfengarten (orange)             28 Stadtwerk (Versorger)          38 Zusatzabgabe 100
-//    9 Gerberhof (himmel)                19 Salzmarkt (orange)                29 Ahornblick (gelb)              39 Goldener Anger (blau)
+//    0 Rathaus (Start), Durchgang +200   10 Hexenturm (Besuch)             20 Lahnwiesen (nichts)            30 Gehe in den Hexenturm
+//    1 Afföllerstraße (braun)            11 Frankfurter Straße (rosa)      21 Schwanallee (rot)              31 Marktplatz (grün)
+//    2 Ereignis                          12 Stadtwerke Strom (Versorger)   22 Ereignis                       32 Reitgasse (grün)
+//    3 Cappeler Straße (braun)           13 Biegenstraße (rosa)            23 Gutenbergstraße (rot)          33 Ereignis
+//    4 Semestergebühr 200                14 Bahnhofstraße (rosa)           24 Weidenhäuser Straße (rot)      34 Ketzerbach (grün)
+//    5 Hauptbahnhof                      15 Südbahnhof                     25 Bahnhof Cappel                 35 Bahnhof Wehrda
+//    6 Ockershäuser Allee (himmel)       16 Universitätsstraße (orange)    26 Steinweg (gelb)                36 Ereignis
+//    7 Ereignis                          17 Ereignis                       27 Wettergasse (gelb)             37 Elisabethkirche (blau)
+//    8 Marbacher Weg (himmel)            18 Rudolphsplatz (orange)         28 Stadtwerke Wasser (Versorger)  38 Parkgebühr Oberstadt 100
+//    9 Wehrdaer Weg (himmel)             19 Pilgrimstein (orange)          29 Barfüßerstraße (gelb)          39 Landgrafenschloss (blau)
 //   Farbgruppen (colorGroups): braun [1,3] (Haus 50), himmel [6,8,9] (50), rosa [11,13,14] (100), orange [16,18,19] (100),
 //   rot [21,23,24] (150), gelb [26,27,29] (150), grün [31,32,34] (200), blau [37,39] (200) – 22 Straßen. Bahnhöfe 5/15/25/35, Versorger 12/28.
 //   Miete Straße: rent[0..5] = ohne Haus, 1–4 Häuser, Hotel; ohne Haus und bei Besitz der ganzen Farbe verdoppelt sich rent[0].
@@ -90,41 +90,41 @@ const MAX_PLAYERS = 6;
 // ---------- Brett ----------
 const STREETS = [
   // [Feld, Name, Gruppe, Preis, Miete[0..5]]
-  [1, 'Lindenweg', 0, 60, [2, 10, 30, 90, 160, 250]],
-  [3, 'Mühlgasse', 0, 60, [4, 20, 60, 180, 320, 450]],
-  [6, 'Brunnenplatz', 1, 100, [6, 30, 90, 270, 400, 550]],
-  [8, 'Kirschallee', 1, 100, [6, 30, 90, 270, 400, 550]],
-  [9, 'Gerberhof', 1, 120, [8, 40, 100, 300, 450, 600]],
-  [11, 'Schmiedegasse', 2, 140, [10, 50, 150, 450, 625, 750]],
-  [13, 'Weidenpfad', 2, 140, [10, 50, 150, 450, 625, 750]],
-  [14, 'Fährstieg', 2, 160, [12, 60, 180, 500, 700, 900]],
-  [16, 'Bäckerzeile', 3, 180, [14, 70, 200, 550, 750, 950]],
-  [18, 'Hopfengarten', 3, 180, [14, 70, 200, 550, 750, 950]],
-  [19, 'Salzmarkt', 3, 200, [16, 80, 220, 600, 800, 1000]],
-  [21, 'Eichenring', 4, 220, [18, 90, 250, 700, 875, 1050]],
-  [23, 'Tuchmachergasse', 4, 220, [18, 90, 250, 700, 875, 1050]],
-  [24, 'Rosengang', 4, 240, [20, 100, 300, 750, 925, 1100]],
-  [26, 'Falkenhöhe', 5, 260, [22, 110, 330, 800, 975, 1150]],
-  [27, 'Lerchenstieg', 5, 260, [22, 110, 330, 800, 975, 1150]],
-  [29, 'Ahornblick', 5, 280, [24, 120, 360, 850, 1025, 1200]],
-  [31, 'Burgwall', 6, 300, [26, 130, 390, 900, 1100, 1275]],
-  [32, 'Kapellenhang', 6, 300, [26, 130, 390, 900, 1100, 1275]],
-  [34, 'Zunftplatz', 6, 320, [28, 150, 450, 1000, 1200, 1400]],
-  [37, 'Weiherterrasse', 7, 350, [35, 175, 500, 1100, 1300, 1500]],
-  [39, 'Goldener Anger', 7, 400, [50, 200, 600, 1400, 1700, 2000]],
+  [1, 'Afföllerstraße', 0, 60, [2, 10, 30, 90, 160, 250]],
+  [3, 'Cappeler Straße', 0, 60, [4, 20, 60, 180, 320, 450]],
+  [6, 'Ockershäuser Allee', 1, 100, [6, 30, 90, 270, 400, 550]],
+  [8, 'Marbacher Weg', 1, 100, [6, 30, 90, 270, 400, 550]],
+  [9, 'Wehrdaer Weg', 1, 120, [8, 40, 100, 300, 450, 600]],
+  [11, 'Frankfurter Straße', 2, 140, [10, 50, 150, 450, 625, 750]],
+  [13, 'Biegenstraße', 2, 140, [10, 50, 150, 450, 625, 750]],
+  [14, 'Bahnhofstraße', 2, 160, [12, 60, 180, 500, 700, 900]],
+  [16, 'Universitätsstraße', 3, 180, [14, 70, 200, 550, 750, 950]],
+  [18, 'Rudolphsplatz', 3, 180, [14, 70, 200, 550, 750, 950]],
+  [19, 'Pilgrimstein', 3, 200, [16, 80, 220, 600, 800, 1000]],
+  [21, 'Schwanallee', 4, 220, [18, 90, 250, 700, 875, 1050]],
+  [23, 'Gutenbergstraße', 4, 220, [18, 90, 250, 700, 875, 1050]],
+  [24, 'Weidenhäuser Straße', 4, 240, [20, 100, 300, 750, 925, 1100]],
+  [26, 'Steinweg', 5, 260, [22, 110, 330, 800, 975, 1150]],
+  [27, 'Wettergasse', 5, 260, [22, 110, 330, 800, 975, 1150]],
+  [29, 'Barfüßerstraße', 5, 280, [24, 120, 360, 850, 1025, 1200]],
+  [31, 'Marktplatz', 6, 300, [26, 130, 390, 900, 1100, 1275]],
+  [32, 'Reitgasse', 6, 300, [26, 130, 390, 900, 1100, 1275]],
+  [34, 'Ketzerbach', 6, 320, [28, 150, 450, 1000, 1200, 1400]],
+  [37, 'Elisabethkirche', 7, 350, [35, 175, 500, 1100, 1300, 1500]],
+  [39, 'Landgrafenschloss', 7, 400, [50, 200, 600, 1400, 1700, 2000]],
 ];
 const GROUP_HOUSE_COST = [50, 50, 100, 100, 150, 150, 200, 200];
-const STATIONS = { 5: 'Bahnhof Nordtor', 15: 'Bahnhof Ostwiesen', 25: 'Bahnhof Südhang', 35: 'Bahnhof Westmoor' };
-const UTILITIES = { 12: 'Wasserwerk', 28: 'Stadtwerk' };
+const STATIONS = { 5: 'Hauptbahnhof', 15: 'Südbahnhof', 25: 'Bahnhof Cappel', 35: 'Bahnhof Wehrda' };
+const UTILITIES = { 12: 'Stadtwerke Strom', 28: 'Stadtwerke Wasser' };
 
 function buildSquares() {
   const sq = Array.from({ length: BOARD_SIZE }, (_, i) => ({ i, type: 'event', name: 'Ereignis' }));
-  Object.assign(sq[0], { type: 'start', name: 'Startfeld' });
-  Object.assign(sq[10], { type: 'jail', name: 'Gefängnis / Besuch' });
-  Object.assign(sq[20], { type: 'free', name: 'Ferienwiese' });
-  Object.assign(sq[30], { type: 'gojail', name: 'Gehe ins Gefängnis' });
-  Object.assign(sq[4], { type: 'tax', name: 'Einkommensabgabe', amount: 200 });
-  Object.assign(sq[38], { type: 'tax', name: 'Zusatzabgabe', amount: 100 });
+  Object.assign(sq[0], { type: 'start', name: 'Rathaus (Start)' });
+  Object.assign(sq[10], { type: 'jail', name: 'Hexenturm (Besuch)' });
+  Object.assign(sq[20], { type: 'free', name: 'Lahnwiesen' });
+  Object.assign(sq[30], { type: 'gojail', name: 'Gehe in den Hexenturm' });
+  Object.assign(sq[4], { type: 'tax', name: 'Semestergebühr', amount: 200 });
+  Object.assign(sq[38], { type: 'tax', name: 'Parkgebühr Oberstadt', amount: 100 });
   for (const [i, name, g, price, rent] of STREETS) {
     sq[i] = { i, type: 'street', name, group: g, color: COLOR_IDS[g], price, mortgage: price / 2, houseCost: GROUP_HOUSE_COST[g], rent };
   }
@@ -146,19 +146,19 @@ export const unmortgageCost = (sq) => mortgageValue(sq) + Math.ceil(mortgageValu
 // ---------- Ereigniskarten (16, gemeinsamer Stapel) ----------
 export const FREE_CARD = 12;
 export const CARDS = [
-  { id: 0, kind: 'goto', sq: 0, text: 'Rücke vor bis zum Startfeld. Der Durchgang bringt dir 200.' },
-  { id: 1, kind: 'goto', sq: 11, text: 'Rücke vor bis zur Schmiedegasse. Kommst du über das Startfeld, erhältst du 200.' },
-  { id: 2, kind: 'goto', sq: 39, text: 'Rücke vor bis zum Goldenen Anger. Kommst du über das Startfeld, erhältst du 200.' },
+  { id: 0, kind: 'goto', sq: 0, text: 'Rücke vor bis zum Rathaus (Start). Der Durchgang bringt dir 200.' },
+  { id: 1, kind: 'goto', sq: 11, text: 'Rücke vor bis zur Frankfurter Straße. Kommst du über das Rathaus (Start), erhältst du 200.' },
+  { id: 2, kind: 'goto', sq: 39, text: 'Rücke vor bis zum Landgrafenschloss. Kommst du über das Rathaus (Start), erhältst du 200.' },
   { id: 3, kind: 'station', text: 'Rücke vor bis zum nächsten Bahnhof. Gehört er jemandem, zahlst du die doppelte Miete.' },
   { id: 4, kind: 'station', text: 'Fahre zum nächsten Bahnhof. Gehört er jemandem, zahlst du die doppelte Miete.' },
   { id: 5, kind: 'utility', text: 'Rücke vor bis zum nächsten Versorger. Gehört er jemandem, würfle neu und zahle das 10-Fache der Augensumme.' },
-  { id: 6, kind: 'gain', amount: 50, text: 'Die Stadtkasse zahlt eine Dividende: Du erhältst 50.' },
+  { id: 6, kind: 'gain', amount: 50, text: 'Die Stadtkasse Marburg zahlt eine Dividende: Du erhältst 50.' },
   { id: 7, kind: 'gain', amount: 150, text: 'Dein Bausparvertrag wird fällig: Du erhältst 150.' },
   { id: 8, kind: 'pay', amount: 40, text: 'Strafzettel fürs Falschparken: Zahle 40 an die Bank.' },
   { id: 9, kind: 'pay', amount: 150, text: 'Die Dachrinne ist kaputt: Zahle 150 an die Bank.' },
   { id: 10, kind: 'back', steps: 3, text: 'Gehe drei Felder zurück.' },
-  { id: 11, kind: 'jail', text: 'Gehe direkt ins Gefängnis. Gehe nicht über das Startfeld, ziehe keine 200 ein.' },
-  { id: 12, kind: 'free', text: 'Du kommst aus dem Gefängnis frei. Behalte diese Karte, bis du sie brauchst.' },
+  { id: 11, kind: 'jail', text: 'Gehe direkt in den Hexenturm. Gehe nicht über das Rathaus (Start), ziehe keine 200 ein.' },
+  { id: 12, kind: 'free', text: 'Du kommst aus dem Hexenturm frei. Behalte diese Karte, bis du sie brauchst.' },
   { id: 13, kind: 'repair', house: 25, hotel: 100, text: 'Hausreparatur: Zahle 25 je Haus und 100 je Hotel an die Bank.' },
   { id: 14, kind: 'collect', amount: 50, text: 'Dein Geburtstag: Jede andere Person zahlt dir 50.' },
   { id: 15, kind: 'payall', amount: 50, text: 'Du lädst alle zum Essen ein: Zahle jeder anderen Person 50.' },
@@ -464,7 +464,7 @@ function proceed(state, rng) {
     state.cont = null;
     if (c.k === 'jailmove') {
       p.jail = 0;
-      log(state, `${p.name} zahlt ${JAIL_FEE} und verlässt das Gefängnis.`);
+      log(state, `${p.name} zahlt ${JAIL_FEE} und verlässt den Hexenturm.`);
       stepAndLand(state, p, c.sum, rng);
       return;
     }
@@ -476,14 +476,14 @@ function stepAndLand(state, p, sum, rng) {
   const from = p.pos;
   const np = from + sum;
   p.pos = np % BOARD_SIZE;
-  if (np >= BOARD_SIZE) { money(state, 'bank', p.id, PASS_BONUS); log(state, `${p.name} zieht über das Startfeld (+${PASS_BONUS}).`); }
+  if (np >= BOARD_SIZE) { money(state, 'bank', p.id, PASS_BONUS); log(state, `${p.name} zieht über das Rathaus (Start) (+${PASS_BONUS}).`); }
   state.last = { pid: p.id, from, to: p.pos, kind: 'dice' };
   log(state, `${p.name} zieht auf ${SQUARES[p.pos].name}.`);
   if (!land(state, p, sum, rng, {})) proceed(state, rng);
 }
 function advanceTo(state, p, target, rng, opts) {
   const from = p.pos;
-  if (target <= from) { money(state, 'bank', p.id, PASS_BONUS); log(state, `${p.name} zieht über das Startfeld (+${PASS_BONUS}).`); }
+  if (target <= from) { money(state, 'bank', p.id, PASS_BONUS); log(state, `${p.name} zieht über das Rathaus (Start) (+${PASS_BONUS}).`); }
   p.pos = target;
   state.last = { pid: p.id, from, to: target, kind: 'card' };
   log(state, `${p.name} rückt vor auf ${SQUARES[target].name}.`);
@@ -496,7 +496,7 @@ function sendToJail(state, p, why) {
   state.rollAgain = false;
   state.doubles = 0;
   state.last = { pid: p.id, from, to: JAIL_SQ, kind: 'jail' };
-  log(state, `${p.name} kommt ins Gefängnis${why ? ' (' + why + ')' : ''}.`);
+  log(state, `${p.name} kommt in den Hexenturm${why ? ' (' + why + ')' : ''}.`);
 }
 
 function startAuction(state, p) {
@@ -561,7 +561,7 @@ function land(state, p, sum, rng, opts) {
     return queueDebts(state, [{ from: p.id, to: o, amount: rent, why: 'Miete ' + s.name }]);
   }
   if (s.type === 'tax') return queueDebts(state, [{ from: p.id, to: 'bank', amount: s.amount, why: s.name }]);
-  if (s.type === 'gojail') { sendToJail(state, p, 'Feld "Gehe ins Gefängnis"'); return false; }
+  if (s.type === 'gojail') { sendToJail(state, p, 'Feld "Gehe in den Hexenturm"'); return false; }
   if (s.type === 'event') return drawCard(state, p, rng);
   return false;
 }
@@ -614,10 +614,10 @@ function doRoll(state, p, rng) {
   if (p.jail > 0) {
     state.rollAgain = false;
     if (dbl) { p.jail = 0; log(state, `${p.name} würfelt einen Pasch und ist frei.`); stepAndLand(state, p, sum, rng); return; }
-    if (p.jail < 3) { p.jail++; log(state, `${p.name} bleibt im Gefängnis.`); state.phase = 'manage'; return; }
+    if (p.jail < 3) { p.jail++; log(state, `${p.name} bleibt im Hexenturm.`); state.phase = 'manage'; return; }
     state.cont = { k: 'jailmove', sum };
     log(state, `Dritter Fehlversuch: ${p.name} muss ${JAIL_FEE} zahlen.`);
-    if (!queueDebts(state, [{ from: p.id, to: 'bank', amount: JAIL_FEE, why: 'Gefängnis' }])) proceed(state, rng);
+    if (!queueDebts(state, [{ from: p.id, to: 'bank', amount: JAIL_FEE, why: 'Hexenturm' }])) proceed(state, rng);
     return;
   }
   if (dbl) {
@@ -644,7 +644,7 @@ const HANDLERS = {
     if (p.cash < JAIL_FEE) return `Zu wenig Bargeld (${JAIL_FEE} nötig).`;
     money(state, p.id, 'bank', JAIL_FEE);
     p.jail = 0;
-    log(state, `${p.name} zahlt ${JAIL_FEE} und verlässt das Gefängnis.`);
+    log(state, `${p.name} zahlt ${JAIL_FEE} und verlässt den Hexenturm.`);
   },
   use_card(state, p) {
     const e = needPhase(state, 'roll'); if (e) return e;
@@ -653,7 +653,7 @@ const HANDLERS = {
     p.freeCards--;
     state.discardPile.push(FREE_CARD);
     p.jail = 0;
-    log(state, `${p.name} setzt die Freikarte ein und verlässt das Gefängnis.`);
+    log(state, `${p.name} setzt die Freikarte ein und verlässt den Hexenturm.`);
   },
   buy(state, p, m, rng) {
     const e = needPhase(state, 'buy'); if (e) return e;

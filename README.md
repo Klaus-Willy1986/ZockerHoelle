@@ -20,6 +20,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Wildnis-Mosaik** (`wildnis/`): Sechseck-Landschaft mit Tieren für 1–4 Personen, mit Computer und Lernrunde.
 - **Bauernschach** (`bauern/`): nur Bauern, Durchbruch gewinnt, für zwei, mit Computer und Lernrunde.
 - **Paare finden** (`memo/`): Memory mit Themen und Größen, allein, gegeneinander oder gegen den Computer.
+- **Haus & Hof – Marburg** (`haus/`): Würfel-Grundstückshandel auf dem Marburger Brett für 2–6 Personen, mit Computer und Lernrunde (Kurzspiel nach 30 Runden).
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 

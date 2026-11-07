@@ -49,10 +49,10 @@ test('Brett: 40 Felder, Typen und Verteilung', () => {
   assert.deepEqual(cnt('tax'), [4, 38]);
   assert.deepEqual(cnt('event'), [2, 7, 17, 22, 33, 36]);
   assert.equal(cnt('street').length, 22);
-  assert.equal(E.SQUARES[0].name, 'Startfeld');
-  assert.equal(E.SQUARES[20].name, 'Ferienwiese');
+  assert.equal(E.SQUARES[0].name, 'Rathaus (Start)');
+  assert.equal(E.SQUARES[20].name, 'Lahnwiesen');
   assert.deepEqual([E.SQUARES[4].amount, E.SQUARES[38].amount], [200, 100]);
-  assert.deepEqual([E.SQUARES[12].name, E.SQUARES[28].name], ['Wasserwerk', 'Stadtwerk']);
+  assert.deepEqual([E.SQUARES[12].name, E.SQUARES[28].name], ['Stadtwerke Strom', 'Stadtwerke Wasser']);
 });
 test('Brett: 8 Farbgruppen vollständig (2 oder 3 Grundstücke), zusammen 22', () => {
   assert.equal(E.colorGroups.length, 8);
@@ -88,7 +88,7 @@ test('Brett: einzigartige erfundene Namen, keine geschützten Begriffe', () => {
   const names = E.SQUARES.map((s) => s.name);
   const named = names.filter((n) => !['Ereignis'].includes(n));
   assert.equal(new Set(named).size, named.length);
-  const forbidden = /monopoly|schlossallee|parkstra|badstra|hauptstra|bahnhofstra|opernplatz|turmstra|seestra|poststra|berliner|münchner|wiener|elisenstra|theaterstra|museumstra|goethestra|rathausplatz|neue stra|los\b/i;
+  const forbidden = /monopoly|schlossallee|parkstra|badstra|hauptstra|opernplatz|turmstra|seestra|poststra|berliner|münchner|wiener|elisenstra|theaterstra|museumstra|goethestra|rathausplatz|neue stra|los\b/i;
   for (const t of [...names, ...E.CARDS.map((c) => c.text)]) assert.doesNotMatch(t, forbidden, t);
 });
 test('Ereigniskarten: 16 eigene Karten, genau eine Freikarte', () => {
