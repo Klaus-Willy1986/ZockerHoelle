@@ -224,17 +224,22 @@ test('est: Statistik "richtig" = höchstens 10 % der Spanne daneben', () => {
 
 test('est: Schrittweite und Startwert', () => {
   assert.equal(Q.estStep({ min: 0, max: 2000, c: 1000 }), 20);
+  assert.equal(Q.estStep({ min: 0, max: 2000, c: 950 }), 10); // richtige Zahl muss einstellbar sein
+  assert.equal(Q.estStep({ min: 0, max: 200, c: 101 }), 1); // kleine Spannen: immer Einserschritte
+  assert.equal(Q.estStep({ min: 1000, max: 1800, c: 1492 }), 1);
   assert.equal(Q.estStep({ min: 1900, max: 2020, c: 1949 }), 1);
   assert.equal(Q.estStep({ min: 0, max: 20, c: 8 }), 1);
   assert.equal(Q.estStep({ min: 0, max: 1, c: 0.5 }), 0.01);
-  assert.equal(Q.estStep({ min: 0, max: 100000, c: 5 }), 1000);
+  assert.equal(Q.estStep({ min: 0, max: 100000, c: 5000 }), 1000);
   assert.equal(Q.estStep({ min: 1826, max: 1920, c: 1872 }), 1);
   assert.equal(Q.estStep({ min: 0, max: 10000, c: 3600 }), 100);
   assert.equal(Q.estMid(EST), 1000);
   for (const q of FRAGEN.filter((x) => x.t === 'est')) {
     const st = Q.estStep(q);
     const steps = (q.max - q.min) / st;
-    assert.ok(steps >= 5 && steps <= 200, `${q.q}: ${steps} Schritte`);
+    assert.ok(steps >= 5 && steps <= 10000, `${q.q}: ${steps} Schritte`);
+    const kc = (q.c - q.min) / st;
+    assert.ok(Math.abs(kc - Math.round(kc)) < 1e-6, `${q.q}: richtige Zahl ${q.c} nicht einstellbar (Schritt ${st})`);
     assert.ok(Q.estMid(q) >= q.min && Q.estMid(q) <= q.max);
     const k = (q.max - q.min) / st;
     assert.ok(Math.abs(k - Math.round(k)) < 1e-6, `${q.q}: max nicht über den Regler erreichbar`);

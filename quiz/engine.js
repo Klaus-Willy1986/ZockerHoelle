@@ -66,15 +66,20 @@ export function estStep(q) {
   const range = q.max - q.min;
   const raw = range / 100;
   const allInt = [q.min, q.max, q.c].every(Number.isInteger);
-  if (raw <= 0) return 1;
-  const mag = 10 ** Math.floor(Math.log10(raw));
-  // Schöne Schrittweiten (1, 2, 5 x 10^n) von groß nach klein; bevorzugt eine, die genau bis max reicht,
-  // damit der Regler beide Enden erreicht.
+  if (range <= 0) return 1;
+  // Kleine ganzzahlige Spannen (Anzahlen, Jahre): immer in Einserschritten, damit jede Zahl einstellbar ist.
+  if (allInt && range <= 1000) return 1;
+  const mag = 10 ** Math.floor(Math.log10(Math.max(raw, 1e-9)));
+  // Schöne Schrittweiten (1, 2, 5 x 10^n) von groß nach klein. Bevorzugt eine, mit der die richtige Zahl UND
+  // beide Enden des Reglers genau erreichbar sind (höchstens 1000 Schritte).
   const cands = [];
-  for (let e = 0; e >= -3; e--) for (const m of [5, 2, 1]) cands.push(m * mag * 10 ** e);
-  const fine = cands.filter((c) => c <= raw * 1.0000001 && (!allInt || c >= 1));
-  let step = fine.find((c) => Math.abs(range / c - Math.round(range / c)) < 1e-9 && range / c <= 400);
-  if (step === undefined) step = fine.length ? fine[0] : (allInt ? 1 : mag);
+  for (let e = 0; e >= -3; e--) for (const m of [5, 2, 1]) cands.push(Number((m * mag * 10 ** e).toPrecision(8)));
+  const okStep = (c) => c <= raw * 1.0000001 && (!allInt || c >= 1)
+    && Math.abs(range / c - Math.round(range / c)) < 1e-9
+    && Math.abs((q.c - q.min) / c - Math.round((q.c - q.min) / c)) < 1e-9
+    && range / c <= 1000;
+  let step = cands.find(okStep);
+  if (step === undefined) step = allInt ? 1 : (cands.find((c) => c <= raw * 1.0000001) ?? mag);
   return Number(step.toPrecision(6));
 }
 export const estMid = (q) => {
