@@ -90,7 +90,7 @@ async function noMarking(page, label) {
     const ans = document.querySelector('.qz-ans');
     const card = document.querySelector('.qz-q');
     if (!ans) return { err: 'kein .qz-ans' };
-    const white = new Set(['qz-ans', 't-mc', 't-tf', 't-est', 't-order', 'qz-opts', 'qz-opt', 'sel', 'gone', 'qz-tf', 'qz-est', 'qz-val', 'qz-range', 'qz-mm', 'qz-pm', 'two', 'qz-btn', 'small', 'btn', 'secondary', 'primary', 'huge', 'qz-joker', 'qz-ord', 'qz-hint', 'qz-cards', 'qz-card', 'on', 'qz-n', 'card', 'action', 'qz-q', 'qz-meta', 'qz-cat', 'qz-no', 'qz-timer', 'off', 'qz-qtext', 'big', 'qz-read']);
+    const white = new Set(['qz-ans', 't-mc', 't-tf', 't-est', 't-order', 'qz-opts', 'qz-opt', 'sel', 'gone', 'qz-tf', 'qz-est', 'qz-val', 'qz-range', 'qz-mm', 'qz-pm', 'two', 'qz-btn', 'small', 'btn', 'secondary', 'primary', 'huge', 'qz-joker', 'qz-ord', 'qz-hint', 'qz-cards', 'qz-card', 'on', 'qz-n', 'card', 'action', 'qz-q', 'qz-meta', 'qz-cat', 'qz-no', 'qz-timer', 'off', 'qz-qtext', 'big', 'qz-read', 'qz-sub', 'qz-nerd']);
     const odd = [];
     for (const el of [...ans.querySelectorAll('*'), ...card.querySelectorAll('*'), ans, card]) for (const c of el.classList) if (!white.has(c)) odd.push(c);
     const attrs = [];
@@ -186,6 +186,14 @@ async function checkReveal(page, q, label) {
 
 const startSolo = async (page, name) => { await page.goto(page.__url || base); await page.fill('#name', name); };
 
+async function checkBadge(page, q, label) {
+  const b = await page.$$eval('.qz-nerd', (e) => e.map((x) => x.textContent.trim()));
+  if (q.d === 3 && !(b.length === 1 && b[0] === '🤓 Nerd-Level')) fail(`${label}: Nerd-Level-Zeichen fehlt (${JSON.stringify(b)})`);
+  if (q.d !== 3 && b.length) fail(`${label}: Nerd-Level-Zeichen bei d:${q.d}`);
+  if (!(await page.$('.qz-sub'))) fail(`${label}: Zeile für das Zeichen fehlt`);
+}
+const allCats = [];
+
 // ================================================================ (a) + (e) Allein, kurzes Quiz
 async function soloRun(browser) {
   const ctx = await newCtx(browser);
@@ -201,8 +209,9 @@ async function soloRun(browser) {
   if (await page.isChecked('[data-opt=lang]')) fail('Lang bleibt angekreuzt, obwohl Kurz gewählt wurde');
   if (!(await page.isChecked('[data-opt=joker]'))) fail('Joker nicht standardmäßig an');
   if (await page.isChecked('[data-opt=timer]')) fail('Bedenkzeit standardmäßig an');
+  if (await page.isChecked('[data-opt=nerd]')) fail('Nerd-Runde standardmäßig an');
   const lbls = await page.$$eval('.optcard .opt', (o) => o.map((x) => x.textContent.replace(/\s+/g, ' ').trim()));
-  for (const w of ['Kurzes Quiz (8 Fragen)', 'Langes Quiz (20 Fragen)', '50:50-Joker', 'Mit Bedenkzeit 30 s']) if (!lbls.some((l) => l.startsWith(w))) fail('Option fehlt: ' + w);
+  for (const w of ['Kurzes Quiz (8 Fragen)', 'Langes Quiz (20 Fragen)', 'Nerd-Runde: nur Nerd-Fragen', '50:50-Joker', 'Mit Bedenkzeit 30 s']) if (!lbls.some((l) => l.startsWith(w))) fail('Option fehlt: ' + w);
   await page.click('[data-act=solo]');
   await page.waitForSelector('#board');
   let exp = 0; let rights = 0;
@@ -219,6 +228,7 @@ async function soloRun(browser) {
     const cat = ((await page.textContent('.qz-cat')) || '').trim();
     const katExpected = (await import(REAL ? '../quiz/fragen.js' : './quiz.fixture.mjs')).KATEGORIEN[q.k];
     if (cat !== katExpected) fail(`Kategorie "${cat}" statt "${katExpected}"`);
+    await checkBadge(page, q, `solo ${i + 1}`);
     await overflow(page, `solo Frage ${i + 1}`);
     await smallButtons(page, `solo ${q.t}`);
     await noMarking(page, `solo ${q.t} ${i + 1}`);
@@ -341,7 +351,7 @@ async function longRun(browser) {
   for (let i = 0; i < 20; i++) {
     await page.waitForSelector('.qz-ans');
     const q = await curQ(page);
-    cnt[q.t]++; cats.push(q.k);
+    cnt[q.t]++; cats.push(q.k); allCats.push(q.k);
     if (i === 0 && (await page.$('[data-act=joker]'))) fail('Joker-Knopf trotz ausgeschaltetem Joker');
     if (!new RegExp(`Frage ${i + 1} von 20`).test(await page.textContent('.banner'))) fail('Banner Länge 20');
     try { await answer(page, q, i % 3 ? 'right' : 'wrong'); } catch (e) { await shot(page, 'lang_haengt'); throw new Error(JSON.stringify(q) + ' ' + e.message.split('\n')[0]); }
@@ -422,6 +432,46 @@ async function botRun(browser, level) {
 }
 
 // ================================================================ (c) Lernrunde
+async function nerdRun(browser) {
+  const NERD = Q.NERD_KATEGORIEN;
+  const mod = await import(REAL ? '../quiz/fragen.js' : './quiz.fixture.mjs');
+  if (!NERD.every((k) => mod.KATEGORIEN[k])) { console.log('Nerd-Runde übersprungen: quiz/fragen.js hat die Nerd-Kategorien noch nicht'); return; }
+  const ctx = await newCtx(browser);
+  const page = await newPage(ctx, 'nerd');
+  await page.goto(base + '?seed=31');
+  await page.fill('#name', 'Nora');
+  await page.check('[data-opt=kurz]');
+  await page.check('[data-opt=nerd]');
+  if (!(await page.isChecked('[data-opt=kurz]')) || !(await page.isChecked('[data-opt=nerd]'))) fail('Nerd-Runde schließt sich mit Kurz aus');
+  await page.check('[data-opt=lang]'); // Kurz/Lang schließen sich aus, Nerd bleibt
+  if (!(await page.isChecked('[data-opt=nerd]')) || (await page.isChecked('[data-opt=kurz]'))) fail('Kurz/Lang/Nerd Wechselwirkung falsch');
+  await page.check('[data-opt=kurz]');
+  await shot(page, 'start_nerd', false);
+  await page.click('[data-act=solo]');
+  const seen = []; let badges = 0; const cats = new Set();
+  for (let round = 0; round < 2; round++) {
+    for (let i = 0; i < 8; i++) {
+      await page.waitForSelector('.qz-ans');
+      const q = await curQ(page);
+      if (!NERD.includes(q.k)) fail(`Nerd-Runde: Frage aus Kategorie ${q.k}`);
+      cats.add(q.k);
+      const cat = ((await page.textContent('.qz-cat')) || '').trim();
+      if (cat !== mod.KATEGORIEN[q.k]) fail(`Nerd-Runde: Kategorie "${cat}"`);
+      if (seen.includes(q.q)) fail('Nerd-Runde: Wiederholung ' + q.q);
+      seen.push(q.q);
+      await checkBadge(page, q, `nerd ${round}/${i + 1}`);
+      if (q.d === 3) { badges++; if (round === 0 && badges === 1) await shot(page, 'ask_nerdlevel'); }
+      await answer(page, q, 'right');
+      await page.waitForSelector('.qz-res');
+      await page.click('[data-act=next]');
+    }
+    await page.waitForSelector('.qz-over');
+    if (round === 0) { await page.click('[data-act=again]'); }
+  }
+  console.log(`Nerd-Runde: 16 Fragen (2 Runden) nur aus ${[...cats]}, keine Wiederholung, ${badges} Nerd-Level-Fragen mit Zeichen`);
+  await ctx.close();
+}
+
 async function lernrunde(browser) {
   const ctx = await newCtx(browser);
   const page = await newPage(ctx, 'lern');
@@ -670,11 +720,16 @@ function portUp() { return new Promise((res) => { http.get(`http://localhost:${P
   await run('lang', () => longRun(browser));
   await run('bot0', () => botRun(browser, 0));
   await run('bot1', () => botRun(browser, 1));
+  await run('nerd', () => nerdRun(browser));
   await run('lern', () => lernrunde(browser));
   await run('duo', () => duoRun(browser));
   await run('timer', () => timerRun(browser));
   await run('misc', () => misc(browser));
   await browser.close();
+  const known = Object.keys(mod.KATEGORIEN);
+  if (!only && allCats.some((k) => !known.includes(k))) fail('unbekannte Kategorie gezogen');
+  if (!only && Q.NERD_KATEGORIEN.every((k) => known.includes(k)) && !allCats.some((k) => Q.NERD_KATEGORIEN.includes(k))) fail('Normale Runde zeigte nie eine neue Kategorie');
+  console.log('Kategorien im langen Quiz:', [...new Set(allCats)].join(','));
   if (srv) { try { srv.kill(); } catch { /* egal */ } }
   else { try { execSync(`kill $(lsof -t -i:${PORT}) 2>/dev/null || true`); } catch { /* egal */ } }
   if (errors.length) { console.log(`\n${errors.length} FEHLER`); process.exit(1); }

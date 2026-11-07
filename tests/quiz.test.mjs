@@ -543,3 +543,121 @@ test('Texte: Antwort- und Lösungstexte', () => {
   assert.equal(Q.correctText(ORD), 'A – B – C – D');
   assert.equal(Q.answerText(MC, null), 'keine Antwort');
 });
+
+// ---------- Nerd-Runde, Nerd-Level (d:3), neue Kategorien ----------
+test('Nerd-Runde: nur Nerd-Kategorien, keine Wiederholung, Typmischung wie sonst', () => {
+  assert.deepEqual(Q.NERD_KATEGORIEN, ['nerd', 'weltall', 'spiele', 'erfinder', 'serien']);
+  for (const len of [8, 12, 20]) {
+    for (let seed = 1; seed <= 60; seed++) {
+      const g = mk(2, { len, nerd: true }, seed);
+      assert.equal(g.nerd, true);
+      assert.equal(g.qs.length, len);
+      assert.ok(g.qs.every((q) => Q.NERD_KATEGORIEN.includes(q.k)), 'fremde Kategorie');
+      assert.equal(new Set(g.qs.map((q) => q.id)).size, len);
+      const c = { mc: 0, tf: 0, est: 0, order: 0 };
+      for (const q of g.qs) c[q.t]++;
+      assert.deepEqual(c, Q.typeCounts(len));
+      for (let i = 2; i < len; i++) assert.ok(!(g.qs[i].k === g.qs[i - 1].k && g.qs[i].k === g.qs[i - 2].k));
+    }
+  }
+  assert.equal(mk(2, { len: 12 }, 3).nerd, false);
+});
+
+test('Nerd-Runde: Schwierigkeit im Mittel etwa 40/35/25 % (kleine Fixture-Sammlung)', () => {
+  const tot = { 1: 0, 2: 0, 3: 0 }; let n = 0;
+  for (let seed = 1; seed <= 200; seed++) {
+    const g = mk(1, { len: 20, nerd: true }, seed);
+    for (const q of g.qs) { tot[q.d]++; n++; }
+    assert.ok(g.qs.filter((q) => q.d === 3).length >= 3 && g.qs.some((q) => q.d === 1) && g.qs.some((q) => q.d === 2));
+  }
+  const f = [1, 2, 3].map((d) => tot[d] / n);
+  assert.ok(Math.abs(f[0] - 0.4) < 0.08 && Math.abs(f[1] - 0.35) < 0.08 && Math.abs(f[2] - 0.25) < 0.06, 'Anteile ' + f);
+  // große Sammlung mit genug von jeder Stufe und jedem Typ: Plan wird genau erreicht
+  const big = [];
+  for (const k of Q.NERD_KATEGORIEN) for (const t of ['mc', 'tf', 'est', 'order']) for (let d = 1; d <= 3; d++) for (let r = 0; r < 4; r++) {
+    const b = t === 'mc' ? { ...MC } : t === 'tf' ? { ...TF } : t === 'est' ? { ...EST } : { ...ORD };
+    big.push({ ...b, id: `${k}${t}${d}${r}`, k, d });
+  }
+  for (let seed = 1; seed <= 50; seed++) {
+    const g = Q.createGame(P(1), { len: 20, nerd: true }, seedRng(seed), big);
+    assert.deepEqual([1, 2, 3].map((d) => g.qs.filter((q) => q.d === d).length), [8, 7, 5]);
+    const g12 = Q.createGame(P(1), { len: 12, nerd: true }, seedRng(seed), big);
+    assert.deepEqual([1, 2, 3].map((d) => g12.qs.filter((q) => q.d === d).length), [5, 4, 3]);
+  }
+});
+
+test('Nerd-Runde: Wiederholungen vermeiden mit exclude, Auffüllen wenn zu wenig frei', () => {
+  const nerdIds = FRAGEN.filter((q) => Q.NERD_KATEGORIEN.includes(q.k)).map((q) => q.id);
+  assert.equal(nerdIds.length, 40);
+  const g1 = mk(1, { len: 12, nerd: true }, 1);
+  const g2 = mk(1, { len: 12, nerd: true, exclude: g1.qs.map((q) => q.id) }, 2);
+  assert.ok(g2.qs.every((q) => !g1.qs.some((x) => x.id === q.id)));
+  const g3 = mk(1, { len: 20, nerd: true, exclude: nerdIds.slice(5) }, 3);
+  assert.equal(g3.qs.length, 20);
+  assert.equal(new Set(g3.qs.map((q) => q.id)).size, 20);
+  assert.ok(g3.qs.every((q) => Q.NERD_KATEGORIEN.includes(q.k)));
+});
+
+test('Nerd-Runde: zu wenig Fragen eines Typs wird mit anderen Typen ausgeglichen', () => {
+  const pool = FRAGEN.filter((q) => Q.NERD_KATEGORIEN.includes(q.k) && q.t !== 'order' && q.t !== 'est');
+  const g = Q.createGame(P(1), { len: 12, nerd: true }, seedRng(2), pool);
+  assert.equal(g.qs.length, 12);
+  assert.ok(g.qs.every((q) => q.t === 'mc' || q.t === 'tf'));
+  assert.equal(new Set(g.qs.map((q) => q.id)).size, 12);
+  const small = FRAGEN.filter((q) => Q.NERD_KATEGORIEN.includes(q.k)).slice(0, 5);
+  assert.equal(Q.createGame(P(1), { len: 12, nerd: true }, seedRng(2), small).qs.length, 5);
+});
+
+test('Nerd-Runde ohne Nerd-Fragen in der Sammlung: normale Mischung statt Absturz', () => {
+  const old = FRAGEN.filter((q) => !Q.NERD_KATEGORIEN.includes(q.k));
+  const g = Q.createGame(P(1), { len: 8, nerd: true }, seedRng(2), old);
+  assert.equal(g.qs.length, 8);
+  assert.equal(g.nerd, false);
+});
+
+test('Normale Runde: Nerd-Level (d:3) höchstens 1 pro 6 Fragen, neue Kategorien kommen vor', () => {
+  const seen = new Set(); let d3total = 0; let withNerdCat = 0;
+  for (let seed = 1; seed <= 200; seed++) {
+    const len = [8, 12, 20][seed % 3];
+    const g = mk(2, { len }, seed);
+    const d3 = g.qs.filter((q) => q.d === 3).length;
+    assert.ok(d3 <= Math.floor(len / 6), `Seed ${seed}: ${d3} Nerd-Level-Fragen bei ${len}`);
+    d3total += d3;
+    if (g.qs.some((q) => Q.NERD_KATEGORIEN.includes(q.k))) withNerdCat++;
+    for (const q of g.qs) seen.add(q.k);
+  }
+  for (const k of Q.NERD_KATEGORIEN) assert.ok(seen.has(k), 'Kategorie nie gezogen: ' + k);
+  assert.ok(d3total > 100, 'd:3 kommt vor: ' + d3total);
+  assert.ok(withNerdCat > 120, 'neue Kategorien in vielen Runden: ' + withNerdCat);
+});
+
+test('d:3, fehlende und unbekannte Kategorien werden robust behandelt', () => {
+  assert.ok(Q.isValidQuestion({ ...MC, d: 3 }));
+  assert.equal(Q.isValidQuestion({ ...MC, d: 4 }), false);
+  assert.equal(Q.isValidQuestion({ ...MC, d: 0 }), false);
+  const noCat = { ...MC }; delete noCat.k;
+  assert.ok(Q.isValidQuestion(noCat));
+  assert.equal(Q.isValidQuestion({ ...MC, k: 5 }), false);
+  const odd = [];
+  for (let i = 0; i < 30; i++) {
+    const base = { ...FRAGEN[i % 40], id: 'o' + i, d: 1 + (i % 3) };
+    if (i % 3 === 0) delete base.k; else if (i % 3 === 1) base.k = 'unbekannt' + (i % 2);
+    odd.push(base);
+  }
+  for (let seed = 1; seed <= 40; seed++) {
+    for (const nerd of [false, true]) {
+      const g = Q.createGame(P(2), { len: 8, nerd }, seedRng(seed), odd);
+      assert.equal(g.qs.length, 8);
+      assert.equal(new Set(g.qs.map((q) => q.id)).size, 8);
+    }
+  }
+  // alle ohne Kategorie, alle d:3: läuft trotzdem
+  const flat = FRAGEN.slice(0, 40).map((q, i) => { const c = { ...q, id: 'z' + i, d: 3 }; delete c.k; return c; });
+  const g = Q.createGame(P(1), { len: 12 }, seedRng(1), flat);
+  assert.equal(g.qs.length, 12);
+  assert.equal(Q.createGame(P(1), { len: 12, nerd: true }, seedRng(1), flat).qs.length, 12);
+  // ganzes Spiel mit Mischung durchspielbar
+  const g2 = Q.createGame(P(3), { len: 8, nerd: true, host: 'p0' }, seedRng(5), FRAGEN);
+  playAll(g2, right);
+  assert.equal(g2.scores.p0, Q.maxPoints(g2));
+});

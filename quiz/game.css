@@ -7,6 +7,8 @@
 .qz-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-weight: 800; font-size: .9rem; color: var(--wood); flex: none; }
 .qz-cat { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .qz-no { flex: none; color: var(--muted); }
+.qz-sub { flex: none; height: 1.7rem; display: flex; align-items: center; }
+.qz-nerd { font-size: .85rem; font-weight: 800; padding: 2px 10px; border-radius: 999px; background: #1d1d1f; color: #fff; }
 .qz-timer { flex: none; height: 12px; border-radius: 6px; background: #eadfca; overflow: hidden; }
 .qz-timer.off { background: transparent; }
 .qz-timer i { display: block; height: 100%; width: 100%; background: var(--amber); transform-origin: left; animation: qz-shrink 30s linear forwards; }

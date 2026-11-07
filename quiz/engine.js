@@ -3,6 +3,7 @@
 // Der Spielstand besteht nur aus Zahlen, Texten, Wahrheitswerten und Listen (JSON-sicher).
 //
 // Frageformat (bank): { id, k:'kategorie-id', t:'mc'|'tf'|'est'|'order', d:1|2, q:'Text', fun?:'Kommentar' }
+// d: 1 leicht, 2 mittel, 3 Nerd-Level; k darf fehlen oder unbekannt sein.
 //   mc:    a:[4 Texte], c:0..3
 //   tf:    c:true|false
 //   est:   c:Zahl, unit:'Einheit', min, max
@@ -21,6 +22,9 @@ export const TYPES = ['mc', 'tf', 'est', 'order'];
 export const PTS = { right: 10, est: [15, 10, 5], exact: 5, orderEach: 3, orderAll: 3 };
 export const TIMER_MS = 30000;
 export const MAX_PLAYERS = 8;
+// Nerd-Runde: nur Fragen aus diesen Kategorien, Schwierigkeit 1/2/3 etwa 40/35/25 %
+export const NERD_KATEGORIEN = ['nerd', 'weltall', 'spiele', 'erfinder', 'serien'];
+export const NERD_MIX = [0.4, 0.35, 0.25];
 
 export const isBotId = (id) => String(id).startsWith('bot');
 const clampIdx = (rng, n) => Math.min(n - 1, Math.floor(rng() * n));
@@ -36,8 +40,9 @@ export function shuffle(arr, rng = Math.random) {
 const isStr = (s) => typeof s === 'string' && s.trim().length > 0;
 export function isValidQuestion(q) {
   if (!q || typeof q !== 'object') return false;
-  if (!(isStr(q.id) || Number.isFinite(q.id)) || !isStr(q.k) || !isStr(q.q)) return false;
-  if (!TYPES.includes(q.t) || (q.d !== 1 && q.d !== 2)) return false;
+  if (!(isStr(q.id) || Number.isFinite(q.id)) || !isStr(q.q)) return false;
+  if (q.k !== undefined && typeof q.k !== 'string') return false; // fehlende Kategorie ist erlaubt
+  if (!TYPES.includes(q.t) || (q.d !== 1 && q.d !== 2 && q.d !== 3)) return false;
   switch (q.t) {
     case 'mc': return Array.isArray(q.a) && q.a.length === 4 && q.a.every(isStr) && Number.isInteger(q.c) && q.c >= 0 && q.c < 4;
     case 'tf': return typeof q.c === 'boolean';
@@ -103,7 +108,23 @@ const prepare = (q, rng) => {
   return c;
 };
 
-function selectQuestions(n, pool, rng) {
+const catOf = (q) => (typeof q.k === 'string' && q.k) || '_';
+
+// Plan der Schwierigkeiten für n Fragen (Anzahl je Stufe). Nerd-Runde: 40/35/25 %. Sonst höchstens 1 Nerd-Frage (d:3) pro 6 Fragen.
+function diffPlan(n, nerd, pool, rng) {
+  let d1; let d2; let d3;
+  if (nerd) {
+    d1 = Math.round(NERD_MIX[0] * n); d2 = Math.round(NERD_MIX[1] * n); d3 = n - d1 - d2;
+  } else {
+    d3 = Math.min(Math.floor(n / 6), pool.filter((q) => q.d === 3).length);
+    const rest = n - d3;
+    const extra = rng() < 0.5;
+    d1 = extra ? Math.ceil(rest / 2) : Math.floor(rest / 2); d2 = rest - d1;
+  }
+  return { 1: d1, 2: d2, 3: d3 };
+}
+
+function selectQuestions(n, pool, rng, nerd) {
   const by = { mc: [], tf: [], est: [], order: [] };
   for (const q of pool) by[q.t].push(q);
   const counts = typeCounts(n);
@@ -117,28 +138,39 @@ function selectQuestions(n, pool, rng) {
     const add = Math.min(room, miss);
     counts[t] += add; miss -= add;
   }
+  const rem = diffPlan(n, nerd, pool, rng);
+  const cap = Math.floor(n / 6);
+  let d3used = 0;
   const catCount = {};
   const chosen = [];
   for (const t of ['order', 'est', 'tf', 'mc']) {
     const rest = shuffle(by[t], rng);
-    let want = rng() < 0.5 ? 1 : 2;
     for (let i = 0; i < counts[t]; i++) {
+      // Stufe wählen: zufällig nach Restbedarf, aber nur eine, die dieser Typ noch anbieten kann
+      const avail = [1, 2, 3].filter((d) => rem[d] > 0 && rest.some((q) => q.d === d));
+      let want = 0;
+      if (avail.length) {
+        let r = rng() * avail.reduce((a, d) => a + rem[d], 0);
+        want = avail[avail.length - 1];
+        for (const d of avail) { r -= rem[d]; if (r < 0) { want = d; break; } }
+      }
       let cand = rest.filter((q) => q.d === want);
+      if (!cand.length) cand = rest.filter((q) => nerd || q.d !== 3 || d3used < cap);
       if (!cand.length) cand = rest;
-      const min = Math.min(...cand.map((q) => catCount[q.k] || 0));
-      const best = cand.filter((q) => (catCount[q.k] || 0) === min);
-      const q = best[0]; // rest ist schon gemischt
+      const min = Math.min(...cand.map((q) => catCount[catOf(q)] || 0));
+      const q = cand.find((x) => (catCount[catOf(x)] || 0) === min); // rest ist schon gemischt
       rest.splice(rest.indexOf(q), 1);
-      catCount[q.k] = (catCount[q.k] || 0) + 1;
+      catCount[catOf(q)] = (catCount[catOf(q)] || 0) + 1;
+      if (q.d === 3) d3used++;
+      if (rem[q.d] > 0) rem[q.d]--;
       chosen.push(q);
-      want = 3 - want;
     }
   }
   // Reihenfolge: nie 3 gleiche Kategorien hintereinander (wenn irgendwie möglich), Fragetypen möglichst abwechselnd
   const bad = (seq, typeToo) => {
     let v = 0;
     for (let i = 2; i < seq.length; i++) {
-      if (seq[i].k === seq[i - 1].k && seq[i].k === seq[i - 2].k) v += 100;
+      if (catOf(seq[i]) === catOf(seq[i - 1]) && catOf(seq[i]) === catOf(seq[i - 2])) v += 100;
       if (typeToo && seq[i].t === seq[i - 1].t && seq[i].t === seq[i - 2].t) v += 1;
     }
     return v;
@@ -166,7 +198,7 @@ export function createGame(playerList, opts = {}, rng = Math.random, bank = []) 
   if (!Array.isArray(playerList) || playerList.length < 1 || playerList.length > MAX_PLAYERS) throw new Error('1 bis 8 Personen');
   const players = playerList.map((p) => ({ id: String(p.id), name: String(p.name) }));
   if (new Set(players.map((p) => p.id)).size !== players.length) throw new Error('Doppelte Spieler-Id');
-  let qs;
+  let qs; let nerd = false;
   if (Array.isArray(opts.fixed) && opts.fixed.length) {
     qs = opts.fixed.filter(isValidQuestion).map((q) => prepare(q, rng));
   } else {
@@ -175,10 +207,13 @@ export function createGame(playerList, opts = {}, rng = Math.random, bank = []) 
     const seen = new Set();
     const uniq = valid.filter((q) => (seen.has(q.id) ? false : (seen.add(q.id), true)));
     const ex = new Set((opts.exclude || []).map(String));
-    let pool = uniq.filter((q) => !ex.has(String(q.id)));
-    if (pool.length < len) pool = pool.concat(shuffle(uniq.filter((q) => ex.has(String(q.id))), rng).slice(0, len - pool.length));
+    // Nerd-Runde: nur die Nerd-Kategorien (gibt es keine, wird normal gemischt)
+    nerd = !!opts.nerd && uniq.some((q) => NERD_KATEGORIEN.includes(q.k));
+    const base = nerd ? uniq.filter((q) => NERD_KATEGORIEN.includes(q.k)) : uniq;
+    let pool = base.filter((q) => !ex.has(String(q.id)));
+    if (pool.length < len) pool = pool.concat(shuffle(base.filter((q) => ex.has(String(q.id))), rng).slice(0, len - pool.length));
     const n = Math.min(len, pool.length);
-    qs = n ? selectQuestions(n, pool, rng).map((q) => prepare(q, rng)) : [];
+    qs = n ? selectQuestions(n, pool, rng, nerd).map((q) => prepare(q, rng)) : [];
   }
   if (!qs.length) throw new Error('Keine Fragen vorhanden');
   const scores = {}; const stats = {};
@@ -191,6 +226,7 @@ export function createGame(playerList, opts = {}, rng = Math.random, bank = []) 
     len: qs.length,
     joker: opts.joker !== false,
     timer: !!opts.timer,
+    nerd,
     qs,
     qi: 0,
     phase: 'ask', // ask | reveal | over

@@ -3,7 +3,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { FRAGEN, KATEGORIEN } from '../quiz/fragen.js';
 
-const KATS = ['allgemein', 'essen', 'natur', 'geschichte', 'erde', 'sprichwort', 'musik', 'film', 'hessen', 'sport', 'kurios'];
+const ALT = ['allgemein', 'essen', 'natur', 'geschichte', 'erde', 'sprichwort', 'musik', 'film', 'hessen', 'sport', 'kurios'];
+const NERD = ['nerd', 'weltall', 'spiele', 'erfinder', 'serien'];
+const KATS = [...ALT, ...NERD];
 const TYPEN = ['mc', 'tf', 'est', 'order'];
 const STEUER = new RegExp('[\\u0000-\\u001f\\u007f-\\u009f\\u2028\\u2029]');
 const nonEmpty = (s) => typeof s === 'string' && s.trim().length > 0;
@@ -19,7 +21,7 @@ function alleTexte(q) {
   return t;
 }
 
-test('Kategorien: alle elf vorhanden, mit Anzeigename', () => {
+test('Kategorien: alle sechzehn vorhanden, mit Anzeigename', () => {
   assert.deepEqual(Object.keys(KATEGORIEN).sort(), [...KATS].sort());
   for (const k of KATS) assert.ok(nonEmpty(KATEGORIEN[k]), k);
 });
@@ -30,7 +32,8 @@ test('Struktur: Felder je Typ', () => {
     assert.ok(nonEmpty(q.id) && /^[mwso]\d{3}$/.test(q.id), `id ${w}`);
     assert.ok(TYPEN.includes(q.t), `Typ ${w}`);
     assert.ok(KATS.includes(q.k), `Kategorie ${w}`);
-    assert.ok(q.d === 1 || q.d === 2, `Schwierigkeit ${w}`);
+    assert.ok(q.d === 1 || q.d === 2 || q.d === 3, `Schwierigkeit ${w}`);
+    if (ALT.includes(q.k)) assert.ok(q.d !== 3, `d:3 nur in Nerd-Kategorien ${w}`);
     assert.ok(nonEmpty(q.q), `Fragetext ${w}`);
     if (q.fun !== undefined) assert.ok(nonEmpty(q.fun), `fun ${w}`);
     if (q.t === 'mc') {
@@ -66,7 +69,13 @@ test('Eindeutigkeit: ids und Fragetexte', () => {
 });
 
 test('Mindestmengen', () => {
-  assert.ok(FRAGEN.length >= 360, `gesamt ${FRAGEN.length}`);
+  assert.ok(FRAGEN.length >= 490, `gesamt ${FRAGEN.length}`);
+  assert.ok(anzahl((q) => NERD.includes(q.k)) >= 160, 'neue Kategorien gesamt');
+  for (const k of NERD) {
+    assert.ok(anzahl((q) => q.k === k) >= 32, `Kategorie ${k} >= 32`);
+    assert.ok(anzahl((q) => q.k === k && q.t === 'est') >= 3, `est in ${k}`);
+    assert.ok(anzahl((q) => q.k === k && q.t === 'order') >= 2, `order in ${k}`);
+  }
   for (const k of KATS) assert.ok(anzahl((q) => q.k === k) >= 25, `Kategorie ${k}`);
   assert.ok(anzahl((q) => q.t === 'est') >= 20, 'Schätzfragen');
   assert.ok(anzahl((q) => q.t === 'order') >= 15, 'Ordnenfragen');
@@ -83,9 +92,16 @@ test('Typ-Anteile ungefähr wie geplant', () => {
   assert.ok(p('order') > 0.07 && p('order') < 0.14, `order ${p('order')}`);
 });
 
-test('Schwierigkeit: etwa zwei Drittel leicht', () => {
-  const leicht = anzahl((q) => q.d === 1) / FRAGEN.length;
-  assert.ok(leicht > 0.55 && leicht < 0.75, `leicht ${leicht}`);
+test('Schwierigkeit: alte Kategorien etwa zwei Drittel leicht, Nerd-Kategorien 40/35/25', () => {
+  const alt = FRAGEN.filter((q) => ALT.includes(q.k));
+  const leicht = alt.filter((q) => q.d === 1).length / alt.length;
+  assert.ok(leicht > 0.55 && leicht < 0.75, `leicht (alt) ${leicht}`);
+  const neu = FRAGEN.filter((q) => NERD.includes(q.k));
+  const p = (d) => neu.filter((q) => q.d === d).length / neu.length;
+  assert.ok(p(1) > 0.28 && p(1) < 0.5, `d1 (neu) ${p(1)}`);
+  assert.ok(p(2) > 0.25 && p(2) < 0.45, `d2 (neu) ${p(2)}`);
+  assert.ok(p(3) > 0.15 && p(3) < 0.35, `d3 (neu) ${p(3)}`);
+  for (const k of NERD) assert.ok(FRAGEN.some((q) => q.k === k && q.d === 3), `d3 in ${k}`);
 });
 
 test('mc: richtige Antwort gleichmäßig auf A–D verteilt (je 18–32 %)', () => {

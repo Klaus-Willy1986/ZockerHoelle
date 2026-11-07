@@ -1,8 +1,10 @@
 // Beispiel-Fragensammlung für die Tests des Kneipenquiz (unabhängig von quiz/fragen.js).
-// 8 Kategorien x 9 Fragen = 72 Fragen: je Kategorie 5 mc, 2 tf, 1 est, 1 order.
+// 8 Kategorien x 9 Fragen = 72 Fragen (je 5 mc, 2 tf, 1 est, 1 order, d:1/2) plus 5 Nerd-Kategorien x 8 Fragen = 40
+// (je 4 mc, 2 tf, 1 est, 1 order; davon 15 mit d:3).
 export const KATEGORIEN = {
   geo: 'Erdkunde 🌍', gesch: 'Geschichte 🏰', natur: 'Natur 🌿', essen: 'Essen und Trinken 🍺',
   musik: 'Musik 🎵', film: 'Film und Fernsehen 📺', sport: 'Sport ⚽', allg: 'Allgemeinwissen 🧠',
+  nerd: 'Nerd und Technik 🤓', weltall: 'Weltall und Wissenschaft 🔭', spiele: 'Spiele und Games 🎲', erfinder: 'Erfindungen und Entdeckungen 💡', serien: 'Serien und Filme 📺',
 };
 
 let n = 0;
@@ -93,4 +95,49 @@ export const FRAGEN = [
   tf('allg', 2, 'Der Mond kreist um die Erde.', true),
   est('allg', 1, 'Wie viele Monate haben mindestens 31 Tage?', 7, 'Monate', 0, 12),
   order('allg', 1, 'Ordne die Wochentage, beginnend mit Montag.', ['Montag', 'Mittwoch', 'Freitag', 'Sonntag']),
+  // ---- Nerd und Technik
+  mc('nerd', 1, 'Wofür steht die Abkürzung WLAN?', ['Weites Lokales Netz', 'Drahtloses lokales Netzwerk', 'Wichtiges Leitungsnetz', 'Wireless Long Area Net'], 1),
+  mc('nerd', 2, 'Welche Taste wiederholt auf der Tastatur die letzte Eingabe nicht, sondern löscht das Zeichen links vom Cursor?', ['Entf', 'Rückschritt', 'Einfg', 'Pos1'], 1),
+  mc('nerd', 3, 'Welche Programmiersprache ist nach einer Schlange benannt?', ['Java', 'Python', 'Ruby', 'Swift'], 1),
+  mc('nerd', 3, 'Wie viele Bit hat ein Byte?', ['Vier', 'Sechs', 'Acht', 'Zehn'], 2),
+  tf('nerd', 1, 'Ein Smartphone kann mit einer SIM-Karte telefonieren.', true),
+  tf('nerd', 2, 'Die Abkürzung USB steht für Universal Serial Bus.', true),
+  est('nerd', 1, 'In welchem Jahr kam das erste iPhone auf den Markt?', 2007, 'Jahr', 1990, 2020),
+  order('nerd', 3, 'Ordne die Speichergrößen von klein nach groß.', ['Kilobyte', 'Megabyte', 'Gigabyte', 'Terabyte']),
+  // ---- Weltall und Wissenschaft
+  mc('weltall', 1, 'Welcher Planet ist der Sonne am nächsten?', ['Venus', 'Merkur', 'Erde', 'Mars'], 1),
+  mc('weltall', 2, 'Wie heißt unsere Galaxie?', ['Andromeda', 'Milchstraße', 'Sombrero', 'Wirbelgalaxie'], 1),
+  mc('weltall', 3, 'Welches Gas macht den größten Teil der Sonne aus?', ['Sauerstoff', 'Helium', 'Wasserstoff', 'Stickstoff'], 2),
+  mc('weltall', 3, 'Wie nennt man die Anziehungskraft der Erde?', ['Magnetismus', 'Schwerkraft', 'Reibung', 'Auftrieb'], 1),
+  tf('weltall', 1, 'Der Mond leuchtet von selbst.', false),
+  tf('weltall', 2, 'Der Jupiter ist der größte Planet unseres Sonnensystems.', true),
+  est('weltall', 1, 'Wie viele Planeten hat unser Sonnensystem?', 8, 'Planeten', 0, 20),
+  order('weltall', 3, 'Ordne die Planeten nach Abstand zur Sonne, der nächste zuerst.', ['Merkur', 'Erde', 'Jupiter', 'Neptun']),
+  // ---- Spiele und Games
+  mc('spiele', 1, 'Wie viele Felder hat ein Schachbrett?', ['32', '48', '64', '100'], 2),
+  mc('spiele', 2, 'Welche Figur zieht im Schach nur diagonal?', ['Turm', 'Läufer', 'Springer', 'Bauer'], 1),
+  mc('spiele', 3, 'Welcher Klempner springt in einem berühmten Videospiel auf Gegner?', ['Donkey Kong', 'Mario', 'Sonic', 'Link'], 1),
+  mc('spiele', 3, 'Wie viele Augen hat ein normaler Würfel auf allen sechs Seiten zusammen?', ['18', '21', '24', '36'], 1),
+  tf('spiele', 1, 'Beim Mensch ärgere dich nicht würfelt man mit einem Würfel.', true),
+  tf('spiele', 2, 'Ein Skatspiel hat 32 Karten.', true),
+  est('spiele', 1, 'Wie viele Steine hat jede Person bei Mensch ärgere dich nicht?', 4, 'Steine', 0, 20),
+  order('spiele', 3, 'Ordne die Brettspiele nach der Zahl ihrer Felder, wenig zuerst.', ['Mühle', 'Dame', 'Schach', 'Go']),
+  // ---- Erfindungen und Entdeckungen
+  mc('erfinder', 1, 'Wer erfand die Glühbirne in ihrer heute bekannten Form maßgeblich?', ['Thomas Edison', 'Isaac Newton', 'Albert Einstein', 'Nikola Tesla'], 0),
+  mc('erfinder', 2, 'Wer entdeckte das Penicillin?', ['Alexander Fleming', 'Louis Pasteur', 'Robert Koch', 'Marie Curie'], 0),
+  mc('erfinder', 3, 'Wer erfand den Buchdruck mit beweglichen Lettern in Europa?', ['Gutenberg', 'Daimler', 'Benz', 'Diesel'], 0),
+  mc('erfinder', 3, 'Welches Gerät erfand Alexander Graham Bell?', ['Radio', 'Telefon', 'Fernseher', 'Dampfmaschine'], 1),
+  tf('erfinder', 1, 'Das Rad wurde vor mehr als 5000 Jahren erfunden.', true),
+  tf('erfinder', 2, 'Der Kompass zeigt immer zum geografischen Südpol.', false),
+  est('erfinder', 1, 'In welchem Jahr landeten die ersten Menschen auf dem Mond?', 1969, 'Jahr', 1900, 2000),
+  order('erfinder', 3, 'Ordne diese Erfindungen nach ihrem Alter, die älteste zuerst.', ['Rad', 'Buchdruck', 'Dampfmaschine', 'Computer']),
+  // ---- Serien und Filme
+  mc('serien', 1, 'Wie heißt der Raumschiff-Kapitän der ersten Star-Trek-Serie?', ['Kirk', 'Picard', 'Janeway', 'Sisko'], 0),
+  mc('serien', 2, 'In welcher Serie leben die Freunde Sheldon, Leonard und Penny?', ['Friends', 'The Big Bang Theory', 'Dallas', 'Lost'], 1),
+  mc('serien', 3, 'Auf welchem Wüstenplaneten wächst Luke Skywalker auf?', ['Tatooine', 'Hoth', 'Endor', 'Naboo'], 0),
+  mc('serien', 3, 'Welche Farbe hat das Laserschwert von Yoda meistens?', ['Rot', 'Grün', 'Gelb', 'Weiß'], 1),
+  tf('serien', 1, 'Darth Vader ist Lukes Vater.', true),
+  tf('serien', 2, 'Spock stammt vom Planeten Vulkan.', true),
+  est('serien', 1, 'Wie viele Staffeln hat die Serie The Big Bang Theory?', 12, 'Staffeln', 1, 30),
+  order('serien', 3, 'Ordne die Star-Wars-Filme der ersten Trilogie nach ihrer Entstehung.', ['Eine neue Hoffnung', 'Das Imperium schlägt zurück', 'Die Rückkehr der Jedi-Ritter', 'Die dunkle Bedrohung']),
 ];

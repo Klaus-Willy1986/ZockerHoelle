@@ -10,6 +10,7 @@ const $app = document.getElementById('app');
 const OPTIONS = [
   { id: 'kurz', label: 'Kurzes Quiz (8 Fragen)', help: 'Ohne Häkchen bei Kurz und Lang sind es 12 Fragen.', def: false },
   { id: 'lang', label: 'Langes Quiz (20 Fragen)', def: false },
+  { id: 'nerd', label: 'Nerd-Runde: nur Nerd-Fragen', help: 'Nur Fragen zu Computern, Wissenschaft, Spielen, Erfindungen und Serien & Filmen, auch besonders knifflige mit dem Zeichen Nerd-Level. Ohne Häkchen kommen Fragen aus allen Bereichen.', def: false },
   { id: 'joker', label: '50:50-Joker', help: 'Jede Person darf einmal pro Spiel zwei falsche Antworten ausblenden lassen (nur bei Fragen mit vier Antworten).', def: true },
   { id: 'timer', label: 'Mit Bedenkzeit 30 s', help: 'Pro Frage läuft ein Balken. Danach zählt die bisher gewählte Antwort, sonst keine. Ohne Häkchen gibt es kein Zeitlimit.', def: false },
 ];
@@ -30,11 +31,16 @@ function makeGame(players, opts) {
   const base = { joker: opts.joker !== false, timer: !!opts.timer, host: sess.cid };
   if (S.learn) return Q.createGame(players, { ...base, joker: true, timer: false, fixed: TUTORIAL_BANK }, rng, []);
   const len = opts.lang ? Q.LENGTHS.lang : opts.kurz ? Q.LENGTHS.kurz : Q.LENGTHS.normal;
+  const nerd = !!opts.nerd;
   let used = sess.get('qz_used', []);
   if (!Array.isArray(used)) used = [];
   const usedSet = new Set(used);
-  if (FRAGEN.filter((q) => !usedSet.has(q.id)).length < 40) used = []; // fast alles schon gesehen: von vorn
-  const g = Q.createGame(players, { ...base, len, exclude: used }, rng, FRAGEN);
+  const scope = nerd ? FRAGEN.filter((q) => Q.NERD_KATEGORIEN.includes(q.k)) : FRAGEN;
+  if (scope.filter((q) => !usedSet.has(q.id)).length < (nerd ? 25 : 40)) { // fast alles schon gesehen: von vorn
+    const ids = new Set(scope.map((q) => q.id));
+    used = used.filter((id) => !ids.has(id));
+  }
+  const g = Q.createGame(players, { ...base, len, nerd, exclude: used }, rng, FRAGEN);
   sess.set('qz_used', used.concat(g.qs.map((q) => q.id)));
   return g;
 }
@@ -169,7 +175,8 @@ function questionCard(g, reveal) {
   }
   const read = speechOk ? `<button class="qz-read" data-act="read">🔊 ${reveal ? 'Auflösung' : 'Frage'} vorlesen</button>` : '<span></span>';
   return `<section id="board" class="card qz-q${reveal ? '' : ' action'}">
-    <div class="qz-meta"><span class="qz-cat">${esc(cat)}</span><span class="qz-no">Frage ${g.qi + 1} von ${g.len}</span></div>${bar}
+    <div class="qz-meta"><span class="qz-cat">${esc(cat)}</span><span class="qz-no">Frage ${g.qi + 1} von ${g.len}</span></div>
+    <div class="qz-sub">${q.d === 3 ? '<span class="qz-nerd">🤓 Nerd-Level</span>' : ''}</div>${bar}
     <p class="${reveal ? '' : 'big '}qz-qtext">${esc(q.q)}</p>${read}</section>`;
 }
 
@@ -338,6 +345,8 @@ function helpBody() {
       <li><b>Schätzfrage:</b> Stelle eine Zahl ein, mit dem Schieberegler oder mit Plus und Minus. Dann tippe auf Das ist meine Antwort. Wer am nächsten dran ist, bekommt 15 Punkte, die zweitbeste Antwort 10 Punkte, die drittbeste 5 Punkte. Wer genau richtig liegt, bekommt 5 Punkte extra. Liegen zwei gleich nah, bekommen beide dieselben Punkte.</li>
       <li><b>Reihenfolge:</b> Tippe die vier Karten nacheinander an, in der Reihenfolge, die du für richtig hältst. Mit Zurück nimmst du die letzte Karte weg, mit Neu anordnen alle. Dann tippe auf Fertig. Jede Karte an der richtigen Stelle gibt 3 Punkte, alles richtig gibt 3 Punkte extra.</li>
     </ul>
+    <h3>Nerd-Runde und Nerd-Level</h3>
+    <p>Mit dem Häkchen bei Nerd-Runde kommen nur Fragen aus diesen Bereichen dran: Computer, Wissenschaft, Spiele, Erfindungen, Serien und Filme. Besonders knifflige Fragen tragen das Zeichen Nerd-Level. Sie sind schwerer, geben aber keine Extrapunkte. In einer normalen Runde gibt es höchstens eine davon pro sechs Fragen.</p>
     <h3>Der 50:50-Joker</h3>
     <p>Jede Person hat einmal pro Spiel einen Joker. Er blendet bei einer Frage mit vier Antworten zwei falsche Antworten für dich aus. Tippe den Joker vor deiner Antwort an. Bei den anderen Fragearten gibt es ihn nicht.</p>
     <h3>Die Theke</h3>
