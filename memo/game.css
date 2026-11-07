@@ -1,0 +1,109 @@
+/* ===== Paare finden ===== */
+
+/* Statuszeile: feste Höhe, damit das Spielfeld nie springt (auch bei drei Zeilen Text) */
+.banner { height: 5.6rem; min-height: 0; padding: 8px 14px; font-size: 1.2rem; line-height: 1.25; overflow: hidden; }
+
+/* Spielfeld: dunkler "Tisch", auf dem die bunten Karten gut leuchten */
+.pf-boardcard {
+  margin: 12px -8px; padding: 8px 6px; border-radius: 26px;
+  background:
+    radial-gradient(120% 80% at 15% 0%, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 55%),
+    linear-gradient(150deg, #17215a 0%, #2a2070 55%, #442470 100%);
+  box-shadow: var(--shadow-2), inset 0 0 0 2px rgba(255,255,255,.1);
+  border: 0;
+}
+.pf-board {
+  --gap: 8px; --cmax: 124px;
+  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: var(--gap);
+  width: 100%; max-width: calc(var(--cols) * var(--cmax) + (var(--cols) - 1) * var(--gap)); margin: 0 auto;
+}
+.pf-board.size-gross { --gap: 6px; --cmax: 112px; }
+.pf-board.size-riesig { --gap: 4px; --cmax: 100px; }
+
+.pf-card {
+  position: relative; display: block; width: 100%; aspect-ratio: 1 / 1.02; padding: 0; margin: 0;
+  background: none; border: 0; border-radius: 14px; font: inherit; color: inherit; cursor: pointer;
+  perspective: 700px; container-type: inline-size; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.pf-card:disabled { cursor: default; }
+.pf-card:focus-visible { outline: 4px solid #ffd54a; outline-offset: 2px; }
+.pf-in { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .2s ease; }
+.pf-card.up .pf-in, .pf-card.gone .pf-in { transform: rotateY(180deg); }
+.pf-face {
+  position: absolute; inset: 0; display: grid; place-items: center; border-radius: 14px;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+
+/* Rückseite: Verlauf, feines Rautenmuster und ein Stern in der Mitte */
+.pf-back {
+  background:
+    radial-gradient(circle at 50% 50%, #fff3c4 0 9%, transparent 10%),
+    radial-gradient(circle at 50% 50%, transparent 0 22%, rgba(255,255,255,.7) 23% 25%, transparent 26%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.17) 0 5px, transparent 5px 10px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,.17) 0 5px, transparent 5px 10px),
+    linear-gradient(145deg, #ff9a3c 0%, #f0407f 52%, #8a3ee6 100%);
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,.9), inset 0 0 0 6px rgba(255,255,255,.22), 0 4px 8px rgba(0,0,0,.4);
+}
+@media (hover: hover) { .pf-card.down:hover .pf-in { transform: translateY(-3px) rotateY(-9deg); } }
+
+/* Vorderseite: weißer Kartengrund, großes Bild */
+.pf-front {
+  transform: rotateY(180deg); background: #fff;
+  box-shadow: inset 0 0 0 3px #e6e2d6, 0 4px 8px rgba(0,0,0,.4);
+}
+.pf-emoji { font-size: 2.1rem; line-height: 1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", system-ui, sans-serif; }
+@supports (font-size: 1cqw) { .pf-emoji { font-size: 58cqw; } }
+.pf-card.up .pf-front { box-shadow: inset 0 0 0 4px #ffb300, 0 0 14px rgba(255,179,0,.7), 0 4px 8px rgba(0,0,0,.4); }
+
+/* Gefundene Paare: blass und grau, aber noch zu erkennen (zum Merken) */
+.pf-card.gone .pf-front { background: #e8e6df; opacity: .5; filter: grayscale(1); box-shadow: inset 0 0 0 2px #bdb9ad; }
+
+/* Bewegung: Umdrehen, Zurückdrehen, Treffer leuchtet kurz auf */
+@keyframes pf-flip { from { transform: rotateY(0deg); } to { transform: rotateY(180deg); } }
+@keyframes pf-back { from { transform: rotateY(180deg); } to { transform: rotateY(0deg); } }
+@keyframes pf-glow {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,213,74,0); }
+  35% { transform: scale(1.1); box-shadow: 0 0 0 5px #ffd54a, 0 0 30px 12px rgba(255,213,74,.9); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,213,74,0); }
+}
+@keyframes pf-fade {
+  from { background: #fff; opacity: 1; filter: none; box-shadow: inset 0 0 0 4px #ffd54a; }
+  to { background: #e8e6df; opacity: .5; filter: grayscale(1); box-shadow: inset 0 0 0 2px #bdb9ad; }
+}
+.pf-in.a-flip { animation: pf-flip .55s cubic-bezier(.25,.8,.3,1) both; }
+.pf-card.a-back .pf-in { animation: pf-back .6s cubic-bezier(.25,.8,.3,1) both; }
+.pf-card.glow { animation: pf-glow 1.25s ease .5s both; }
+.pf-card.gone.glow .pf-front { animation: pf-fade 1.9s ease .5s both; }
+@media (prefers-reduced-motion: reduce) {
+  .pf-in, .pf-in.a-flip, .pf-card.a-back .pf-in, .pf-card.glow, .pf-card.gone.glow .pf-front { animation: none; transition: none; }
+  .pf-card.down:hover .pf-in { transform: none; }
+}
+
+/* Hinweis und "Weiter"-Knopf unter dem Spielfeld: immer gleich hoch, bleibt am unteren Rand sichtbar */
+.pf-action { position: sticky; bottom: 6px; z-index: 10; min-height: 7rem; padding: 10px 14px; display: flex; flex-direction: column; justify-content: center; gap: 6px; border: 2px solid var(--line); box-shadow: 0 -3px 12px rgba(0,0,0,.22); }
+.pf-action p { margin: 0; font-size: 1rem; min-height: 2.6em; display: flex; align-items: center; justify-content: center; }
+.pf-action .btn { margin: 4px 0 0; min-height: 60px; padding: 12px 16px; }
+
+/* Punkte */
+.pf-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; }
+.pf-stats div { background: #f3f1ea; border-radius: 16px; padding: 10px 6px; }
+.pf-stats b { display: block; font-size: 1.7rem; line-height: 1.1; }
+.pf-stats span { font-size: .85rem; color: var(--muted); font-weight: 700; }
+.pf-best { margin: 10px 0 0; font-size: .95rem; }
+.pf-players { list-style: none; padding: 0; margin: 0 0 6px; }
+.pf-pl { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 14px; margin: 6px 0; border-radius: 16px; background: #f3f1ea; font-size: 1.15rem; border: 3px solid transparent; }
+.pf-pl.on { background: #e5f6ea; border-color: var(--ok); }
+.pf-pn { font-weight: 800; min-width: 0; overflow-wrap: anywhere; }
+.pf-pn small { display: block; font-size: .75rem; font-weight: 700; color: var(--ok); }
+.pf-pp { white-space: nowrap; }
+.pf-pp b { font-size: 1.6rem; }
+.pf-result h1 { font-size: 1.7rem; }
+
+@media (min-width: 560px) {
+  .pf-boardcard { margin: 12px 0; padding: 16px; }
+  .pf-board, .pf-board.size-gross, .pf-board.size-riesig { --cmax: clamp(56px, calc((100vh - 410px) / var(--rows)), 124px); }
+  .pf-board { --gap: 12px; }
+  .pf-board.size-gross { --gap: 10px; }
+  .pf-board.size-riesig { --gap: 8px; }
+  .banner { font-size: 1.4rem; }
+}

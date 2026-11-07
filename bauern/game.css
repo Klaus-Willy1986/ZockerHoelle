@@ -1,0 +1,64 @@
+/* ===== Bauernschach ===== */
+:root { --bs-lt: #f6e9c8; --bs-dk: #7a4e2a; --bs-ink: #14110d; }
+
+/* Statuszeile: feste Höhe, damit nichts springt */
+.bs-banner { height: 4.6rem; min-height: 4.6rem; overflow: hidden; padding: 6px 10px; margin: 6px 0; font-size: 1.25rem; line-height: 1.2; }
+.bs-banner h1 { display: inline; font-size: 1.3rem; margin: 0; color: #fff; -webkit-text-fill-color: #fff; background: none; line-height: 1.2; }
+.bs-banner .trophy { display: inline-block; font-size: 1.7rem; animation: none; vertical-align: middle; filter: none; }
+
+/* Brett mit Koordinaten am Rand */
+.bs-frame { display: grid; grid-template-columns: 16px minmax(0, 1fr); grid-template-rows: auto 22px; width: calc(100% + 16px); margin: 8px -8px; max-width: 560px; touch-action: manipulation; }
+@media (min-width: 600px) { .bs-frame { width: 100%; margin: 8px auto; } }
+.bs-ranks { display: grid; grid-template-rows: repeat(8, 1fr); }
+.bs-files { display: grid; grid-template-columns: repeat(8, 1fr); }
+.bs-ranks span, .bs-files span { display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; color: var(--bs-ink); line-height: 1; }
+.bs-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); grid-template-rows: repeat(8, minmax(0, 1fr)); aspect-ratio: 1; border: 2px solid var(--bs-ink); border-radius: 4px; background: var(--bs-ink); }
+.bs-sq { position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; padding: 0; margin: 0; border: 0; border-radius: 0; font: inherit; color: inherit; cursor: default; }
+.bs-sq.lt { background: var(--bs-lt); }
+.bs-sq.dk { background: var(--bs-dk); }
+button.bs-sq.can, button.bs-sq.tgt, button.bs-sq.sel { cursor: pointer; }
+button.bs-sq:focus-visible { outline: 4px solid #1d4ed8; outline-offset: -4px; z-index: 3; }
+
+/* Bauern */
+.bs-pc { width: 84%; height: 84%; display: block; pointer-events: none; }
+.bs-pc.w path { fill: #fffdf3; stroke: #14110d; stroke-width: 5; stroke-linejoin: round; }
+.bs-pc.b path { fill: #1b1b22; stroke: #f4f4f4; stroke-width: 5; stroke-linejoin: round; }
+.bs-icon { flex: none; width: 30px; height: 30px; background: #cdbd96; border-radius: 8px; }
+.bs-icon.w path { fill: #fffdf3; stroke: #14110d; stroke-width: 6; stroke-linejoin: round; }
+.bs-icon.b path { fill: #1b1b22; stroke: #f4f4f4; stroke-width: 6; stroke-linejoin: round; }
+.bs-icon.b { background: #8a8a8a; }
+
+/* letzter Zug: Ausgangs- und Zielfeld */
+.bs-sq.from { box-shadow: inset 0 0 0 4px #e6c200; background-image: linear-gradient(rgba(255,214,0,.35), rgba(255,214,0,.35)); }
+.bs-sq.to { box-shadow: inset 0 0 0 4px #e6c200; background-image: linear-gradient(rgba(255,214,0,.7), rgba(255,214,0,.7)); }
+.bs-sq.from::after { content: ""; position: absolute; inset: 3px; border: 3px dashed #5c4600; pointer-events: none; }
+
+/* ziehbare Bauern leuchten (Rahmen + Puls), Auswahl und Ziele sind nicht nur an der Farbe zu erkennen */
+button.bs-sq.can { box-shadow: inset 0 0 0 4px #ffb300; animation: bs-pulse 1.3s infinite; }
+button.bs-sq.sel { box-shadow: inset 0 0 0 5px #0f7a2a; background-image: linear-gradient(rgba(60,190,90,.45), rgba(60,190,90,.45)); animation: none; }
+@keyframes bs-pulse { 50% { box-shadow: inset 0 0 0 6px #ffb300; } }
+.bs-sq.tgt { background-image: linear-gradient(rgba(40,170,80,.6), rgba(40,170,80,.6)); box-shadow: inset 0 0 0 4px #0b5a1e; }
+.bs-sq.tgt::before { content: ""; position: absolute; width: 36%; height: 36%; border-radius: 50%; background: #fff; border: 3px solid #0b5a1e; box-sizing: border-box; }
+.bs-sq.tgt.cap::before { width: 48%; height: 48%; background: #ffd54a; border-color: #6b2d08; }
+.bs-sq.tgt.has::before { top: 3px; right: 3px; left: auto; width: 26%; height: 26%; z-index: 2; }
+.bs-sq.tgt.has.cap::before { background: #ffd54a; }
+
+.bs-action { padding: 12px 14px; min-height: 9.4rem; }
+.bs-action.over { min-height: 0; }
+.bs-last { margin: 0 0 6px; min-height: 2.8em; font-weight: 800; }
+.bs-hint { margin: 6px 0; font-weight: 700; font-size: 1.05rem; background: #eef3fc; border: 2px solid var(--primary); color: #12315f; border-radius: 12px; padding: 8px 12px; }
+.bs-hint.force { background: #fff1e3; border-color: #b3541e; color: #6b2d08; }
+.bs-action .btn { margin: 6px 0; }
+
+/* Punktestand */
+.bs-score { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; margin: 8px 0; }
+.bs-pl { background: #fff; border: 3px solid var(--line); border-radius: 14px; padding: 6px 10px; min-width: 0; }
+.bs-pl.turn { border-color: var(--ok); background: #f1f8f2; }
+.bs-n { display: flex; align-items: center; gap: 6px; font-size: 1rem; min-height: 2rem; }
+.bs-n b { word-break: break-word; line-height: 1.15; }
+.bs-c { font-size: .9rem; color: var(--muted); }
+.bs-p { font-size: 1.05rem; line-height: 1.2; }
+.bs-p b { font-size: 1.5rem; }
+.bs-round, .bs-rules { grid-column: 1 / -1; margin: 0; text-align: center; font-weight: 700; font-size: 1rem; }
+.bs-rules { font-weight: 500; font-size: .9rem; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { button.bs-sq.can { animation: none; } }
