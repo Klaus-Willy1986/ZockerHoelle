@@ -41,48 +41,48 @@ const readGame = (page) => page.evaluate(() => {
 const getCid = (page) => page.evaluate(() => { for (const st of [sessionStorage, localStorage]) { try { const c = JSON.parse(st.getItem('zh.cid')); if (c) return c; } catch { /* egal */ } } return null; });
 
 const stats = { notes: 0, penalties: 0 };
-// Ein Schritt eines Menschen, der die Regeln kennt: erst eigene passende Karte, dann fremde, sonst aufdecken.
+// Ein Schritt eines Menschen, der die Regeln kennt (Gesetz 1 und 2): erst Mitte, dann aufdrücken, sonst bei sich; sonst aufdecken.
 // `src` = Seite, die den Spielstand hält (Gastgeber); `page` = Seite, auf der geklickt wird.
 async function humanStep(page, src, opt = {}) {
   const g = await readGame(src || page);
   if (!g || g.phase !== 'play') return null;
   const cid = await getCid(page);
   if (M.activePlayer(g).id !== cid) return null;
-  if (!(await page.locator('.banner.mine, .banner.sk-penbanner').count())) return null;
-  const me = g.players.find((p) => p.id === cid);
+  if (!(await page.locator('.banner.mine').count())) return null;
   const click = async (sel) => { try { await page.click(sel, { timeout: 2000 }); return true; } catch { return false; } };
-  const others = M.fittingSources(g).filter((id) => id !== cid);
-  // einmalig: freundliche Hinweise und Strafe ausprobieren
-  if (opt.probe && !opt.probe.note) {
-    const bad = g.players.find((p) => p.id !== cid && M.topOf(p) && !M.fits(g, M.topOf(p)));
-    if (bad && !M.ownFits(g) && !others.length) {
+  if (!g.source) return (await click('[data-act=flip]')) ? 'flip' : null;
+  const card = M.curCard(g);
+  const tg = M.targetsFor(g, card, cid);
+  // einmalig: freundlicher Hinweis bei einem Ziel, bei dem die Karte nicht passt (keine Strafe)
+  if (opt.probe && !opt.probe.note && g.source === 'flipped') {
+    const bad = g.players.find((p) => p.id !== cid && M.topOf(p) && !M.fitsOn(g, card, p.id));
+    if (bad) {
       opt.probe.note = true;
-      await click(`[data-act=steal][data-pid="${bad.id}"]`);
+      await click(`[data-act=place-other][data-pid="${bad.id}"]`);
       await page.waitForSelector('.sk-note', { timeout: 3000 });
       const t = await page.textContent('.sk-note');
-      if (!/passt nicht/.test(t)) errors.push('Hinweis fehlt: ' + t);
+      if (!/passt dort nicht/.test(t)) errors.push('Hinweis fehlt: ' + t);
       stats.notes++;
       await shot(page, 'hinweis');
       return 'note';
     }
   }
-  if (opt.probe && !opt.probe.pen && (M.ownFits(g) || others.length)) {
+  // einmalig: absichtlicher Fehler (Schafskopp): bei sich ablegen, obwohl es woanders passt
+  if (opt.probe && !opt.probe.pen && g.source === 'flipped' && (tg.center || tg.others.length)) {
     opt.probe.pen = true;
-    await click('[data-act=end]');
-    // Banner steht nur bis zur nächsten Aktion (Computer ist im Test sehr schnell): auch im Protokoll prüfen
-    await page.waitForFunction(() => /Schafskopp/.test((document.querySelector('.recap') || {}).innerText || '') || !!document.querySelector('.sk-penbanner'), null, { timeout: 3000 }).catch(() => errors.push('Strafe: kein Schafskopp-Hinweis'));
+    await click('[data-act=place-own]');
+    await page.waitForFunction(() => /gepennt/.test((document.querySelector('.recap') || {}).innerText || '') || !!document.querySelector('.sk-penbanner'), null, { timeout: 3000 }).catch(() => errors.push('Strafe: kein Schafskopp-Hinweis'));
     const banner = await page.evaluate(() => (document.querySelector('.sk-penbanner') || {}).innerText || '');
-    if (banner && (!/Schafskopp/.test(banner) || !/Strafkarten/.test(banner))) errors.push('Strafbanner falsch: ' + banner);
+    if (banner && (!/Schafskopp/.test(banner) || !/von jedem eine Karte/.test(banner))) errors.push('Strafbanner falsch: ' + banner);
     const rc = await page.evaluate(() => (document.querySelector('.recap') || {}).innerText || '');
-    if (!/Schafskopp/.test(rc) || !/Strafkarten/.test(rc)) errors.push('Strafe nicht im Protokoll: ' + rc);
+    if (!/Schafskopp/.test(rc) || !/gepennt/.test(rc)) errors.push('Strafe nicht im Protokoll: ' + rc);
     stats.penalties++;
     await shot(page, 'strafe');
     return 'pen';
   }
-  if (M.ownFits(g)) return (await click('[data-act=place]')) ? 'place' : null;
-  if (others.length) return (await click(`[data-act=steal][data-pid="${others[0]}"]`)) ? 'steal' : null;
-  if (me.deck.length) return (await click('[data-act=flip]')) ? 'flip' : null;
-  return null;
+  if (tg.center) return (await click('[data-act=place-center]')) ? 'center' : null;
+  if (tg.others.length) return (await click(`[data-act=place-other][data-pid="${tg.others[0]}"]`)) ? 'other' : null;
+  return (await click('[data-act=place-own]')) ? 'own' : null;
 }
 
 async function playGame(page, label, { maxMs = 150000, src, probe, pos, extraCheck } = {}) {
@@ -104,7 +104,7 @@ async function playGame(page, label, { maxMs = 150000, src, probe, pos, extraChe
 async function layoutCheck(page, label) {
   const r = await page.evaluate(() => {
     const out = { sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth, small: [] };
-    document.querySelectorAll('[data-act=flip],[data-act=place],[data-act=steal],[data-act=end],[data-act=again],[data-act=next]').forEach((b) => {
+    document.querySelectorAll('[data-act=flip],[data-act=place-center],[data-act=place-own],[data-act=place-other],[data-act=again]').forEach((b) => {
       const q = b.getBoundingClientRect();
       if (q.width < 48 || q.height < 48) out.small.push(b.dataset.act + ' ' + Math.round(q.width) + 'x' + Math.round(q.height));
     });
@@ -153,7 +153,7 @@ async function startBot(browser, n, level, label, vp) {
         await page.click('[data-act=again]');
         await page.waitForSelector('#board');
         const g2 = await readGame(page);
-        if (g2.phase !== 'play' || g2.penalty.length !== 12) errors.push('a: neue Runde nicht gestartet');
+        if (g2.phase !== 'play' || g2.players.reduce((n, p) => n + p.deck.length, 0) !== 84) errors.push('a: neue Runde nicht gestartet');
         // Neuladen mitten im Spiel
         for (let i = 0; i < 6; i++) { await humanStep(page); await page.waitForTimeout(60); }
         await page.reload();
@@ -242,7 +242,7 @@ async function startBot(browser, n, level, label, vp) {
       const norm = (s) => s.replace(/\(du\)/g, '').replace(/\s+/g, ' ').trim();
       const view = (P) => P.evaluate(() => ({
         rows: document.querySelector('.sk-rows')?.innerText || '', recap: document.querySelector('.recap')?.innerText || '',
-        pen: document.querySelector('.sk-pstack')?.innerText || '', html: document.body.innerHTML, labels: [...document.querySelectorAll('[aria-label],[title]')].map((e) => e.getAttribute('aria-label') || e.getAttribute('title')),
+        pen: (document.querySelector('.sk-stage .sk-card') || document.body).getAttribute('aria-label') || '', html: document.body.innerHTML, labels: [...document.querySelectorAll('[aria-label],[title]')].map((e) => e.getAttribute('aria-label') || e.getAttribute('title')),
       }));
       const t0 = Date.now();
       while (Date.now() - t0 < 150000) {
@@ -262,7 +262,7 @@ async function startBot(browser, n, level, label, vp) {
             }
             // verdeckte Karten: nur in Stapeln, nie im DOM
             const hidden = new Set();
-            const visible = new Set([...g.players.flatMap((p) => p.pile.map((c) => M.cardName(c)))]);
+            const visible = new Set([...g.players.flatMap((p) => p.pile.map((c) => M.cardName(c))), ...(g.flipped ? [M.cardName(g.flipped)] : [])]);
             for (const p of g.players) for (const c of p.deck) if (!visible.has(M.cardName(c))) hidden.add(M.cardName(c));
             for (const v of [va, vb]) {
               for (const lab of v.labels) for (const h of hidden) if (lab && new RegExp(`${h}(?!\\d)`).test(lab)) leaks++;

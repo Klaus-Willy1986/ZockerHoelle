@@ -83,3 +83,16 @@ button.sk-tap:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
   .sk-row { grid-template-columns: 90px 56px minmax(0, 1fr) 56px; }
 }
 @media (prefers-reduced-motion: reduce) { .sk-card.flipin { animation: none; } }
+
+/* Aufdeckkarte an fester Stelle */
+.sk-stage { box-sizing: border-box; height: 108px; margin: 8px 0 10px; padding: 8px 10px; display: flex; align-items: center; gap: 14px; border-radius: 14px; border: 3px dashed #bdb8a8; background: #faf8f2; overflow: hidden; }
+.sk-stage.on { border-style: solid; border-color: #ffb300; background: #fff4cc; }
+.sk-stage .sk-card { font-size: 10px; }
+.sk-st-t { display: flex; flex-direction: column; font-size: .95rem; line-height: 1.25; min-width: 0; }
+.sk-st-t b { font-size: 1rem; }
+.sk-st-t span { font-weight: 800; font-size: 1.1rem; }
+.sk-stage:not(.on) .sk-st-t span { font-weight: 600; font-size: .9rem; color: var(--muted); }
+.sk-btns2 { display: grid; gap: 4px; margin: 4px 0; }
+.sk-btns2 .btn { margin: 4px 0; }
+.sk-honor { font-size: 1.05rem; margin: 6px 0; }
+.sk-action { min-height: 17rem; }
