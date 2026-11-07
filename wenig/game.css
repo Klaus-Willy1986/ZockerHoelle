@@ -1,0 +1,94 @@
+/* ===== Wenig ist mehr ===== */
+/* Karten: Zahl groß in der Mitte, Farbe nach Bereich (zusätzlich immer als Zahl). */
+.wm-card { position: relative; display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 100%; aspect-ratio: 7 / 8; margin: 0; padding: 0; font: inherit; font-weight: 900; font-size: 30px; line-height: 1; border-radius: 10px; border: 3px solid #1a1a1a; color: #111; box-shadow: 0 2px 3px rgba(0,0,0,.3); text-align: center; overflow: hidden; }
+.wm-card .n { display: block; letter-spacing: -.02em; }
+.wm-card.neg  { background: #1f5fbf; color: #fff; }
+.wm-card.zero { background: #0a766a; color: #fff; }
+.wm-card.low  { background: #ffd54a; color: #111; }
+.wm-card.mid  { background: #ff9a2e; color: #111; }
+.wm-card.high { background: #c62828; color: #fff; }
+.wm-card.back { background: repeating-linear-gradient(45deg, #43338a 0 7px, #2f2268 7px 14px); border-color: #1a1a1a; }
+.wm-card.back::before { content: ""; position: absolute; inset: 7px; border: 2px solid rgba(255,255,255,.7); border-radius: 6px; }
+.wm-card.gone { background: transparent; border: 3px dashed #9a968a; box-shadow: none; }
+.wm-card.slot { background: transparent; border: 3px dashed #9a968a; box-shadow: none; }
+.wm-card.dim { opacity: .6; }
+button.wm-card { cursor: pointer; }
+.wm-card.can { box-shadow: 0 0 0 3px #fff, 0 0 0 7px #2e8b3d; }
+.wm-card.sel { box-shadow: 0 0 0 3px #fff, 0 0 0 7px #ffb300; }
+button.wm-card:focus-visible, button.wm-pile:focus-visible { outline: 4px solid #ffb300; outline-offset: 3px; }
+
+/* Spielfläche */
+.wm-board { padding: 12px; }
+.wm-center { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; justify-items: center; align-items: start; height: 7rem; }
+.wm-col { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; max-width: 100px; min-width: 0; }
+.wm-col .wm-card { width: 76px; font-size: 32px; }
+.wm-lbl { font-size: .85rem; font-weight: 800; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; height: 1.2rem; }
+.wm-pile { position: relative; display: block; padding: 0; margin: 0; border: 0; background: none; font: inherit; width: 76px; }
+button.wm-pile { cursor: pointer; border-radius: 12px; }
+button.wm-pile .wm-card { box-shadow: 0 0 0 3px #fff, 0 0 0 7px #2e8b3d; }
+.wm-count { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); background: #fff; color: #111; font-weight: 900; font-size: 1.1rem; min-width: 2em; padding: .05em .35em; border-radius: 999px; border: 2px solid #1a1a1a; z-index: 2; line-height: 1.25; }
+
+/* Hinweis- und Knopfbereich: feste Höhe, damit nichts springt */
+.wm-action { height: 8.4rem; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; overflow: hidden; margin: 6px 0 4px; }
+.wm-action p { margin: 0 0 6px; font-size: 1.05rem; line-height: 1.3; }
+.wm-action .btn { margin: 4px 0; }
+.wm-action .wm-put { min-height: 56px; padding-top: 10px; padding-bottom: 10px; font-size: 1.1rem; }
+.wm-action .wm-or { margin: 4px 0 0; }
+
+/* Eigenes Raster */
+.wm-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 0 0 8px; font-size: 1.1rem; height: 1.6rem; overflow: hidden; white-space: nowrap; }
+.wm-open { font-size: .9rem; font-weight: 700; color: var(--muted); }
+.wm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; max-width: 340px; margin: 0 auto; padding: 4px 4px 8px; }
+.wm-grid .wm-card { width: 100%; }
+.wm-grid .wm-card.can { box-shadow: 0 0 0 2px #fff, 0 0 0 5px #2e8b3d; }
+
+/* Mitspieler */
+.wm-others h2 { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.wm-tog { margin: 0; }
+.wm-opps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.wm-opps.one { grid-template-columns: 1fr; justify-items: start; }
+.wm-opp { padding: 8px; border-radius: 12px; background: #f1efe8; border: 3px solid transparent; min-width: 0; }
+.wm-opp.act { border-color: var(--primary); background: #e8f0fd; }
+.wm-nm { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1rem; }
+.wm-sum { display: block; font-size: .85rem; font-weight: 700; color: var(--muted); margin-bottom: 6px; white-space: nowrap; }
+.wm-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; max-width: 150px; }
+.wm-mini .wm-card { width: 100%; aspect-ratio: 1 / 1; font-size: 14px; border-width: 2px; border-radius: 5px; box-shadow: none; }
+.wm-mini .wm-card.back::before { inset: 3px; border-width: 1px; border-radius: 2px; }
+.wm-mini .wm-card.gone { border-width: 2px; }
+
+/* Punktestand */
+.wm-table { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
+.wm-table th { text-align: left; font-size: .85rem; color: var(--muted); padding: 4px 6px; }
+.wm-table td { padding: 8px 6px; border-top: 1px solid var(--line); }
+.wm-table td.n, .wm-table th.n { text-align: right; font-weight: 800; white-space: nowrap; }
+.wm-table td.add { color: var(--muted); font-weight: 600; font-size: .95rem; }
+.wm-table tr.lead td { background: #fff6d6; }
+.wm-table small { font-weight: 700; color: var(--warn); }
+
+/* Rundenende */
+.wm-over h1 { text-align: center; margin: 4px 0 10px; font-size: 1.6rem; }
+.wm-dbl { margin-top: 12px; }
+.wm-btns { display: grid; gap: 4px; margin-top: 10px; }
+
+@media (min-width: 700px) {
+  .wm-opps { grid-template-columns: repeat(3, 1fr); }
+  .wm-opps.one { grid-template-columns: 1fr; }
+  .wm-grid { max-width: 380px; }
+  .wm-grid .wm-card { font-size: 34px; }
+}
+
+/* Statusbanner: immer gleich hoch (auch bei drei Zeilen), damit das Spielfeld nicht springt */
+.banner { box-sizing: border-box; height: 5.2rem; min-height: 0; overflow: hidden; font-size: 1.15rem; line-height: 1.25; padding: 8px 12px; }
+
+/* Alle Knöpfe mindestens 48 px (auch die kleinen Knöpfe der Kopfzeile) */
+.btn.mini { min-height: 48px; }
+.wm-table td:first-child { white-space: nowrap; max-width: 9em; overflow: hidden; text-overflow: ellipsis; }
+.wm-table td, .wm-table th { padding-left: 4px; padding-right: 4px; }
+.wm-over .wm-table { font-size: 1rem; }
+.wm-table { table-layout: fixed; }
+.wm-table th.n, .wm-table td.n { width: 4.6rem; }
+.wm-table td:first-child { max-width: none; }
+.wm-table small { display: block; font-size: .7rem; line-height: 1.1; }
+.wm-table th.n, .wm-table td.n { width: 3.3rem; }
+.wm-over .wm-table td, .wm-over .wm-table th { font-size: .95rem; }
+.wm-over .wm-table th.n { font-size: .75rem; }
