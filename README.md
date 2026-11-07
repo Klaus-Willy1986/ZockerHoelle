@@ -14,6 +14,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Farbcode knacken** (`farbcode/`): Code-Rate-Spiel (allein, gegen den Computer oder zu zweit).
 - **Sudoku** (`sudoku/`): Zahlenrätsel mit drei Stufen, zum Alleinspielen.
 - **Kachelstadt** (`kachelstadt/`): Legespiel mit Plättchen und Gefolgsleuten für 2–5 Personen, mit Computer und Lernrunde.
+- **Drei gewinnt** (`drei/`): Kreuz und Kreis (3×3 oder 5×5) für zwei, mit Computer und Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 

@@ -1,0 +1,51 @@
+/* ===== Drei gewinnt ===== */
+:root { --dr-x: #1450b4; --dr-o: #c25200; --dr-win: #1d7a34; }
+
+/* Statuszeile: feste Höhe, damit nichts springt */
+.dr-banner { height: 4.6rem; min-height: 4.6rem; overflow: hidden; padding: 6px 12px; margin: 6px 0; }
+.dr-banner h1 { display: inline; font-size: 1.3rem; margin: 0; color: #fff; -webkit-text-fill-color: #fff; background: none; line-height: 1.2; }
+.dr-banner .trophy { display: inline-block; font-size: 1.7rem; animation: none; vertical-align: middle; filter: none; }
+
+/* Punktestand: kompakt, damit das Brett auf dem Handy ganz sichtbar bleibt */
+.dr-score { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; margin: 6px 0; }
+.dr-pl { background: #fff; border: 3px solid var(--line); border-radius: 14px; padding: 6px 10px; min-width: 0; }
+.dr-pl.turn { border-color: var(--ok); background: #f1f8f2; }
+.dr-n { display: flex; align-items: center; gap: 6px; font-size: 1rem; min-height: 2rem; }
+.dr-n b { word-break: break-word; line-height: 1.15; }
+.dr-c { font-size: .9rem; color: var(--muted); }
+.dr-p { font-size: 1.05rem; line-height: 1.2; }
+.dr-p b { font-size: 1.5rem; }
+.dr-round { grid-column: 1 / -1; margin: 0; text-align: center; font-weight: 700; font-size: 1rem; min-height: 1.4em; }
+.dr-icon { flex: none; width: 26px; height: 26px; fill: none; stroke-linecap: round; }
+@media (max-width: 380px) { .dr-pl { padding: 6px 8px; } .dr-n { font-size: .95rem; } }
+@media (max-width: 340px) { .dr-n { font-size: .85rem; gap: 4px; } .dr-icon { width: 22px; height: 22px; } }
+
+/* Zeichen */
+.dr-mark { display: block; width: 74%; height: 74%; margin: 13%; fill: none; stroke-linecap: round; }
+.dr-mark.x, .dr-icon.x { stroke: var(--dr-x); stroke-width: 16; }
+.dr-mark.o, .dr-icon.o { stroke: var(--dr-o); stroke-width: 15; }
+
+/* Brett: feste Stelle, quadratische Felder */
+.dr-board-card { padding: 8px; }
+.dr-board { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 6px; width: 100%; max-width: 480px; margin: 0 auto; touch-action: manipulation; }
+.dr-board.n5 { gap: 5px; max-width: 520px; }
+.dr-cell { position: relative; aspect-ratio: 1 / 1; min-width: 0; min-height: 64px; padding: 0; font: inherit; background: #fff; border: 3px solid #5b6070; border-radius: 14px; cursor: default; -webkit-tap-highlight-color: transparent; display: block; }
+.dr-board.n5 .dr-cell { min-height: 56px; border-radius: 10px; border-width: 2.5px; }
+.dr-cell.free { background: #fffbe0; border-color: #d99a00; cursor: pointer; }
+.dr-cell.free:hover { background: #fff3b0; }
+.dr-cell:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.dr-cell.last { box-shadow: inset 0 0 0 4px rgba(31, 95, 191, .35); }
+.dr-cell.win { background: #d3f0d8; border-color: var(--dr-win); border-width: 6px; box-shadow: 0 0 0 3px rgba(29, 122, 52, .35); animation: dr-pop .9s ease-in-out 2; }
+.dr-board.n5 .dr-cell.win { border-width: 5px; }
+.dr-board.ended .dr-cell:not(.win):not(.mx):not(.mo) { opacity: .6; }
+@keyframes dr-pop { 50% { transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .dr-cell.win { animation: none; } }
+@media (max-width: 340px) { .dr-board-card { margin-left: -8px; margin-right: -8px; padding: 6px; } .dr-board.n5 { gap: 4px; } }
+
+/* Unter dem Brett: wechselnde Hinweise, feste Mindesthöhe */
+.dr-status { min-height: 9rem; padding: 14px 16px; }
+.dr-status .big { margin: 0 0 6px; font-weight: 700; font-size: 1.2rem; }
+.dr-hint { background: #fff3cd; border: 2px solid #e0a800; border-radius: 12px; padding: 10px 12px; margin: 8px 0 0; font-weight: 600; color: #4d3b00; }
+
+/* Lernrunde: anzutippende Felder */
+.dr-cell.coach-target { background: #fff0b3; border-color: #e08a00; outline: 5px solid #ffb300 !important; outline-offset: 2px; }
