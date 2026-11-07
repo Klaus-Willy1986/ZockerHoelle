@@ -47,6 +47,8 @@ function lastOf(g) { return g.last && typeof g.last === 'object' ? g.last : null
 
 const penSentence = (pen) => (pen.pid === cid ? `Du ${M.reasonText(pen.reason).replace(/^hat /, 'hast ')}.` : `${pen.name} ${M.reasonText(pen.reason)}.`);
 
+const shortName = (n, k = 9) => (n.length > k ? n.slice(0, k - 1) + '…' : n);
+
 function bannerHtml(g) {
   if (g.phase === 'over') return `<div class="banner done">Das Spiel ist zu Ende</div>`;
   const ap = M.activePlayer(g);
@@ -56,101 +58,86 @@ function bannerHtml(g) {
     const t = l.penalty.pid === cid ? 'Du hast gepennt und bekommst von jedem eine Karte.' : `${esc(l.penalty.name)} hat gepennt und bekommt von jedem eine Karte.`;
     return `<div class="banner sk-penbanner${mine ? ' mine' : ''}">🐑 Schafskopp! ${t}</div>`;
   }
-  return mine ? `<div class="banner mine">Du bist dran!</div>` : `<div class="banner">${esc(ap.name)} ist dran</div>`;
+  if (mine) return `<div class="banner mine">${g.flipped ? `Du hast ${esc(M.cardName(g.flipped))} aufgedeckt. Wohin damit?` : 'Du bist dran!'}</div>`;
+  return `<div class="banner">${esc(ap.name)} ist dran</div>`;
 }
 
+// Mitte: pro Farbe nur die tatsächlich gelegte Spanne als zwei Endkacheln
 function rowsHtml(g) {
-  const lastPlace = lastOf(g) && lastOf(g).kind === 'place' && lastOf(g).to === 'center' ? lastOf(g).card : null;
+  const lp = lastOf(g) && lastOf(g).kind === 'place' && lastOf(g).to === 'center' ? lastOf(g).card : null;
   return M.SUITS.map((su, s) => {
     const row = g.rows[s];
-    let cells = '';
-    for (let r = 1; r <= M.MAX_RANK; r++) {
-      const on = row && r >= row.lo && r <= row.hi;
-      cells += `<i class="${on ? 'on' : ''}${r === M.START ? ' start' : ''}"></i>`;
-    }
-    const newLo = lastPlace && lastPlace.s === s && row && lastPlace.r === row.lo ? ' new' : '';
-    const newHi = lastPlace && lastPlace.s === s && row && lastPlace.r === row.hi ? ' new' : '';
-    const label = row ? `${su.name}: Reihe von ${row.lo} bis ${row.hi}` : `${su.name}: noch nicht eröffnet, wartet auf die Elf`;
-    return `<div class="sk-row s${s}" role="img" aria-label="${label}">
-      <div class="sk-rl"><b aria-hidden="true">${su.sym}</b><span>${su.name}</span></div>
-      <div class="sk-end lo${row ? '' : ' none'}${newLo}">${row ? row.lo : '–'}</div>
-      <div class="sk-band">${cells}${row ? '' : '<span class="wait">wartet auf die 11</span>'}</div>
-      <div class="sk-end hi${row ? '' : ' none'}${newHi}">${row ? row.hi : '–'}</div>
-    </div>`;
+    const nw = (r) => (lp && lp.s === s && lp.r === r ? ' new' : '');
+    let mid;
+    let label;
+    if (!row) { mid = '<span class="sk-none">noch leer</span>'; label = `${su.name}: noch leer, wartet auf die Elf`; }
+    else if (row.lo === row.hi) { mid = `<span class="sk-end${nw(row.lo)}">${row.lo}</span>`; label = `${su.name}: nur die ${row.lo}`; }
+    else { mid = `<small>von</small><span class="sk-end${nw(row.lo)}">${row.lo}</span><span class="sk-dots" aria-hidden="true">…</span><small>bis</small><span class="sk-end${nw(row.hi)}">${row.hi}</span>`; label = `${su.name}: Reihe von ${row.lo} bis ${row.hi}`; }
+    return `<div class="sk-row s${s}" role="img" aria-label="${label}"><div class="sk-rl"><b aria-hidden="true">${su.sym}</b><span>${su.name}</span></div><div class="sk-span">${mid}</div></div>`;
   }).join('');
 }
 
 function isMyTurn(g) { return g.phase === 'play' && M.activePlayer(g).id === cid; }
 
-// Aufdeckkarte an fester Stelle (für alle sichtbar)
-function stageHtml(g) {
-  const ap = M.activePlayer(g);
-  if (g.phase === 'play' && g.flipped) {
-    const who = ap.id === cid ? 'Du hast aufgedeckt:' : `${esc(ap.name)} hat aufgedeckt:`;
-    return `<div class="sk-stage on">${cardHtml(g.flipped, { cls: 'flipin' })}<div class="sk-st-t"><b>${who}</b><span>${M.cardName(g.flipped)}</span></div></div>`;
-  }
-  return `<div class="sk-stage">${emptySlot('')}<div class="sk-st-t"><span>Hier erscheint die aufgedeckte Karte.</span></div></div>`;
-}
-
 function pileHtml(g, p, { mine }) {
   const top = M.topOf(p);
   const l = lastOf(g);
   const fresh = l && l.pid === p.id && l.kind === 'flip' && top && M.sameCard(l.card, top) ? ' flipin' : '';
-  const cap = `Offen: ${p.pile.length}`;
-  if (!top) return `<div class="sk-col">${emptySlot('leer')}<span class="sk-cap">${cap}</span></div>`;
+  if (!top) return `<div class="sk-col">${emptySlot('leer')}${mine ? '<span class="sk-cap">Offen</span>' : ''}</div>`;
   if (!mine && isMyTurn(g)) {
-    return `<button type="button" class="sk-col sk-tap" data-act="place-other" data-pid="${esc(p.id)}" aria-label="Bei ${esc(p.name)} aufdrücken, oberste offene Karte ${M.cardName(top)}">${cardHtml(top, { cls: fresh })}<span class="sk-cap">${cap}</span><span class="sk-do">aufdrücken</span></button>`;
+    return `<button type="button" class="sk-col sk-tap" data-act="place-other" data-pid="${esc(p.id)}" aria-label="Bei ${esc(p.name)} aufdrücken, oberste offene Karte ${M.cardName(top)}, ${p.pile.length} offene Karten">${cardHtml(top, { cls: fresh })}<span class="sk-hand" aria-hidden="true">👇</span></button>`;
   }
-  return `<div class="sk-col">${cardHtml(top, { cls: fresh })}<span class="sk-cap">${cap}</span></div>`;
+  return `<div class="sk-col" role="img" aria-label="Oberste offene Karte ${M.cardName(top)}, ${p.pile.length} offene Karten">${cardHtml(top, { cls: fresh })}${mine ? `<span class="sk-cap">Offen: ${p.pile.length}</span>` : ''}</div>`;
 }
 
 function deckHtml(g, p, { mine }) {
   const n = p.deck.length;
   if (mine && isMyTurn(g) && n) {
-    return `<button type="button" class="sk-col sk-tap" data-act="flip" aria-label="Deinen Stapel aufdecken, ${n} verdeckte Karten">${backHtml(n)}<span class="sk-cap">Stapel</span><span class="sk-do">Aufdecken</span></button>`;
+    return `<button type="button" class="sk-col sk-tap" data-act="flip" aria-label="Deinen Stapel aufdecken, ${n} verdeckte Karten">${backHtml(n)}<span class="sk-cap">Stapel</span></button>`;
   }
-  return `<div class="sk-col" role="img" aria-label="Verdeckter Stapel mit ${n} Karten">${n ? backHtml(n) : emptySlot('leer')}<span class="sk-cap">Stapel</span></div>`;
+  return `<div class="sk-col" role="img" aria-label="Verdeckter Stapel mit ${n} Karten">${n ? backHtml(n) : emptySlot('leer')}${mine ? '<span class="sk-cap">Stapel</span>' : ''}</div>`;
 }
 
 function oppHtml(g, p) {
   const l = S.lobby.find((x) => x.id === p.id);
-  const off = l && !l.connected ? ' <span class="offline">(weg)</span>' : '';
+  const off = l && !l.connected ? ' ⚠' : '';
   const act = g.phase === 'play' && M.activePlayer(g).id === p.id;
-  return `<li class="sk-opp${act ? ' act' : ''}"><div class="sk-hd"><b class="sk-nm">${esc(p.name)}${off}</b><span class="sk-ct">${kartenZahl(M.restCount(g, p))}</span></div>
+  return `<li class="sk-opp${act ? ' act' : ''}"><div class="sk-hd"><b class="sk-nm" title="${esc(p.name)}">${esc(shortName(p.name, 13))}${off}</b><span class="sk-ct" aria-label="${kartenZahl(M.restCount(g, p))}">${M.restCount(g, p)}</span></div>
     <div class="sk-stacks">${deckHtml(g, p, { mine: false })}${pileHtml(g, p, { mine: false })}</div></li>`;
 }
 
+// Eigener Bereich: Stapel | Platz für die aufgedeckte Karte | eigene offene Karte, darunter drei Knöpfe
 function meHtml(g) {
   const p = me();
   if (!p) return `<p class="big center">Du schaust nur zu.</p>`;
   const act = isMyTurn(g);
+  const ap = M.activePlayer(g);
+  const stage = g.phase === 'play' && g.flipped
+    ? `<div class="sk-col" role="img" aria-label="Aufgedeckt: ${M.cardName(g.flipped)}">${cardHtml(g.flipped, { cls: 'flipin' })}<span class="sk-cap">${ap.id === cid ? 'Aufgedeckt' : esc(shortName(ap.name, 8)) + ' deckt auf'}</span></div>`
+    : `<div class="sk-col" aria-hidden="true">${emptySlot('')}<span class="sk-cap">Aufgedeckt</span></div>`;
+  const btns = act
+    ? `<div class="sk-btns3"><button type="button" class="btn secondary" data-act="flip">Aufdecken</button><button type="button" class="btn primary" data-act="place-center">In die Mitte</button><button type="button" class="btn secondary" data-act="place-own">Bei mir ablegen</button></div>`
+    : `<div class="sk-btns3 ph" aria-hidden="true"></div>`;
   return `<div class="sk-me${act ? ' act' : ''}"><div class="sk-hd"><b class="sk-nm">${esc(p.name)} (du)</b><span class="sk-ct">${kartenZahl(M.restCount(g, p))}</span></div>
-    <div class="sk-stacks">${deckHtml(g, p, { mine: true })}${pileHtml(g, p, { mine: true })}</div></div>`;
+    <div class="sk-mine">${deckHtml(g, p, { mine: true })}${stage}${pileHtml(g, p, { mine: true })}</div>${btns}</div>`;
 }
 
 function actionHtml(g) {
   const p = me();
   const ap = M.activePlayer(g);
   const l = lastOf(g);
-  const pen = l && l.penalty ? ` ${penSentence(l.penalty)}` : '';
+  const pen = l && l.penalty ? penSentence(l.penalty) : '';
   if (!p) return `<p class="big">${esc(l && l.text ? l.text : 'Das Spiel beginnt.')}</p>`;
-  if (ap.id !== cid) {
-    const last = l && l.text ? l.text : 'Das Spiel beginnt.';
-    return `<p class="big">${esc(last)}${esc(pen)} <b>${esc(ap.name)}</b> ist am Zug. Bitte einen Moment Geduld.</p>`;
-  }
-  const note = g.notice && g.notice.pid === cid ? `<p class="sk-note">${esc(g.notice.text)}</p>` : '';
-  const text = g.flipped
-    ? `Du hast ${M.cardName(g.flipped)} aufgedeckt. Wohin damit?`
-    : `Du bist dran. Decke eine Karte auf oder lege deine offene Karte ab.`;
-  return `<p class="big">${esc(text)}${esc(pen)}</p>${note}
-    <div class="sk-btns2"><button type="button" class="btn primary huge" data-act="place-center">In die Mitte</button>
-    <button type="button" class="btn secondary huge" data-act="place-own">Bei mir ablegen</button></div>
-    <p class="muted small">Zum Aufdrücken tippe auf die offene Karte einer anderen Person.</p>`;
+  if (ap.id !== cid) return `<p class="big">${esc(pen || (l && l.text) || 'Das Spiel beginnt.')}</p>`;
+  if (g.notice && g.notice.pid === cid) return `<p class="big sk-note">${esc(g.notice.text)}</p>`;
+  return `<p class="big${pen ? '' : ' hintline'}">${esc(pen || 'Zum Aufdrücken: offene Karte eines Mitspielers antippen.')}</p>`;
 }
 
 function recapHtml(g) {
-  if (!g.recap || !g.recap.length) return '';
-  return `<section class="card recap"><h3>Das ist zuletzt passiert</h3><ul>${g.recap.slice(0, 5).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></section>`;
+  if (!g.recap || !g.recap.length) return '<section class="card recap"><ul><li>&nbsp;</li><li>&nbsp;</li></ul></section>';
+  const items = g.recap.slice(0, 2).map((x) => `<li title="${esc(x)}">${esc(x)}</li>`);
+  while (items.length < 2) items.push('<li>&nbsp;</li>');
+  return `<section class="card recap" aria-label="Zuletzt passiert"><ul>${items.join('')}</ul></section>`;
 }
 
 function gameHtml() {
@@ -160,11 +147,10 @@ function gameHtml() {
   return `${ui.header()}${ui.lost()}${bannerHtml(g)}
     <section class="card sk-board" id="board">
       <div class="sk-rows" aria-label="Die vier Farbreihen in der Tischmitte">${rowsHtml(g)}</div>
-      ${stageHtml(g)}
-      <ul class="sk-opps${others.length === 1 ? ' one' : ''}" aria-label="Die Mitspieler">${others.map((p) => oppHtml(g, p)).join('')}</ul>
+      <ul class="sk-opps n${Math.min(others.length, 3)}" aria-label="Die Mitspieler">${others.map((p) => oppHtml(g, p)).join('')}</ul>
       ${meHtml(g)}
     </section>
-    <section class="card action sk-action" aria-live="polite">${actionHtml(g)}</section>
+    <section class="action sk-action" aria-live="polite">${actionHtml(g)}</section>
     ${recapHtml(g)}`;
 }
 

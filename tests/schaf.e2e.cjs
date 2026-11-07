@@ -103,7 +103,8 @@ async function playGame(page, label, { maxMs = 150000, src, probe, pos, extraChe
 
 async function layoutCheck(page, label) {
   const r = await page.evaluate(() => {
-    const out = { sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth, small: [] };
+    const rc = document.querySelector('.recap');
+    const out = { height: rc ? Math.round(rc.getBoundingClientRect().bottom + scrollY + 12) : 0, sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth, small: [] };
     document.querySelectorAll('[data-act=flip],[data-act=place-center],[data-act=place-own],[data-act=place-other],[data-act=again]').forEach((b) => {
       const q = b.getBoundingClientRect();
       if (q.width < 48 || q.height < 48) out.small.push(b.dataset.act + ' ' + Math.round(q.width) + 'x' + Math.round(q.height));
@@ -112,12 +113,13 @@ async function layoutCheck(page, label) {
   });
   if (r.sw > r.cw) errors.push(`${label}: horizontaler Scroll ${r.sw} > ${r.cw}`);
   if (r.small.length) errors.push(`${label}: Knöpfe unter 48px: ${r.small.join(', ')}`);
+  return r.height;
 }
 
-async function startBot(browser, n, level, label, vp) {
+async function startBot(browser, n, level, label, vp, big) {
   const { ctx, page } = await newPage(browser, label, vp);
   await page.goto(BASE);
-  await page.evaluate(() => { try { localStorage.clear(); sessionStorage.clear(); } catch { /* egal */ } });
+  await page.evaluate((b) => { try { localStorage.clear(); sessionStorage.clear(); if (b) localStorage.setItem('zh.big', 'true'); } catch { /* egal */ } }, !!big);
   await page.goto(BASE);
   await page.fill('#name', 'Anna');
   await page.screenshot({ path: path.join(SHOTS, `schaf-${label}-start.png`), fullPage: true });
@@ -296,21 +298,23 @@ async function startBot(browser, n, level, label, vp) {
     }
 
     // ---------- (d) Layout 390x844 (2 und 4 Personen), Desktop ----------
-    for (const [n, lab] of [[1, 'd2'], [3, 'd4']]) {
-      const { ctx, page } = await startBot(browser, n, 1, lab);
+    for (const [n, lab, big] of [[1, 'd2', false], [2, 'd3', false], [3, 'd4', false], [3, 'd4gross', true]]) {
+      const { ctx, page } = await startBot(browser, n, 1, lab, undefined, big);
       const positions = [];
+      let maxH = 0;
       const t0 = Date.now(); let k = 0;
       while (Date.now() - t0 < 60000 && !(await page.locator('.sk-over').count())) {
         const bp = await boardPos(page);
         if (bp) positions.push(bp.top);
-        if (k++ % 15 === 0) await layoutCheck(page, lab);
+        if (k++ % 5 === 0) maxH = Math.max(maxH, await layoutCheck(page, lab));
         if (k === 12) await shot(page, lab + '-spiel');
         await humanStep(page);
         await page.waitForTimeout(15);
       }
       const spread = Math.max(...positions) - Math.min(...positions);
-      console.log(`(d) ${lab}: Messpunkte`, positions.length, 'Brett-Top-Streuung', spread, 'px');
+      console.log(`(d) ${lab}: Messpunkte`, positions.length, 'Brett-Top-Streuung', spread, 'px, Gesamthöhe max', maxH, 'px');
       if (spread > 1) errors.push(`${lab}: Brett-Position schwankt (${spread}px)`);
+      if (!big && maxH > 844) errors.push(`${lab}: Gesamthöhe ${maxH} > 844`);
       await ctx.close();
     }
     {
