@@ -77,7 +77,7 @@ test('Mindestmengen', () => {
     assert.ok(anzahl((q) => q.k === k && q.t === 'order') >= 2, `order in ${k}`);
   }
   for (const k of KATS) assert.ok(anzahl((q) => q.k === k) >= 25, `Kategorie ${k}`);
-  assert.ok(anzahl((q) => q.t === 'est') >= 20, 'Schätzfragen');
+  assert.ok(anzahl((q) => q.t === 'est') >= 40, 'Schätzfragen');
   assert.ok(anzahl((q) => q.t === 'order') >= 15, 'Ordnenfragen');
   assert.ok(anzahl((q) => q.t === 'tf') >= 50, 'Wahr/Falsch');
   assert.ok(anzahl((q) => q.t === 'mc') >= 180, 'Mehrfachauswahl');
@@ -86,9 +86,9 @@ test('Mindestmengen', () => {
 test('Typ-Anteile ungefähr wie geplant', () => {
   const n = FRAGEN.length;
   const p = (t) => anzahl((q) => q.t === t) / n;
-  assert.ok(p('mc') > 0.45 && p('mc') < 0.65, `mc ${p('mc')}`);
+  assert.ok(p('mc') > 0.5 && p('mc') < 0.7, `mc ${p('mc')}`);
   assert.ok(p('tf') > 0.14 && p('tf') < 0.26, `tf ${p('tf')}`);
-  assert.ok(p('est') > 0.1 && p('est') < 0.2, `est ${p('est')}`);
+  assert.ok(p('est') > 0.06 && p('est') < 0.2, `est ${p('est')}`);
   assert.ok(p('order') > 0.07 && p('order') < 0.14, `order ${p('order')}`);
 });
 
@@ -142,4 +142,28 @@ test('Texte: keine Zeilenumbrüche/Steuerzeichen, kein TODO, keine überflüssig
 
 test('Fragen enden mit Fragezeichen, Doppelpunkt oder Punkt', () => {
   for (const q of FRAGEN) assert.match(q.q, /[?.:)“]$/, `Ende ${q.id}: ${q.q}`);
+});
+
+test('Schätzfragen: echte Schätzungen, Zahl nicht im Text, allein verständlich, Regler sinnvoll', () => {
+  for (const q of FRAGEN.filter((x) => x.t === 'est')) {
+    const zahlen = (q.q.match(/\d[\d.]*/g) || []).map((z) => Number(z.replace(/\./g, '')));
+    assert.ok(!zahlen.includes(q.c), `Antwort steht im Text: ${q.id}`);
+    assert.ok(!/\b(dieser|dieses|dieser Fragen|oben|vorherige)\b/i.test(q.q), `Bezug auf andere Frage: ${q.id}`);
+    // Jahre und kleine Zahlen: Spanne höchstens 1000, damit der Regler in Einserschritten läuft
+    if (q.unit === '' || q.c < 1000) assert.ok(q.max - q.min <= 1000, `Spanne zu groß: ${q.id}`);
+    assert.ok(Number.isInteger(q.min) && Number.isInteger(q.max) && Number.isInteger(q.c), `ganzzahlig ${q.id}`);
+    assert.ok(q.c > q.min && q.c < q.max, `c liegt nicht am Rand: ${q.id}`);
+  }
+});
+
+test('mc: richtige Antwort steht nicht wörtlich in der Frage', () => {
+  for (const q of FRAGEN.filter((x) => x.t === 'mc')) {
+    const r = norm(q.a[q.c]);
+    if (r.length < 4) continue;
+    assert.ok(!(' ' + norm(q.q) + ' ').includes(' ' + r + ' '), `Antwort im Fragetext: ${q.id} (${q.a[q.c]})`);
+  }
+});
+
+test('Fragetexte beziehen sich nicht auf andere Fragen', () => {
+  for (const q of FRAGEN) assert.ok(!/dieser \d+|oben genannt|siehe/i.test(q.q), q.id);
 });
