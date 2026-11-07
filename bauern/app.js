@@ -230,8 +230,8 @@ function tapSquare(i) {
 
 const ui = createUI({
   sess, $app,
-  title: 'Bauernschach', icon: '♟', sub: 'Nur Bauern auf dem Brett – wer kommt zuerst ans Ziel? Für zwei, online zusammen spielen',
-  helpTitle: 'Die Spielregeln von Bauernschach', helpBody: helpBody(),
+  title: 'Bauernrennen', icon: '♟', sub: 'Nur Bauern auf dem Brett – wer kommt zuerst ans Ziel? Für zwei, online zusammen spielen',
+  helpTitle: 'Die Spielregeln von Bauernrennen', helpBody: helpBody(),
   bots: [1], levels: ['Leicht', 'Mittel'],
   options: [
     { id: 'enpassant', label: 'Im Vorbeigehen schlagen erlauben', help: 'Ein Bauer darf nach einem Doppelschritt sofort „im Vorbeigehen“ geschlagen werden (en passant).', def: true },

@@ -1,4 +1,4 @@
-// Lernrunde für Bauernschach: liefert zu jedem Spielstand einen kurzen, vorlesbaren Satz und die Elemente, die pulsieren sollen.
+// Lernrunde für Bauernrennen: liefert zu jedem Spielstand einen kurzen, vorlesbaren Satz und die Elemente, die pulsieren sollen.
 // Keine Strategie-Tipps, keine Zugempfehlung, keine Warnung vor Bedrohungen: nur Regeln und Bedienung.
 import * as P from './engine.js';
 

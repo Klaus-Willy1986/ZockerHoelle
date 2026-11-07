@@ -1,4 +1,4 @@
-// Bauernschach – Computergegner. Reine Funktionen, kein DOM. Regeln nur über engine.js.
+// Bauernrennen – Computergegner. Reine Funktionen, kein DOM. Regeln nur über engine.js.
 // chooseAction(state, botId, level, rng) -> { t: 'move', from, to } oder null.
 // level 0 = Leicht, 1 = Mittel. Es gibt keine verdeckte Information.
 import { genMoves, applyMove, colorOf, dirOf, goalRank, startRank, countPawns, reachedGoal, KIND_CAPTURE, KIND_EP } from './engine.js';

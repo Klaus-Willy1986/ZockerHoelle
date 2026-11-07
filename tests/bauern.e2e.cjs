@@ -1,4 +1,4 @@
-// Bauernschach im Browser: (a) gegen Computer (Mittel) bis zum Ende + "Noch eine Runde", (b) Lernrunde,
+// Bauernrennen im Browser: (a) gegen Computer (Mittel) bis zum Ende + "Noch eine Runde", (b) Lernrunde,
 // (c) Gastgeber + Gast über Test-Netz (?mock=1), (d) Layout 390x844.
 // Aufruf: NODE_PATH=$(npm root -g) node tests/bauern.e2e.cjs [Screenshot-Ordner] [Port]
 // Startet selbst einen Static-Server (python3 -m http.server) und beendet ihn am Ende wieder.

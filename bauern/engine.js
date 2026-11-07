@@ -1,4 +1,4 @@
-// Bauernschach – reine Spiellogik, keine Oberfläche, kein Netzwerk.
+// Bauernrennen – reine Spiellogik, keine Oberfläche, kein Netzwerk.
 // Brett: 64 Felder, Index = Reihe * 8 + Spalte. Feld 0 = a1 (unten links aus Sicht von Weiß), Feld 63 = h8.
 // Reihe 1 hat den Index 0..7, Reihe 8 den Index 56..63. Weiß zieht "aufwärts" (Reihe wächst), Schwarz "abwärts".
 // Inhalt: 0 leer, 1 weißer Bauer, 2 schwarzer Bauer. Farbe: 0 = Weiß (beginnt), 1 = Schwarz.
@@ -112,7 +112,7 @@ export const playerOfColor = (g, color) => (color === 0 ? g.white : 1 - g.white)
 
 // rng wird für die Regeln nicht gebraucht (kein Zufall, keine verdeckte Information).
 export function createGame(playerList, opts = {}, rng = Math.random) { // eslint-disable-line no-unused-vars
-  if (!Array.isArray(playerList) || playerList.length !== 2) throw new Error('Bauernschach braucht genau 2 Personen.');
+  if (!Array.isArray(playerList) || playerList.length !== 2) throw new Error('Bauernrennen braucht genau 2 Personen.');
   return {
     game: 'bs',
     mode: 'play', // 'play' | 'over' (Ende der laufenden Runde)
