@@ -39,6 +39,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Reversi** (`reversi/`): Brettspiel für zwei (8×8, Einschließen und Umdrehen), mit Computer und Lernrunde.
 - **Backgammon** (`backgammon/`): Würfel-Brettspiel für zwei (Spiel bis 3 oder 5 Punkte, Gammon, Backgammon), mit Computer und Lernrunde.
 - **Schach** (`schach/`): Vollständiges Schach für zwei (alle Regeln), mit Computer und Lernrunde.
+- **Kartenrennen** (`kartenrennen/`): Karten-Brettspiel für zwei Teams (je zwei Personen), mit Computer und Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
