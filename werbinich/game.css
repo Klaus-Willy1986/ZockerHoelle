@@ -1,0 +1,74 @@
+/* ===== Wer bin ich? ===== */
+
+/* Statuszeile: feste Höhe, damit das Spielfeld nie springt */
+.banner { height: 5.6rem; min-height: 0; padding: 8px 14px; font-size: 1.25rem; line-height: 1.25; overflow: hidden; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Spielfeld: Kategorie groß, darunter der Antwortverlauf in einem Bereich fester Höhe */
+.wb-board { background: linear-gradient(150deg, #20285e 0%, #3a2a7a 60%, #52307f 100%); color: #fff; padding: 14px 12px 12px; margin: 8px 0; }
+.wb-cat { margin: 0; height: 5.4rem; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.55rem; font-weight: 900; line-height: 1.15; }
+.wb-meta { margin: 4px 0 8px; text-align: center; font-size: .8rem; line-height: 1.3; height: 2.1rem; overflow: hidden; color: #e4e6ff; }
+.wb-meta span { display: block; min-height: 1.05rem; }
+.wb-chips { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px; height: 6.4rem; overflow-y: auto; padding: 4px; background: rgba(255,255,255,.1); border-radius: 14px; -webkit-overflow-scrolling: touch; }
+.wb-empty { color: #e4e6ff; font-size: .9rem; padding: 6px 8px; }
+.wb-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 4px 10px; border-radius: 999px; font-size: .78rem; font-weight: 700; line-height: 1.2; border: 2px solid; background: #fff; color: #1d1d1f; }
+.wb-chip i { font-style: normal; font-size: 1rem; }
+.wb-chip b { font-weight: 900; white-space: nowrap; }
+.wb-chip.a-ja { background: #dff3e2; border-color: #2e8b3d; color: #14501f; }
+.wb-chip.a-nein { background: #fde4e4; border-color: #c62828; color: #7d1313; }
+.wb-chip.a-teils { background: #fff1c2; border-color: #c79400; color: #5e4300; }
+.wb-chip.wrong { background: #eee; border-color: #777; color: #333; }
+
+/* Aktionsbereich: feste Mindesthöhe */
+.wb-action { min-height: 6.6rem; display: flex; flex-direction: column; justify-content: center; margin: 8px 0; padding: 12px 14px; }
+.wb-action .big { margin: 0; font-size: 1.05rem; line-height: 1.35; }
+
+/* Fragenliste: scrollbar, Bereich fester Höhe, große Karten */
+.wb-listcard { padding: 6px; margin: 8px 0; }
+.wb-qlist, .wb-pickbox { height: 24rem; }
+.wb-qlist { overflow-y: auto; padding: 0 4px 6px; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.wb-th { position: sticky; top: 0; z-index: 2; margin: 0; padding: 10px 6px 6px; font-size: .95rem; letter-spacing: .02em; text-transform: uppercase; color: #3b3f52; background: #fff; border-bottom: 2px solid #e6e2d6; }
+.wb-q, .wb-t { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 4.2rem; margin: 8px 0 0; padding: 10px 14px; font: inherit; font-size: 1.1rem; font-weight: 700; line-height: 1.25; text-align: left; color: var(--ink); background: #fff; border: 3px solid #2563d6; border-radius: 16px; cursor: pointer; box-shadow: 0 2px 5px rgba(20,20,40,.14); touch-action: manipulation; }
+.wb-q .e, .wb-t .e { flex: none; width: 2.2rem; text-align: center; font-size: 1.8rem; line-height: 1; }
+.wb-q .t, .wb-t .t { flex: 1; }
+.wb-q:hover:not(.done), .wb-t:hover:not(.gone) { background: #f1f6ff; }
+.wb-q:focus-visible, .wb-t:focus-visible, .wb-l:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.wb-q.wait { border-color: #9aa3b8; color: #3b3f52; }
+.wb-q.done { cursor: default; box-shadow: none; background: #ececec; border-color: #c4c4c4; color: #666; }
+.wb-q.done .e { opacity: .45; filter: grayscale(1); }
+.wb-q.done b { flex: none; padding: 4px 10px; border-radius: 999px; background: #fff; color: #333; font-size: .95rem; }
+.wb-q.done.a-ja b { color: #14501f; } .wb-q.done.a-nein b { color: #7d1313; } .wb-q.done.a-teils b { color: #5e4300; }
+
+/* Raten: Buchstaben-Leiste und Begriffsliste */
+.wb-pickbox { display: flex; flex-direction: column; padding: 0 4px; }
+.wb-pickhead { margin: 8px 4px 4px; font-size: 1.05rem; font-weight: 800; }
+.wb-pickhead small { display: block; color: var(--muted); font-weight: 600; font-size: .8rem; }
+.wb-letters { display: flex; flex-wrap: wrap; gap: 5px; padding: 4px 2px 6px; max-height: 8.4rem; overflow-y: auto; }
+.wb-l { min-width: 48px; height: 48px; padding: 0 10px; font: inherit; font-size: 1.05rem; font-weight: 800; color: var(--primary); background: #fff; border: 2px solid var(--primary); border-radius: 12px; cursor: pointer; }
+.wb-l.on { color: #fff; background: var(--primary); }
+.wb-picklist { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 6px; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.wb-t { border-color: #1f8a4c; }
+.wb-t.gone { background: #ececec; border-color: #c4c4c4; color: #777; cursor: default; box-shadow: none; }
+.wb-t.gone b { flex: none; font-size: .8rem; }
+
+/* Der Knopf bleibt immer am unteren Rand sichtbar */
+.wb-know { position: sticky; bottom: 10px; z-index: 10; margin: 10px 0; box-shadow: 0 6px 16px rgba(20,20,40,.35); }
+.wb-know:disabled { opacity: 1; background: #d3d7e2; color: #4a4f60; border-color: #b5bac8; box-shadow: none; transform: none; }
+
+/* Auflösung */
+.wb-reveal { min-height: 6.6rem; text-align: center; margin: 8px 0; }
+.wb-big { font-size: 4.5rem; line-height: 1.1; }
+.wb-reveal p { margin: .3em 0; }
+
+/* Punkte */
+.wb-score h2 { margin-bottom: .3em; }
+.wb-players { list-style: none; margin: 0; padding: 0; }
+.wb-pl { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; margin: 6px 0; border-radius: 14px; background: #f3f3f3; font-size: 1.1rem; }
+.wb-pl.on { background: #e1f1e5; outline: 3px solid #2e8b3d; }
+.wb-pn { font-weight: 800; }
+.wb-pn small { display: block; font-weight: 600; color: #2e6b3a; font-size: .75rem; }
+.wb-pp b { font-size: 1.3rem; }
+.wb-over .rn small { display: block; font-weight: 500; font-size: .75rem; color: var(--muted); }
+.wb-done { list-style: none; padding: 0; margin: 6px 0 12px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.wb-done li { padding: 4px 12px; border-radius: 999px; background: #f0f2f8; font-weight: 700; }
+@media (min-width: 560px) { .wb-qlist, .wb-pickbox { height: 26rem; } }
