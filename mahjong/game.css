@@ -1,0 +1,37 @@
+/* ===== Mahjong-Solitär ===== */
+main#app { padding-left: 6px; padding-right: 6px; }
+.mj-status { display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 6px; min-height: 48px; margin: 4px 4px; font-weight: 800; font-size: .85rem; white-space: nowrap; }
+.mj-lay { background: #3b3b42; color: #fff; padding: 4px 12px; border-radius: 999px; white-space: nowrap; }
+.mj-clock { font-variant-numeric: tabular-nums; }
+.mj-left { text-align: right; }
+.mj-left b { font-size: 1.1rem; }
+
+.mj-scroll { overflow: auto; max-height: 74vh; border-radius: 14px; background: #2b6a47; box-shadow: 0 1px 4px rgba(0,0,0,.25); -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.mj-inner { width: max-content; margin: 0 auto; }
+.mj-svg { display: block; touch-action: pan-x pan-y; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+.mj-tile { cursor: pointer; outline: none; }
+.mj-tile:focus-visible .mj-face { stroke: #1f5fbf; stroke-width: 4px; }
+.mj-side { fill: #8c7a45; stroke: #4a3f1f; stroke-width: 1; }
+.mj-tile.hint .mj-face { animation: mj-pulse 0.9s ease-in-out infinite; }
+.mj-tile.coach-target .mj-face { stroke: #ff9d00 !important; stroke-width: 5px !important; fill: #fff0b3; animation: mj-pulse 1s ease-in-out infinite; }
+.mj-tile.coach-target { outline: none !important; animation: none; z-index: auto; }
+@keyframes mj-pulse { 50% { opacity: .55; } }
+.mj-gone { pointer-events: none; transform-box: fill-box; transform-origin: center; animation: mj-vanish .45s ease-in forwards; }
+@keyframes mj-vanish { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.35); } }
+@media (prefers-reduced-motion: reduce) { .mj-gone { display: none; } .mj-tile.hint .mj-face, .mj-tile.coach-target .mj-face { animation: none; } .mj-btn.alert { animation: none; } }
+
+.mj-msg { display: flex; align-items: center; min-height: 4.4rem; margin: 6px 0; padding: 8px 12px; border: 2px solid var(--line); border-radius: 12px; background: #fff; font-size: 1.05rem; font-weight: 600; }
+.mj-msg.warn { background: #fde7e7; border-color: var(--warn); color: #6b1410; }
+.mj-msg.ok { background: #e4f4e7; border-color: var(--ok); color: #124d1c; }
+
+.mj-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+.mj-btn.btn { margin: 0; min-height: 56px; background: #fff; color: var(--primary); border-color: var(--primary); font-size: 1rem; padding: 8px 6px; }
+.mj-btn.btn:disabled { border: 2px dashed #8b8b93; color: #55555c; background: #f1efe9; opacity: 1; cursor: default; }
+.mj-btn.alert { background: #fff4cc; border-color: #b8860b; color: #4d3b00; animation: mj-pulse 1.2s ease-in-out infinite; }
+.mj-time.btn { margin: 4px 0; }
+.mj-modal .btn { margin: 10px 0; }
+.mj-setup .opt { border-bottom: 1px solid var(--line); }
+.mj-pick { min-height: 2.6em; display: flex; align-items: center; gap: .35em; flex-wrap: wrap; margin: 0 0 8px; }
+.mj-bests { list-style: none; margin: 0; padding: 0; }
+.mj-bests li { padding: 6px 0; border-bottom: 1px solid var(--line); }
+.over h1 { font-size: 1.9rem; }

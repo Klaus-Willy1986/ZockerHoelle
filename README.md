@@ -51,6 +51,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Bilderrätsel** (`bilder/`): Zahlen-Ausmalrätsel (98 eindeutig lösbare Bilder, 5×5 bis 10×10) zum Alleinspielen, mit Lernrunde.
 - **Patience** (`patience/`): Kartenlegen zum Alleinspielen (Klondike und FreeCell), mit unbegrenztem Zurück und Lernrunde.
 - **Zeichenraten** (`zeichnen/`): Zeichnen und Raten für 2–8 Personen (online oder an einem Gerät), 422 Begriffe, mit Lernrunde.
+- **Mahjong-Solitär** (`mahjong/`): Mahjong-Solitär (144 Steine, drei Brettformen, immer lösbar), mit Hinweis, Zurück, Mischen und Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
