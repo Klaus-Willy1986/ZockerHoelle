@@ -41,6 +41,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Schach** (`schach/`): Vollständiges Schach für zwei (alle Regeln), mit Computer und Lernrunde.
 - **Kartenrennen** (`kartenrennen/`): Karten-Brettspiel für zwei Teams (je zwei Personen), mit Computer und Lernrunde.
 - **Doppelkopf** (`doppelkopf/`): Doppelkopf für vier (Normalspiel mit Hochzeit und Re/Kontra-Ansage), mit Computer und Lernrunde.
+- **Wortsuche** (`wortsuche/`): Wortsuche (8×8 bis 12×12) mit zwölf Themen, allein, im Wettlauf mit Mitspielenden oder gegen Computer, mit Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
