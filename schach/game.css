@@ -1,0 +1,85 @@
+/* ===== Schach ===== */
+:root { --sc-lt: #f3e5c0; --sc-dk: #7a4e2a; --sc-ink: #14110d; }
+
+/* Statuszeile: feste Höhe, damit nichts springt */
+.sc-banner { height: 4.6rem; min-height: 4.6rem; overflow: hidden; padding: 6px 10px; margin: 6px 0; font-size: 1.25rem; line-height: 1.2; }
+.sc-banner h1 { display: inline; font-size: 1.3rem; margin: 0; color: #fff; -webkit-text-fill-color: #fff; background: none; line-height: 1.2; }
+.sc-banner .trophy { display: inline-block; font-size: 1.7rem; animation: none; vertical-align: middle; filter: none; }
+.banner.sc-banner.check { background: linear-gradient(135deg, #d9482b 0%, #a3260f 100%); animation: none; }
+
+/* Brett mit Koordinaten am Rand */
+.sc-frame { display: grid; grid-template-columns: 16px minmax(0, 1fr); grid-template-rows: auto 22px; width: calc(100% + 16px); margin: 8px -8px; max-width: 560px; touch-action: manipulation; }
+@media (min-width: 600px) { .sc-frame { width: 100%; margin: 8px auto; } }
+.sc-ranks { display: grid; grid-template-rows: repeat(8, 1fr); }
+.sc-files { display: grid; grid-template-columns: repeat(8, 1fr); }
+.sc-ranks span, .sc-files span { display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; color: var(--sc-ink); line-height: 1; }
+.sc-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); grid-template-rows: repeat(8, minmax(0, 1fr)); aspect-ratio: 1; border: 2px solid var(--sc-ink); border-radius: 4px; background: var(--sc-ink); }
+.sc-sq { position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; padding: 0; margin: 0; border: 0; border-radius: 0; font: inherit; color: inherit; cursor: default; }
+.sc-sq.lt { background-color: var(--sc-lt); }
+.sc-sq.dk { background-color: var(--sc-dk); }
+button.sc-sq { cursor: pointer; }
+button.sc-sq:focus-visible { outline: 4px solid #1d4ed8; outline-offset: -4px; z-index: 3; }
+
+/* Figuren: Weiß hell mit dunklem Rand, Schwarz dunkel mit hellem Rand */
+.sc-pc { width: 92%; height: 92%; display: block; pointer-events: none; }
+.sc-pc .o *, .sc-icon .o *, .sc-cap-pc .o *, .sc-big .o *, .sc-rkicon .o * { stroke-linejoin: round; }
+.w .o * { fill: #14110d; stroke: #14110d; stroke-width: 8; }
+.w .f * { fill: #fffdf3; stroke: none; }
+.w .d .ln { stroke: #14110d; stroke-width: 3.2; fill: none; stroke-linecap: round; }
+.w .d .dot { fill: #14110d; }
+.b .o * { fill: #f4f4f4; stroke: #f4f4f4; stroke-width: 8; }
+.b .f * { fill: #1b1b22; stroke: none; }
+.b .d .ln { stroke: #f4f4f4; stroke-width: 3.2; fill: none; stroke-linecap: round; }
+.b .d .dot { fill: #f4f4f4; }
+.sc-icon { flex: none; width: 34px; height: 34px; background: #cdbd96; border-radius: 8px; }
+.sc-icon.b { background: #8a8a8a; }
+
+/* letzter Zug: Ausgangs- und Zielfeld */
+.sc-sq.from { box-shadow: inset 0 0 0 4px #e6c200; background-image: linear-gradient(rgba(255,214,0,.35), rgba(255,214,0,.35)); }
+.sc-sq.to { box-shadow: inset 0 0 0 4px #e6c200; background-image: linear-gradient(rgba(255,214,0,.7), rgba(255,214,0,.7)); }
+.sc-sq.from::after { content: ""; position: absolute; inset: 3px; border: 3px dashed #5c4600; pointer-events: none; }
+/* König im Schach */
+.sc-sq.chk { box-shadow: inset 0 0 0 5px #d62812; background-image: radial-gradient(circle, rgba(255,60,40,.75) 0%, rgba(255,60,40,.25) 70%); }
+
+/* Regelhilfe: ziehbare Figuren leuchten, Auswahl und Ziele (Rahmen + Punkt, nicht nur Farbe) */
+button.sc-sq.can { box-shadow: inset 0 0 0 4px #ffb300; animation: sc-pulse 1.3s infinite; }
+button.sc-sq.sel { box-shadow: inset 0 0 0 5px #0f7a2a; background-image: linear-gradient(rgba(60,190,90,.45), rgba(60,190,90,.45)); animation: none; }
+@keyframes sc-pulse { 50% { box-shadow: inset 0 0 0 6px #ffb300; } }
+.sc-sq.tgt { background-image: linear-gradient(rgba(40,170,80,.6), rgba(40,170,80,.6)); box-shadow: inset 0 0 0 4px #0b5a1e; }
+.sc-sq.tgt::before { content: ""; position: absolute; width: 34%; height: 34%; border-radius: 50%; background: #fff; border: 3px solid #0b5a1e; box-sizing: border-box; }
+.sc-sq.tgt.cap::before { inset: 5%; width: auto; height: auto; background: transparent; border: 5px solid #b3261e; box-sizing: border-box; z-index: 2; }
+.sc-sq.tgt.rk::before { display: none; }
+.sc-rkicon { width: 70%; height: 70%; pointer-events: none; }
+
+/* Unter dem Brett */
+.sc-capcard { padding: 6px 10px; margin: 4px 0; min-height: 4.4rem; }
+.sc-caprow { display: flex; align-items: center; gap: 6px; min-height: 28px; font-size: .9rem; color: var(--muted); font-weight: 700; flex-wrap: wrap; }
+.sc-caprow .sc-lbl { flex: none; min-width: 7.2em; }
+.sc-cap-pc { width: 24px; height: 24px; flex: none; margin-right: -4px; }
+.sc-none { font-weight: 500; }
+
+.sc-action { padding: 12px 14px; min-height: 12.5rem; }
+.sc-action.over { min-height: 0; }
+.sc-last { margin: 0 0 6px; min-height: 2.8em; font-weight: 800; }
+.sc-hint { margin: 6px 0; font-weight: 700; font-size: 1.05rem; background: #eef3fc; border: 2px solid var(--primary); color: #12315f; border-radius: 12px; padding: 8px 12px; }
+.sc-msg { margin: 6px 0; font-weight: 800; font-size: 1.05rem; background: #fff1e3; border: 2px solid #b3541e; color: #6b2d08; border-radius: 12px; padding: 8px 12px; }
+.sc-action .btn { margin: 6px 0; }
+.sc-promo { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+.sc-promo .btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 64px; margin: 0; font-size: 1.15rem; padding: 4px 8px; }
+.sc-big { width: 44px; height: 44px; flex: none; background: #cdbd96; border-radius: 8px; }
+.sc-big.b { background: #8a8a8a; }
+.sc-log { margin: 6px 0 0; padding: 0; list-style: none; font-size: 1rem; }
+.sc-log li { padding: 3px 0; border-bottom: 1px solid var(--line); }
+
+/* Punktestand */
+.sc-score { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; margin: 8px 0; }
+.sc-pl { background: #fff; border: 3px solid var(--line); border-radius: 14px; padding: 6px 10px; min-width: 0; }
+.sc-pl.turn { border-color: var(--ok); background: #f1f8f2; }
+.sc-n { display: flex; align-items: center; gap: 6px; font-size: 1rem; min-height: 2rem; }
+.sc-n b { word-break: break-word; line-height: 1.15; }
+.sc-c { font-size: .9rem; color: var(--muted); }
+.sc-p { font-size: 1.05rem; line-height: 1.2; }
+.sc-p b { font-size: 1.5rem; }
+.sc-round, .sc-rules { grid-column: 1 / -1; margin: 0; text-align: center; font-weight: 700; font-size: 1rem; }
+.sc-rules { font-weight: 500; font-size: .9rem; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { button.sc-sq.can { animation: none; } }
