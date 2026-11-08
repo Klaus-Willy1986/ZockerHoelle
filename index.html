@@ -13,6 +13,23 @@
   <main class="hubmain">
     <div class="hubhead"><div class="logo">🎲</div><h1>Zocker-Hölle</h1><p class="sub">Welches Spiel möchtet ihr spielen?</p></div>
     <div id="resume"></div>
+    <div class="hubfilter" role="search" aria-label="Spiele finden">
+      <input type="search" id="hsuche" placeholder="🔍 Spiel suchen …" aria-label="Spiel suchen" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div class="chips" id="hchips" role="group" aria-label="Spiele filtern">
+        <button type="button" class="chip on" data-f="alle">Alle</button>
+        <button type="button" class="chip" data-f="0">🎲 Würfel</button>
+        <button type="button" class="chip" data-f="1">🧩 Brett</button>
+        <button type="button" class="chip" data-f="2">🃏 Karten</button>
+        <button type="button" class="chip" data-f="3">🧠 Rätsel</button>
+      </div>
+      <div class="chips" id="htoggles" role="group" aria-label="Weitere Filter">
+        <button type="button" class="chip" data-t="allein" aria-pressed="false">🙋 Allein spielbar</button>
+        <button type="button" class="chip" data-t="computer" aria-pressed="false">🤖 Mit Computer</button>
+        <button type="button" class="chip" data-t="lern" aria-pressed="false">🎓 Mit Lernrunde</button>
+      </div>
+      <p id="hcount" class="muted small center" aria-live="polite"></p>
+    </div>
+    <p id="hleer" class="center big" hidden>Kein Spiel gefunden. Probiere ein anderes Wort oder nimm einen Filter heraus.</p>
     <section class="hubsec"><h2><span>🎲</span> Würfelspiele</h2>
       <div class="hubgrid">
         <a class="hubcard" href="kreuzquer/" style="--accent:#b91c1c">
@@ -372,6 +389,50 @@
         } catch (e) { /* egal */ }
       });
       document.getElementById('resume').innerHTML = html ? '<div class="hubgrid" style="margin-top:14px">' + html + '</div>' : '';
+    })();
+  </script>
+  <script>
+    // Suche und Filter für die Spielauswahl
+    (function () {
+      var secs = Array.prototype.slice.call(document.querySelectorAll('.hubsec'));
+      var cards = [];
+      secs.forEach(function (sec, i) {
+        Array.prototype.forEach.call(sec.querySelectorAll('.hubcard'), function (c) {
+          var tags = (c.querySelector('.tags') || { textContent: '' }).textContent;
+          cards.push({ el: c, sec: i, secEl: sec, text: norm(c.textContent) + ' | ' + norm2(c.textContent), allein: /(^|[^0-9])1(\s|\u2013|-)/.test(tags), computer: /Computer/.test(tags), lern: /Lernrunde/.test(tags) });
+        });
+      });
+      function norm(t) { return String(t).toLowerCase().replace(/\u00e4/g, 'ae').replace(/\u00f6/g, 'oe').replace(/\u00fc/g, 'ue').replace(/\u00df/g, 'ss').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' '); }
+      function norm2(t) { return String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\u00df/g, 'ss').replace(/\s+/g, ' '); }
+      var q = document.getElementById('hsuche'), chips = document.getElementById('hchips'), togs = document.getElementById('htoggles');
+      var state = { f: 'alle', t: { allein: false, computer: false, lern: false } };
+      function apply() {
+        var term = norm(q.value).trim(), term2 = norm2(q.value).trim();
+        var shown = 0, perSec = {};
+        cards.forEach(function (c) {
+          var ok = (state.f === 'alle' || String(c.sec) === state.f) && (!term || c.text.indexOf(term) >= 0 || c.text.indexOf(term2) >= 0) &&
+            (!state.t.allein || c.allein) && (!state.t.computer || c.computer) && (!state.t.lern || c.lern);
+          c.el.hidden = !ok;
+          if (ok) { shown++; perSec[c.sec] = true; }
+        });
+        secs.forEach(function (sec, i) { sec.hidden = !perSec[i]; });
+        document.getElementById('hleer').hidden = shown > 0;
+        document.getElementById('hcount').textContent = shown === cards.length ? cards.length + ' Spiele' : shown + ' von ' + cards.length + ' Spielen';
+      }
+      q.addEventListener('input', apply);
+      chips.addEventListener('click', function (e) {
+        var b = e.target.closest('.chip'); if (!b) return;
+        state.f = b.getAttribute('data-f');
+        Array.prototype.forEach.call(chips.querySelectorAll('.chip'), function (x) { x.classList.toggle('on', x === b); });
+        apply();
+      });
+      togs.addEventListener('click', function (e) {
+        var b = e.target.closest('.chip'); if (!b) return;
+        var k = b.getAttribute('data-t'); state.t[k] = !state.t[k];
+        b.classList.toggle('on', state.t[k]); b.setAttribute('aria-pressed', state.t[k] ? 'true' : 'false');
+        apply();
+      });
+      apply();
     })();
   </script>
 </body>

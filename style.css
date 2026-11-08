@@ -311,3 +311,13 @@ main.hubmain { max-width: 1000px; }
 /* Phasenwürfeln: Zählung der Würfe */
 .p10-wurf { text-align: center; font-size: 1.1rem; margin: 0 0 10px; padding: 8px 12px; background: #eef3ff; border-radius: 14px; }
 .p10-wurf.last { background: #fff1cc; }
+
+/* Suche und Filter auf der Startseite */
+.hubfilter { margin: 18px 0 4px; display: flex; flex-direction: column; gap: 10px; }
+.hubfilter input[type=search] { width: 100%; box-sizing: border-box; min-height: 58px; padding: 10px 18px; font-size: 1.2rem; font-weight: 600; border-radius: 18px; border: 3px solid #cfd3e6; background: #fff; color: inherit; }
+.hubfilter input[type=search]:focus { outline: none; border-color: var(--primary, #2563d6); box-shadow: 0 0 0 4px rgba(37,99,214,.18); }
+.hubfilter .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.hubfilter .chip { min-height: 48px; padding: 8px 16px; border-radius: 999px; border: 3px solid #cfd3e6; background: #fff; font: inherit; font-size: 1.05rem; font-weight: 800; color: #2d3148; cursor: pointer; }
+.hubfilter .chip.on { background: var(--primary, #2563d6); border-color: var(--primary, #2563d6); color: #fff; }
+.hubfilter .chip:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.hubcard[hidden], .hubsec[hidden] { display: none !important; }
