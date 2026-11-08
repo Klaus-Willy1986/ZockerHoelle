@@ -47,6 +47,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Ich packe meinen Koffer** (`koffer/`): Gedächtnisspiel mit 106 Bildkarten, allein, im Wettstreit mit Mitspielenden oder gegen Computer, mit Lernrunde.
 - **Kreuzworträtsel** (`kreuzwort/`): Kreuzworträtsel (immer neu erzeugt, drei Stufen, 751 Wörter) zum Alleinspielen mit Bildschirmtastatur und Lernrunde.
 - **Wer bin ich?** (`werbinich/`): Ratespiel mit 123 geheimen Begriffen (Tiere, Berufe, Dinge, Märchenfiguren) und 68 Ja-Nein-Fragen, allein, im Wettstreit oder gegen Computer, mit Lernrunde.
+- **Minenfeld** (`minenfeld/`): Logikspiel zum Alleinspielen (8×8 bis 12×12), mit Flaggen-Knopf, Langdruck, Bestzeiten und Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
