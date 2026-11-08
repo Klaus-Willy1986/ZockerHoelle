@@ -40,6 +40,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Backgammon** (`backgammon/`): Würfel-Brettspiel für zwei (Spiel bis 3 oder 5 Punkte, Gammon, Backgammon), mit Computer und Lernrunde.
 - **Schach** (`schach/`): Vollständiges Schach für zwei (alle Regeln), mit Computer und Lernrunde.
 - **Kartenrennen** (`kartenrennen/`): Karten-Brettspiel für zwei Teams (je zwei Personen), mit Computer und Lernrunde.
+- **Doppelkopf** (`doppelkopf/`): Doppelkopf für vier (Normalspiel mit Hochzeit und Re/Kontra-Ansage), mit Computer und Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
