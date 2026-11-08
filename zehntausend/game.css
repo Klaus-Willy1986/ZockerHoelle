@@ -1,0 +1,36 @@
+/* ===== Zehntausend ===== */
+.zt-note { min-height: 4.2rem; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; font-size: 1.05rem; margin: 0 0 6px; padding: 6px 10px; border-radius: 12px; background: #f4f1ea; }
+.zt-note.final { background: #b3541e; color: #fff; }
+#board.zt-board { height: 21.5rem; gap: 6px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+.zt-stat { display: flex; justify-content: space-between; gap: 8px; font-size: 1.05rem; font-weight: 700; min-height: 2.6rem; align-items: center; }
+.zt-stat b { font-size: 1.5rem; }
+.zt-cap { font-size: .8rem; font-weight: 800; color: var(--muted); margin: 2px 0 4px; text-transform: none; }
+.zt-grid { display: grid; grid-template-columns: repeat(3, 84px); grid-auto-rows: 84px; gap: 10px; justify-content: center; }
+.zt-aside { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; max-width: 360px; margin: 0 auto; }
+.zt-die { display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); width: 100%; aspect-ratio: 1; padding: 11%; border-radius: 16%; background: #fff; color: #111; border: 3px solid #333; box-shadow: 0 3px 4px rgba(0,0,0,.3); font: inherit; }
+button.zt-die { cursor: pointer; }
+.zt-die i { display: block; width: 100%; height: 100%; }
+.zt-die i.on::after { content: ""; display: block; width: 82%; height: 82%; margin: 9%; border-radius: 50%; background: currentColor; }
+.zt-die.sel { background: #e4f3e7; border-color: var(--ok); outline: 4px solid var(--ok); outline-offset: 1px; transform: translateY(-4px); }
+.zt-die.lost { background: #f3e3e1; border-color: var(--warn); color: #6b2b27; }
+.zt-die.small { border-width: 2px; padding: 9%; box-shadow: 0 2px 3px rgba(0,0,0,.25); }
+.zt-die:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.zt-ghost { width: 100%; aspect-ratio: 1; border-radius: 16%; border: 3px dashed #c9c3b6; background: transparent; }
+.zt-ghost.small { border-width: 2px; }
+.zt-spin .zt-die { animation: ztwob .18s infinite alternate; }
+@keyframes ztwob { from { transform: rotate(-10deg) translateY(-3px); } to { transform: rotate(10deg) translateY(2px); } }
+.zt-action { min-height: 23.2rem; }
+.zt-action .btn { margin: 8px 0; }
+.zt-action .hold { min-height: 5.3rem; }
+.zt-hurdle { min-height: 2.9rem; margin: 0; font-size: .95rem; text-align: center; color: var(--muted); }
+.zt-prow { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: baseline; padding: 8px 12px; margin: 6px 0; border-radius: 12px; background: #f4f1ea; font-size: 1.1rem; }
+.zt-prow.active { background: #e8f0fd; outline: 3px solid var(--primary); }
+.zt-prow .n { font-weight: 800; min-width: 0; overflow-wrap: anywhere; }
+.zt-prow .a { font-weight: 900; font-size: 1.4rem; text-align: right; }
+.zt-prow .t { min-width: 4.2em; text-align: right; color: var(--primary); font-weight: 800; }
+.zt-prow small { display: block; font-weight: 500; color: var(--muted); font-size: .8rem; }
+.zt-prow.head { background: transparent; color: var(--muted); font-size: .85rem; font-weight: 700; padding: 0 12px; margin: 0; }
+.zt-tab { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 1.05rem; }
+.zt-tab td { padding: 8px 6px; border-bottom: 1px solid var(--line); }
+.zt-tab td:last-child { text-align: right; font-weight: 800; white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .zt-spin .zt-die { animation: none; } }
