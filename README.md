@@ -26,6 +26,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Elf voran** (`elf/`): Anlegekartenspiel um die Elf für 2–6 Personen, mit Computer und Lernrunde.
 - **Kneipenquiz** (`quiz/`): rund 390 Fragen in 11 Kategorien (Auswahl, Wahr/Falsch, Schätzen, Ordnen) für 1–8 Personen, mit Computer und Lernrunde.
 - **Bauernskat** (`bauernskat/`): Skat-Variante für zwei mit verdeckt/offen ausgelegten Karten (Offiziersskat), mit Computer und Lernrunde.
+- **Mäxchen** (`maexchen/`): Würfel-Bluffspiel für 2–8 Personen, mit Computer und Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
