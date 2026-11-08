@@ -49,6 +49,8 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Wer bin ich?** (`werbinich/`): Ratespiel mit 123 geheimen Begriffen (Tiere, Berufe, Dinge, Märchenfiguren) und 68 Ja-Nein-Fragen, allein, im Wettstreit oder gegen Computer, mit Lernrunde.
 - **Minenfeld** (`minenfeld/`): Logikspiel zum Alleinspielen (8×8 bis 12×12), mit Flaggen-Knopf, Langdruck, Bestzeiten und Lernrunde.
 - **Bilderrätsel** (`bilder/`): Zahlen-Ausmalrätsel (98 eindeutig lösbare Bilder, 5×5 bis 10×10) zum Alleinspielen, mit Lernrunde.
+- **Patience** (`patience/`): Kartenlegen zum Alleinspielen (Klondike und FreeCell), mit unbegrenztem Zurück und Lernrunde.
+- **Zeichenraten** (`zeichnen/`): Zeichnen und Raten für 2–8 Personen (online oder an einem Gerät), 422 Begriffe, mit Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
