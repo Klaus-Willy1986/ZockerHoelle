@@ -44,6 +44,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Wortsuche** (`wortsuche/`): Wortsuche (8×8 bis 12×12) mit zwölf Themen, allein, im Wettlauf mit Mitspielenden oder gegen Computer, mit Lernrunde.
 - **Galgenmännchen** (`galgen/`): Galgenmännchen als Schneemann (565 Wörter, 9 Kategorien), allein, gemeinsam oder gegen Computer, mit Lernrunde.
 - **Dunkle Rätsel** (`dunkel/`): Situationsrätsel (62 familienfreundliche Rätsel) mit Hinweisen, allein oder in der Gruppe mit Spielleiter, mit Lernrunde.
+- **Ich packe meinen Koffer** (`koffer/`): Gedächtnisspiel mit 106 Bildkarten, allein, im Wettstreit mit Mitspielenden oder gegen Computer, mit Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 

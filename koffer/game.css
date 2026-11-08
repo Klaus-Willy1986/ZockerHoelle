@@ -1,0 +1,117 @@
+/* ===== Ich packe meinen Koffer ===== */
+
+/* Statuszeile: feste Höhe, damit das Spielfeld nie springt */
+.banner { height: 5.2rem; min-height: 0; padding: 6px 14px; font-size: 1.2rem; line-height: 1.25; overflow: hidden; }
+
+/* Wer spielt mit: zwei Spalten, jede Kachel gleich hoch */
+.kf-rank { padding: 8px; margin: 8px 0; }
+.kf-players { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.kf-pl { box-sizing: border-box; height: 58px; padding: 4px 10px; border-radius: 12px; background: #f4f1ea; border: 3px solid transparent; display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 0; }
+.kf-pl.on { background: #e5f6ea; border-color: var(--ok); }
+.kf-pl.out { opacity: .6; }
+.kf-pl.out .kf-nm { text-decoration: line-through; }
+.kf-nm { font-size: 1rem; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #111; }
+.kf-sub { font-size: .8rem; line-height: 1.2; height: 1.2em; white-space: nowrap; overflow: hidden; display: flex; gap: 6px; align-items: center; }
+.kf-st { font-weight: 800; color: var(--muted); }
+.kf-st.on { color: var(--ok); }
+
+/* Spielbereich (Koffer): dunkles Leder mit hellen Karten */
+.kf-boardcard {
+  margin: 8px -8px; padding: 8px 6px 12px; border-radius: 22px; border: 0;
+  background: linear-gradient(150deg, #5b3a1f 0%, #7a4e29 55%, #4d3019 100%);
+  box-shadow: var(--shadow-2), inset 0 0 0 2px rgba(255,255,255,.12);
+  color: #fff;
+}
+.kf-board { min-width: 0; }
+.kf-head { display: flex; align-items: center; gap: 12px; min-height: 4.2rem; padding: 0 6px; }
+.kf-bag { font-size: 2.6rem; line-height: 1; }
+.kf-closed { margin: 0; font-size: 1.15rem; font-weight: 800; }
+.kf-count { margin: 0; font-size: 1.05rem; }
+.kf-count b { color: #ffd54a; }
+.kf-h { margin: 12px 6px 2px; font-size: 1.1rem; font-weight: 800; color: #fff; }
+.kf-sub2 { margin: 0 6px 8px; font-size: .9rem; color: #f3e6d4; min-height: 1.3em; }
+.kf-wait { min-height: 16rem; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8px; }
+.kf-wait p { margin: 2px 0; }
+.kf-wait .kf-closed { font-size: 1.3rem; }
+.kf-wait .kf-sub2 { margin-top: 10px; font-size: 1.05rem; }
+.kf-bigbag { font-size: 5.5rem; line-height: 1.1; }
+
+/* Gewählte Folge (bleibt beim Blättern oben stehen) */
+.kf-seqbar { position: sticky; top: var(--sticky-top, 0px); z-index: 6; display: flex; align-items: center; gap: 8px; height: 68px; padding: 6px 8px; margin: 4px 0; border-radius: 14px; background: #fff; color: #111; box-shadow: 0 3px 10px rgba(0,0,0,.35); }
+.kf-chips { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: thin; height: 100%; }
+.kf-chip { position: relative; flex: 0 0 auto; width: 46px; height: 50px; display: grid; place-items: center; font-size: 1.9rem; line-height: 1; border-radius: 10px; background: #f4f1ea; border: 2px solid #d6d2c8; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", system-ui, sans-serif; }
+.kf-chip i { position: absolute; top: -4px; left: -2px; min-width: 18px; padding: 0 4px; border-radius: 9px; background: #1f5fbf; color: #fff; font: 800 .65rem/1.4 system-ui, sans-serif; text-align: center; font-style: normal; }
+.kf-chip.new { background: #fff4cc; border-color: #f2b705; }
+.kf-chip.new i { background: #b36b00; }
+.kf-ph { color: var(--muted); font-size: .95rem; }
+.btn.mini.kf-undo { flex: 0 0 auto; margin: 0; min-height: 48px; font-size: .95rem; }
+
+/* Hilfe (nur wenn gewünscht) */
+.kf-peek { margin: 6px 4px; padding: 6px; border-radius: 12px; background: rgba(255,255,255,.14); }
+.kf-peek .kf-h { margin: 0 4px 4px; font-size: .95rem; }
+.kf-peeklist, .kf-tiles { display: flex; flex-wrap: wrap; gap: 8px 6px; padding-top: 6px; }
+.kf-modal b { white-space: nowrap; }
+
+/* Raster und Auswahl: vier Spalten, große Karten */
+.kf-grid, .kf-offer { --gap: 6px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); width: 100%; max-width: 520px; margin: 0 auto; padding: 0 2px; }
+.kf-card {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  width: 100%; aspect-ratio: 1 / 1.1; min-height: 80px; padding: 2px; margin: 0;
+  background: #fff; color: #111; border: 0; border-radius: 14px; font: inherit; cursor: pointer;
+  container-type: inline-size; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  box-shadow: inset 0 0 0 3px #e6e2d6, 0 3px 6px rgba(0,0,0,.4);
+}
+.kf-card:focus-visible { outline: 4px solid #ffd54a; outline-offset: 2px; }
+.kf-e { font-size: 2.2rem; line-height: 1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", system-ui, sans-serif; }
+@supports (font-size: 1cqw) { .kf-e { font-size: 46cqw; } .kf-n { font-size: 14.5cqw; } }
+.kf-n { font-size: .7rem; font-weight: 800; line-height: 1.05; max-width: 100%; text-align: center; overflow-wrap: anywhere; hyphens: auto; }
+.kf-no { position: absolute; top: 3px; left: 3px; min-width: 24px; padding: 1px 6px; border-radius: 12px; background: #1f5fbf; color: #fff; font: 800 .8rem/1.3 system-ui, sans-serif; font-style: normal; text-align: center; }
+.kf-card.chosen { background: #dce8fb; box-shadow: inset 0 0 0 4px #1f5fbf, 0 3px 6px rgba(0,0,0,.4); opacity: .75; }
+.kf-card.dim { opacity: .55; }
+.kf-offer .kf-card { background: #fffbea; box-shadow: inset 0 0 0 3px #f2d27a, 0 3px 6px rgba(0,0,0,.4); }
+.kf-offer .kf-card.sel { background: #fff4cc; box-shadow: inset 0 0 0 5px #f2a600, 0 0 14px rgba(255,200,60,.9), 0 3px 6px rgba(0,0,0,.4); }
+.kf-offer .kf-card.sel::after { content: "✔"; position: absolute; top: 2px; right: 6px; color: #b36b00; font-weight: 900; font-size: 1.1rem; }
+
+/* Kleine Karten (Auflösung, Hilfe) */
+.kf-tile { position: relative; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 70px; height: 78px; padding: 2px 0; border-radius: 10px; background: #fff; color: #111; box-shadow: inset 0 0 0 2px #d6d2c8; }
+.kf-tile .kf-te { font-size: 1.9rem; line-height: 1.1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", system-ui, sans-serif; }
+.kf-tile .kf-tn { font-size: .62rem; font-weight: 800; line-height: 1.05; text-align: center; max-width: 100%; overflow-wrap: anywhere; hyphens: auto; }
+.kf-tile .kf-no { top: -4px; left: -4px; min-width: 20px; font-size: .65rem; padding: 0 5px; }
+.kf-tile.mark { box-shadow: inset 0 0 0 3px #1f5fbf; background: #dce8fb; }
+.kf-tile.good { box-shadow: inset 0 0 0 3px #2e8b3d; background: #e3f4e6; }
+.kf-tile.bad { box-shadow: inset 0 0 0 3px #c62828; background: #fde8e6; }
+.kf-tile.lg { width: 130px; height: 150px; border-radius: 18px; box-shadow: inset 0 0 0 4px #f2b705, 0 4px 10px rgba(0,0,0,.3); background: #fff4cc; }
+.kf-tile.lg .kf-te { font-size: 4.4rem; }
+.kf-tile.lg .kf-tn { font-size: 1.05rem; }
+
+/* Hinweis und "Fertig" unter dem Spielfeld: gleich hoch, bleibt am unteren Rand sichtbar */
+.kf-action { position: sticky; bottom: 6px; z-index: 10; height: 7.6rem; padding: 8px 14px; display: flex; flex-direction: column; justify-content: center; gap: 4px; border: 2px solid var(--line); box-shadow: 0 -3px 12px rgba(0,0,0,.22); overflow: hidden; }
+.kf-action p { margin: 0; font-size: .95rem; line-height: 1.25; height: 3.75em; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.kf-action .btn { margin: 2px 0 0; min-height: 56px; padding: 8px 16px; }
+
+/* Ergebnis (Fenster vor dem Spiel) */
+.kf-modalwrap { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; padding: 12px; background: rgba(15,15,30,.62); }
+.kf-modal { width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; background: #fff; color: #111; border-radius: 22px; padding: 16px 14px 0; box-shadow: 0 12px 40px rgba(0,0,0,.5); }
+.kf-ok, .kf-bad { text-align: center; font-size: 1.6rem; font-weight: 900; margin-bottom: 6px; }
+.kf-ok { color: #1d7a3a; }
+.kf-bad { color: #b3261e; }
+.kf-newthing { display: flex; justify-content: center; margin: 8px 0; }
+.kf-modalbtn { position: sticky; bottom: 0; background: #fff; padding: 6px 0 12px; margin-top: 6px; }
+.kf-modalbtn .btn { margin: 4px 0; }
+.kf-resolve h3 { margin: 10px 0 6px; font-size: 1rem; }
+.kf-resolve .kf-tiles { padding: 4px 2px; }
+.kf-resolvecard { text-align: left; }
+
+/* Ende und Punkte */
+.kf-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; }
+.kf-stats div { background: #f3f1ea; border-radius: 16px; padding: 10px 6px; }
+.kf-stats b { display: block; font-size: 1.7rem; line-height: 1.1; }
+.kf-stats span { font-size: .85rem; color: var(--muted); font-weight: 700; }
+.kf-result h1 { font-size: 1.7rem; }
+.ranking li.kf-gone .rn { text-decoration: line-through; opacity: .7; }
+
+@media (min-width: 560px) {
+  .kf-boardcard { margin: 8px 0; padding: 12px 14px 16px; }
+  .banner { font-size: 1.4rem; }
+}
+@media (prefers-reduced-motion: reduce) { .kf-card, .kf-modal { transition: none; animation: none; } }
