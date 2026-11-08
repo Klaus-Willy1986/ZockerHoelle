@@ -29,6 +29,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Mäxchen** (`maexchen/`): Würfel-Bluffspiel für 2–8 Personen, mit Computer und Lernrunde.
 - **Vier in Reihe** (`vier/`): Steine fallen lassen, vier in einer Reihe gewinnen (7×6 oder 8×7), für zwei, mit Computer und Lernrunde.
 - **Rommé** (`romme/`): Kartenspiel für 2–4 Personen (Eröffnung 40 Punkte, Joker, Anlegen), nur per Tippen, mit Computer und Lernrunde.
+- **Stadt, Land, Fluss** (`stadt/`): Wortspiel mit Buchstabe und Kategorien (Wörterbuch mit 1.676 Einträgen), allein, mit Mitspielenden oder gegen Computer, mit Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
