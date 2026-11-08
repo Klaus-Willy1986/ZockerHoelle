@@ -35,6 +35,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Mogeln** (`mogeln/`): Karten-Bluffspiel für 2–6 Personen, mit Computer und Lernrunde.
 - **Stichprophet** (`stichprophet/`): Stichspiel mit Vorhersage (Zauberer, Narren, Trumpf) für 3–6 Personen, mit Computer und Lernrunde.
 - **Zehntausend** (`zehntausend/`): Würfelspiel (Farkle-Art) bis 10.000 Punkte, allein, mit Mitspielenden oder gegen Computer, mit Lernrunde.
+- **Bunco** (`bunco/`): Würfelspiel mit Zielzahl über sechs Runden, allein, mit Mitspielenden oder gegen Computer, mit Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
