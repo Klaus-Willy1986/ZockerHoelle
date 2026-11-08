@@ -1,0 +1,86 @@
+/* ===== Schwimmen (31) ===== */
+/* Karten: Größe über font-size steuerbar (1em = 1/6 der Kartenbreite). Normal 78 x 113 px. */
+.sw-card { --c: #111; position: relative; display: block; box-sizing: border-box; flex: none; font: inherit; font-size: 13px; width: 6em; height: 8.667em; padding: 0; border-radius: .75em; background: #fff; color: var(--c); border: 2px solid #4a4a52; box-shadow: 0 2px 4px rgba(0,0,0,.28); text-align: center; overflow: hidden; }
+.sw-card.red { --c: #c62828; }
+.sw-card.sm { font-size: 9px; border-width: 1.5px; }
+.sw-card .tl { position: absolute; top: .25em; left: .3em; display: flex; flex-direction: column; align-items: center; line-height: 1; font-weight: 900; }
+.sw-card .rk { font-size: 2em; letter-spacing: -.02em; }
+.sw-card .ss { font-size: 1.5em; margin-top: .05em; }
+.sw-card .mid { position: absolute; left: 0; right: 0; top: .72em; font-size: 3.1em; line-height: 1.1; }
+.sw-card .nm { position: absolute; left: 0; right: 0; bottom: .35em; font-size: .95em; font-weight: 800; line-height: 1; }
+.sw-card.red::after { content: ""; position: absolute; inset: 3px; border: 2px dashed rgba(198,40,40,.35); border-radius: .55em; pointer-events: none; }
+.sw-card.back { background: repeating-linear-gradient(45deg, #1f5fbf 0 6px, #174a96 6px 12px); border-color: #0d2f66; }
+.sw-card.back::before { content: ""; position: absolute; inset: .55em; border: 2px solid rgba(255,255,255,.75); border-radius: .5em; }
+button.sw-card { cursor: pointer; }
+button.sw-card:hover { background: #f4f8ff; }
+button.sw-card:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.sw-card.sel { border: 4px solid #ffb300; box-shadow: 0 0 0 4px #ffe08a, 0 4px 8px rgba(0,0,0,.3); transform: translateY(-6px); }
+
+/* Spielfläche */
+.sw-board { padding: 12px; }
+.sw-opps { list-style: none; margin: 0 0 10px; padding: 0; display: grid; grid-template-columns: 1fr; gap: 8px; }
+.sw-opp { display: flex; align-items: center; gap: 8px; height: 62px; padding: 4px 10px; border-radius: 12px; background: #f1efe8; border: 3px solid transparent; overflow: hidden; }
+.sw-opp.act { border-color: var(--primary); background: #e8f0fd; }
+.sw-opp.out { opacity: .55; }
+.sw-who { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: center; line-height: 1.2; }
+.sw-nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1rem; }
+.sw-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .8rem; color: var(--muted); font-weight: 700; }
+.sw-lives { flex: none; display: inline-flex; align-items: center; gap: 1px; font-size: 1.2rem; line-height: 1; white-space: nowrap; }
+.sw-lives .lost { filter: grayscale(.2); opacity: .8; }
+.sw-lives .swim { margin-left: 4px; font-size: 1.1rem; }
+.sw-backs { flex: none; display: flex; align-items: center; height: 36px; }
+.sw-backs .sw-card { margin-left: -1.6em; font-size: 4px; border-width: 1px; box-shadow: none; }
+.sw-backs .sw-card::before { inset: .4em; border-width: 1px; }
+.sw-backs .sw-card:first-child { margin-left: 0; }
+
+.sw-tablebox { background: #e6f2e8; border: 3px solid #b9d9bf; border-radius: 14px; padding: 8px 6px 10px; text-align: center; }
+.sw-lbl { display: block; font-size: .95rem; font-weight: 800; color: var(--muted); margin-bottom: 6px; }
+.sw-table { display: flex; justify-content: center; gap: 12px; min-height: 8.7em; font-size: 13px; }
+.sw-state { height: 3.4rem; margin: 8px 0 0; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; font-size: 1rem; line-height: 1.25; overflow: hidden; }
+.sw-state.on { color: #b3541e; }
+
+/* Hand */
+.sw-handcard { padding: 12px; }
+.sw-handhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 4px; }
+.sw-handhead h2 { margin: 0; font-size: 1.1rem; }
+.sw-val { min-height: 1.9rem; margin: 0 0 6px; font-size: 1.1rem; font-weight: 700; }
+.sw-val b { font-size: 1.4rem; }
+.sw-hand { display: flex; justify-content: center; gap: 12px; padding-top: 8px; min-height: 9.6em; font-size: 13px; }
+.sw-hand .sw-card { font-size: inherit; }
+.sw-out { text-align: center; margin: 12px 0; font-weight: 800; }
+
+/* Aktionsbereich: feste Höhe, damit nichts springt */
+.sw-action { min-height: 19rem; display: flex; flex-direction: column; justify-content: flex-start; }
+.sw-msg { height: 7.6rem; overflow: hidden; display: flex; align-items: center; }
+.sw-msg p { margin: 0; }
+.sw-msg .warn { color: var(--warn); font-weight: 800; }
+.sw-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sw-btns .btn { margin: 0; min-height: 64px; padding: 8px 6px; font-size: 1.05rem; line-height: 1.15; }
+.sw-btns .btn.knock { background: #fff4cc; border-color: #ffb300; color: #5c3d00; }
+.sw-btns .btn.t31 { background: #fff; border-color: #6a3fb5; color: #4a2a8a; }
+
+/* Rundenende */
+.sw-over h1 { text-align: center; margin: 4px 0 6px; font-size: 1.5rem; }
+.sw-over .big { text-align: center; }
+.sw-rows { margin: 10px 0; display: grid; gap: 8px; }
+.sw-row { border: 2px solid var(--line); border-radius: 12px; padding: 8px 10px; background: #fff; }
+.sw-row.lose { border-color: #e0a09a; background: #fff3f1; }
+.sw-row.win { border-color: #8fcf9a; background: #eefaf0; }
+.sw-row .head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; font-weight: 800; }
+.sw-row .cards { display: flex; gap: 6px; margin: 6px 0; }
+.sw-row .res { font-size: .95rem; font-weight: 700; }
+.sw-btns1 { display: grid; gap: 4px; margin-top: 10px; }
+.sw-table2 { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
+.sw-table2 th { text-align: left; font-size: .85rem; color: var(--muted); padding: 4px 6px; }
+.sw-table2 td { padding: 8px 6px; border-top: 1px solid var(--line); }
+.sw-table2 td.n, .sw-table2 th.n { text-align: right; }
+
+@media (min-width: 700px) {
+  .sw-card { font-size: 15px; }
+  .sw-table, .sw-hand { font-size: 15px; gap: 18px; }
+  .sw-opps { grid-template-columns: 1fr 1fr; }
+  .sw-card.sm { font-size: 10px; }
+}
+
+/* Statusbanner: immer gleich hoch (auch bei zwei Zeilen), damit das Spielfeld nicht springt */
+.banner { box-sizing: border-box; height: 5.2rem; min-height: 0; overflow: hidden; font-size: 1.35rem; line-height: 1.25; }

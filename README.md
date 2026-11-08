@@ -31,6 +31,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Rommé** (`romme/`): Kartenspiel für 2–4 Personen (Eröffnung 40 Punkte, Joker, Anlegen), nur per Tippen, mit Computer und Lernrunde.
 - **Stadt, Land, Fluss** (`stadt/`): Wortspiel mit Buchstabe und Kategorien (Wörterbuch mit 1.676 Einträgen), allein, mit Mitspielenden oder gegen Computer, mit Lernrunde.
 - **Bingo** (`bingo/`): Zahlen-Bingo (75 Zahlen) mit Vorlesen, allein, mit Mitspielenden oder gegen Computer, mit Lernrunde.
+- **Schwimmen** (`schwimmen/`): Kartenspiel (31) mit Leben, Tauschen, Klopfen für 2–6 Personen, mit Computer und Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
