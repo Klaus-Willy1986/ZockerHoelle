@@ -1,0 +1,77 @@
+/* ===== Mogeln ===== */
+/* Karten: Größe über font-size steuerbar (1em = 1/6 der Kartenbreite). Hand: 10px -> 60 x 87 px. */
+.mg-card { --c: #111; position: relative; display: block; box-sizing: border-box; flex: none; font: inherit; font-size: 10px; width: 6em; height: 8.667em; padding: 0; border-radius: .75em; background: #fff; color: var(--c); border: 2px solid #4a4a52; box-shadow: 0 2px 4px rgba(0,0,0,.28); text-align: center; overflow: hidden; }
+.mg-card.red { --c: #c62828; }
+.mg-card .tl { position: absolute; top: .25em; left: .3em; display: flex; flex-direction: column; align-items: center; line-height: 1; font-weight: 900; }
+.mg-card .rk { font-size: 2em; letter-spacing: -.02em; }
+.mg-card .ss { font-size: 1.5em; margin-top: .05em; }
+.mg-card .mid { position: absolute; left: 0; right: 0; top: .8em; font-size: 3em; line-height: 1.1; }
+.mg-card .nm { position: absolute; left: 0; right: 0; bottom: .3em; font-size: .95em; font-weight: 800; line-height: 1; }
+.mg-card.red::after { content: ""; position: absolute; inset: 3px; border: 2px dashed rgba(198,40,40,.35); border-radius: .55em; pointer-events: none; }
+.mg-card.back { background: repeating-linear-gradient(45deg, #1f5fbf 0 6px, #174a96 6px 12px); border-color: #0d2f66; }
+.mg-card.back::before { content: ""; position: absolute; inset: .55em; border: 2px solid rgba(255,255,255,.75); border-radius: .5em; }
+.mg-card.sm { font-size: 6px; border-width: 1px; }
+.mg-card.sm .rk { font-size: 2.3em; }
+.mg-card.sm .mid { font-size: 3.2em; top: .9em; }
+.mg-card.sm .nm { display: none; }
+.mg-card.sm.red::after { display: none; }
+
+button.mg-card { cursor: pointer; transition: transform .08s; }
+button.mg-card:hover { background: #f4f8ff; }
+button.mg-card:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.mg-card.sel { border: 4px solid #ffb300; box-shadow: 0 0 0 3px #ffe08a, 0 4px 8px rgba(0,0,0,.3); transform: translateY(-8px); background: #fffaf0; }
+
+.banner { box-sizing: border-box; height: 3.4rem; min-height: 0; margin: 6px 0; padding: 2px 10px; overflow: hidden; font-size: 1.25rem; line-height: 1.15; }
+
+/* Spielfläche: feste Höhe, damit nichts springt */
+.mg-board { padding: 10px; margin: 6px 0; }
+.mg-opps { list-style: none; margin: 0 0 8px; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.mg-opps.one { grid-template-columns: 1fr; }
+.mg-opp { box-sizing: border-box; height: 52px; padding: 4px 10px; border-radius: 12px; background: #f1efe8; border: 3px solid transparent; display: flex; flex-direction: column; justify-content: center; gap: 1px; min-width: 0; overflow: hidden; }
+.mg-opp.act { border-color: var(--primary); background: #e8f0fd; }
+.mg-nm { font-size: .95rem; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #111; }
+.mg-ct { font-size: .9rem; font-weight: 800; line-height: 1.1; color: #111; white-space: nowrap; }
+
+.mg-center { height: 112px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; }
+.mg-pilecol { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.mg-pile { position: relative; }
+.mg-pile .mg-card { font-size: 10px; }
+.mg-count { position: absolute; left: 50%; bottom: .45em; transform: translateX(-50%); background: #fff; color: #111; font-weight: 900; font-size: 1.05rem; min-width: 2em; padding: .05em .35em; border-radius: 999px; border: 2px solid #0d2f66; z-index: 2; text-align: center; }
+.mg-lbl { font-size: .8rem; font-weight: 800; color: var(--muted); line-height: 1; }
+.mg-rankbox { box-sizing: border-box; height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 14px; background: #fff4cc; border: 3px solid #ffb300; color: #111; min-width: 0; overflow: hidden; }
+.mg-all { font-size: 1.1rem; font-weight: 700; line-height: 1.1; }
+.mg-rank { font-size: 2.3rem; font-weight: 900; line-height: 1.15; white-space: nowrap; }
+.mg-strip { box-sizing: border-box; height: 64px; margin-top: 6px; display: flex; gap: 6px; align-items: center; justify-content: center; border-radius: 12px; background: #dff0e4; border: 2px solid #b8d8bd; }
+.mg-rv { position: relative; display: block; border-radius: 6px; padding: 2px; }
+.mg-rv i { position: absolute; right: -3px; bottom: -3px; width: 20px; height: 20px; line-height: 20px; border-radius: 50%; font-style: normal; font-weight: 900; font-size: .85rem; text-align: center; color: #fff; }
+.mg-rv.ok { background: #bfe8c5; } .mg-rv.ok i { background: #2e7d32; }
+.mg-rv.bad { background: #f7c9c4; } .mg-rv.bad i { background: #b3261e; }
+.mg-line { box-sizing: border-box; height: 2.6em; margin: 6px 0 0; display: flex; align-items: center; justify-content: center; text-align: center; font-size: .95rem; font-weight: 600; line-height: 1.2; overflow: hidden; }
+html.big .mg-nm, html.big .mg-ct { font-size: .8rem; }
+
+.mg-action { min-height: 14rem; margin: 8px 0; display: flex; flex-direction: column; justify-content: center; }
+.mg-action .big { margin: 0 0 6px; }
+.mg-action .btn { margin: 6px 0; }
+.mg-sub { font-size: .95rem; color: var(--muted); margin: 4px 0; line-height: 1.25; min-height: 1.25em; }
+.mg-result { font-weight: 800; }
+
+.mg-handcard { padding: 12px; }
+.mg-handcard h2 { margin: 0 0 8px; font-size: 1.1rem; }
+.mg-hand { display: flex; flex-wrap: wrap; gap: 14px 6px; padding-top: 10px; justify-content: flex-start; }
+
+.mg-table { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
+.mg-table th { text-align: left; font-size: .85rem; color: var(--muted); padding: 4px 6px; }
+.mg-table td { padding: 8px 6px; border-top: 1px solid var(--line); }
+.mg-table td.n, .mg-table th.n { text-align: right; font-weight: 800; white-space: nowrap; }
+.mg-table tr.lead td { background: #fff6d6; }
+.mg-over h1 { text-align: center; margin: 4px 0 6px; font-size: 1.6rem; }
+.mg-btns { display: grid; gap: 4px; margin-top: 10px; }
+
+@media (min-width: 700px) {
+  .mg-card { font-size: 12px; }
+  .mg-card.sm { font-size: 7px; }
+  .mg-opps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .mg-opps.one { grid-template-columns: 1fr; }
+  .mg-hand { gap: 16px 8px; }
+}
+@media (prefers-reduced-motion: reduce) { button.mg-card { transition: none; } }
