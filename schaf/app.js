@@ -55,7 +55,7 @@ function bannerHtml(g) {
   const l = lastOf(g);
   const mine = ap.id === cid;
   if (l && l.penalty) {
-    const t = l.penalty.pid === cid ? 'Du hast gepennt und bekommst von jedem eine Karte.' : `${esc(l.penalty.name)} hat gepennt und bekommt von jedem eine Karte.`;
+    const t = l.penalty.pid === cid ? 'Du bist die Schlafmütze: gepennt – und du bekommst von jedem eine Karte.' : `${esc(l.penalty.name)} ist die Schlafmütze: gepennt – und bekommt von jedem eine Karte.`;
     return `<div class="banner sk-penbanner${mine ? ' mine' : ''}">🐑 Schafskopp! ${t}</div>`;
   }
   if (mine) return `<div class="banner mine">${g.flipped ? `Du hast ${esc(M.cardName(g.flipped))} aufgedeckt. Wohin damit?` : 'Du bist dran!'}</div>`;

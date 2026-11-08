@@ -36,8 +36,8 @@ function compute(g, ctx) {
 
   if (last && last.penalty && once(ctx, 'penalty', sig)) {
     return { text: last.penalty.pid === me.id
-      ? 'Schafskopp! Du hast gepennt und bekommst von jedem eine Karte. Dein Zug ist damit zu Ende.'
-      : 'Schafskopp! Der Computer hat gepennt und bekommt von jedem eine Karte, auch von dir.' };
+      ? 'Schafskopp! Du bist die Schlafmütze: gepennt – du bekommst von jedem eine Karte. Dein Zug ist damit zu Ende.'
+      : 'Schafskopp! Der Computer ist die Schlafmütze: gepennt – er bekommt von jedem eine Karte, auch von dir.' };
   }
 
   if (ap.id !== me.id) return { text: 'Jetzt ist der Computer dran. Schau einfach zu.' };

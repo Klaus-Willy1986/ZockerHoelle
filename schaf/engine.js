@@ -213,7 +213,7 @@ function penalize(g, reason) {
     const c = q.deck.length ? q.deck.pop() : q.pile.length ? q.pile.pop() : null;
     if (c) { p.deck.unshift(c); got += 1; }
   }
-  pushRecap(g, `🐑 Schafskopp! ${p.name} hat gepennt und bekommt von jedem eine Karte.`);
+  pushRecap(g, `🐑 Schafskopp! ${p.name} ist die Schlafmütze: gepennt – und bekommt von jedem eine Karte.`);
   g.last = { ...(g.last || { seq: g.moves, kind: 'penalty', pid: p.id, name: p.name, text: '' }), penalty: { pid: p.id, name: p.name, reason, got, text: g.recap[0] } };
   // Wer durch die Abgabe keine Karten mehr hat, gewinnt.
   const n2 = g.players.length;
