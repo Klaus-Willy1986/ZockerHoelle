@@ -321,6 +321,12 @@
           <div class="tags"><span class="tg">1 Person</span><span class="tg">🎓 Lernrunde</span></div>
           <span class="go">Spielen</span>
         </a>
+        <a class="hubcard" href="bilder/" style="--accent:#c2410c">
+          <div class="hh"><span class="hi">🖼️</span><h3>Bilderrätsel</h3></div>
+          <p>Mit Zahlen ein verstecktes Bild ausmalen – wer errät, was es wird?</p>
+          <div class="tags"><span class="tg">1 Person</span><span class="tg">🎓 Lernrunde</span></div>
+          <span class="go">Spielen</span>
+        </a>
       </div>
     </section>
     <div class="hubfoot">
@@ -336,7 +342,7 @@
   <script>
     // Läuft schon ein Spiel in diesem Browser? Dann direkt "Zurück ins Spiel" anbieten.
     (function () {
-      var games = [["kq", "kreuzquer/", "Kreuz & Quer"], ["p10", "phasen/", "Phasenwürfeln"], ["pasch", "pasch/", "Pasch & Straße"], ["fw", "farben/", "Farbenwürfeln"], ["ludo", "ludo/", "Ludo"], ["bk", "barrikade/", "Barrikade"], ["muehle", "muehle/", "Mühle"], ["dame", "dame/", "Dame"], ["kachelstadt", "kachelstadt/", "Kachelstadt"], ["wn", "wildnis/", "Wildnis-Mosaik"], ["rg", "reihen/", "Reihen & Gruppen"], ["hh", "haus/", "Haus & Hof"], ["drei", "drei/", "Drei gewinnt"], ["sv", "schiffe/", "Schiffe versenken"], ["wm", "wenig/", "Wenig ist mehr"], ["sk", "schaf/", "Schafskopp"], ["ev", "elf/", "Elf voran"], ["bsk", "bauernskat/", "Bauernskat"], ["bs", "bauern/", "Bauernrennen"], ["pf", "memo/", "Paare finden"], ["qz", "quiz/", "Kneipenquiz"], ["mm", "maumau/", "Mau-Mau"], ["sr", "stapelrennen/", "Stapelrennen"], ["fk", "farbkarten/", "Farbkarten"], ["sd", "sudoku/", "Sudoku"], ["sp", "springspiel/", "Springspiel"], ["fc", "farbcode/", "Farbcode knacken"], ["mx", "maexchen/", "Mäxchen"], ["vr", "vier/", "Vier in Reihe"], ["rm", "romme/", "Rommé"], ["sl", "stadt/", "Stadt, Land, Fluss"], ["bg", "bingo/", "Bingo"], ["sw", "schwimmen/", "Schwimmen"], ["mg", "mogeln/", "Mogeln"], ["st", "stichprophet/", "Stichprophet"], ["zt", "zehntausend/", "Zehntausend"], ["bc", "bunco/", "Bunco"], ["rv", "reversi/", "Reversi"], ["bgm", "backgammon/", "Backgammon"], ["sc", "schach/", "Schach"], ["kr", "kartenrennen/", "Kartenrennen"], ["dk", "doppelkopf/", "Doppelkopf"], ["ws", "wortsuche/", "Wortsuche"], ["gg", "galgen/", "Galgenmännchen"], ["dr", "dunkel/", "Dunkle Rätsel"], ["kf", "koffer/", "Ich packe meinen Koffer"], ["kw", "kreuzwort/", "Kreuzworträtsel"], ["wb", "werbinich/", "Wer bin ich?"], ["mn", "minenfeld/", "Minenfeld"]];
+      var games = [["kq", "kreuzquer/", "Kreuz & Quer"], ["p10", "phasen/", "Phasenwürfeln"], ["pasch", "pasch/", "Pasch & Straße"], ["fw", "farben/", "Farbenwürfeln"], ["ludo", "ludo/", "Ludo"], ["bk", "barrikade/", "Barrikade"], ["muehle", "muehle/", "Mühle"], ["dame", "dame/", "Dame"], ["kachelstadt", "kachelstadt/", "Kachelstadt"], ["wn", "wildnis/", "Wildnis-Mosaik"], ["rg", "reihen/", "Reihen & Gruppen"], ["hh", "haus/", "Haus & Hof"], ["drei", "drei/", "Drei gewinnt"], ["sv", "schiffe/", "Schiffe versenken"], ["wm", "wenig/", "Wenig ist mehr"], ["sk", "schaf/", "Schafskopp"], ["ev", "elf/", "Elf voran"], ["bsk", "bauernskat/", "Bauernskat"], ["bs", "bauern/", "Bauernrennen"], ["pf", "memo/", "Paare finden"], ["qz", "quiz/", "Kneipenquiz"], ["mm", "maumau/", "Mau-Mau"], ["sr", "stapelrennen/", "Stapelrennen"], ["fk", "farbkarten/", "Farbkarten"], ["sd", "sudoku/", "Sudoku"], ["sp", "springspiel/", "Springspiel"], ["fc", "farbcode/", "Farbcode knacken"], ["mx", "maexchen/", "Mäxchen"], ["vr", "vier/", "Vier in Reihe"], ["rm", "romme/", "Rommé"], ["sl", "stadt/", "Stadt, Land, Fluss"], ["bg", "bingo/", "Bingo"], ["sw", "schwimmen/", "Schwimmen"], ["mg", "mogeln/", "Mogeln"], ["st", "stichprophet/", "Stichprophet"], ["zt", "zehntausend/", "Zehntausend"], ["bc", "bunco/", "Bunco"], ["rv", "reversi/", "Reversi"], ["bgm", "backgammon/", "Backgammon"], ["sc", "schach/", "Schach"], ["kr", "kartenrennen/", "Kartenrennen"], ["dk", "doppelkopf/", "Doppelkopf"], ["ws", "wortsuche/", "Wortsuche"], ["gg", "galgen/", "Galgenmännchen"], ["dr", "dunkel/", "Dunkle Rätsel"], ["kf", "koffer/", "Ich packe meinen Koffer"], ["kw", "kreuzwort/", "Kreuzworträtsel"], ["wb", "werbinich/", "Wer bin ich?"], ["mn", "minenfeld/", "Minenfeld"], ["bd", "bilder/", "Bilderrätsel"]];
       var html = '';
       games.forEach(function (g) {
         try {
