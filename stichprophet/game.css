@@ -1,0 +1,102 @@
+/* ===== Stichprophet ===== */
+/* Karten: Zelle (.st-cell) ist der Container; alle Größen in cqw (Prozent der Kartenbreite). */
+.st-cell { container-type: inline-size; width: 100%; min-width: 0; }
+.st-card { --c: #111; --bg: #fff; --bd: #4a4a52; position: relative; display: block; box-sizing: border-box; width: 100%; aspect-ratio: 6 / 8.667; margin: 0; padding: 0; font: inherit; color: var(--c); background: var(--bg); border: 2px solid var(--bd); border-radius: 12cqw; box-shadow: 0 2px 4px rgba(0,0,0,.28); text-align: left; overflow: hidden; }
+.st-card.s0 { --c: #a31515; --bg: #ffe1e1; --bd: #b71c1c; }
+.st-card.s1 { --c: #5c4300; --bg: #ffeb8a; --bd: #b58900; }
+.st-card.s2 { --c: #135c27; --bg: #d6f1db; --bd: #1b7a2e; }
+.st-card.s3 { --c: #123f94; --bg: #d9e6ff; --bd: #1a56c4; }
+.st-card.wiz { --c: #4a148c; --bg: #eadcff; --bd: #6a1b9a; }
+.st-card.fool { --c: #7a3b00; --bg: #ffe6c7; --bd: #c76a00; }
+.st-card .rk { position: absolute; left: 9cqw; top: 4cqw; font-size: 37cqw; font-weight: 900; line-height: 1; letter-spacing: -.03em; }
+.st-card .ss { position: absolute; left: 9cqw; top: 42cqw; font-size: 26cqw; line-height: 1; }
+.st-card .mid { position: absolute; right: 6cqw; bottom: 4cqw; font-size: 60cqw; line-height: 1; }
+.st-card.wiz .mid, .st-card.fool .mid { right: 0; left: 0; bottom: 14cqw; text-align: center; font-size: 56cqw; }
+.st-card .nm { position: absolute; left: 0; right: 0; bottom: 4cqw; text-align: center; font-size: 16cqw; font-weight: 800; line-height: 1; }
+@container (max-width: 64px) { .st-card .nm { display: none; } .st-card.wiz .mid, .st-card.fool .mid { bottom: 8cqw; } }
+button.st-card { cursor: pointer; }
+button.st-card:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.st-card.can { border: 4px solid var(--ok); box-shadow: 0 0 0 3px #bfe8c5, 0 4px 8px rgba(0,0,0,.3); }
+.st-card.dim { opacity: .45; filter: grayscale(.7); box-shadow: none; }
+.st-card.empty { background: transparent; border: 3px dashed #a9a597; box-shadow: none; }
+
+.st-board { padding: 10px; }
+
+/* Kopf: Runde und Trumpf – feste Höhe */
+.st-info { display: flex; justify-content: space-between; align-items: center; gap: 10px; height: 5.6rem; overflow: hidden; }
+.st-round { display: flex; flex-direction: column; font-weight: 800; line-height: 1.25; min-width: 0; }
+.st-round b { font-size: 1rem; white-space: nowrap; }
+.st-round span { font-size: .8rem; white-space: nowrap; color: var(--muted); font-weight: 700; }
+.st-trump { display: flex; align-items: center; gap: 10px; min-width: 0; text-align: right; }
+.st-trump .txt { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; align-items: flex-end; }
+.st-trump .main { font-size: 1.2rem; font-weight: 900; white-space: nowrap; }
+.st-trump .main .sy { font-size: 1.7rem; vertical-align: -.1em; }
+.st-trump .sub { font-size: .8rem; font-weight: 700; color: var(--muted); max-width: 11em; }
+.st-up { width: 44px; flex: none; }
+.sy.s0 { color: #b71c1c; } .sy.s1 { color: #b58900; } .sy.s2 { color: #1b7a2e; } .sy.s3 { color: #1a56c4; }
+
+/* Ansagetafel */
+.st-bids { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 6px; margin: 4px 0 2px; }
+.st-chip { border: 2px solid var(--line); border-radius: 12px; padding: 4px 6px; text-align: center; background: #faf8f3; min-width: 0; height: 4.6rem; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+.st-chip.act { border-color: var(--primary); box-shadow: 0 0 0 3px #bcd3f6; background: #eef4fe; }
+.st-chip .nm { font-size: .78rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-chip .val { font-size: 1.3rem; font-weight: 900; line-height: 1.15; white-space: nowrap; }
+.st-chip .tag { font-size: .7rem; font-weight: 700; color: var(--muted); height: .9rem; line-height: .9rem; }
+.st-cap { font-size: .8rem; font-weight: 700; color: var(--muted); text-align: center; height: 1.1rem; line-height: 1.1rem; margin-bottom: 4px; }
+
+/* Tischmitte: aktueller Stich, feste Höhe */
+.st-center { --sw: min(80px, calc((100vw - 80px - 6px * (var(--n) - 1)) / var(--n))); display: grid; grid-template-columns: repeat(var(--n), var(--sw)); justify-content: space-between; align-items: start; gap: 6px; height: calc(var(--sw) * 1.444 + 2.3rem); padding: 8px 0 4px; border-top: 2px solid var(--line); border-bottom: 2px solid var(--line); margin: 4px 0 0; }
+.st-slot { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+.st-slot .lb { font-size: .8rem; font-weight: 800; color: var(--muted); height: 1.2rem; line-height: 1.2rem; width: var(--sw); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.st-slot.act .lb { color: var(--primary); text-decoration: underline; }
+.st-slot.win .st-card { box-shadow: 0 0 0 4px #ffb300; }
+.st-center.past .st-slot .st-card:not(.empty) { opacity: .6; }
+.st-slot .st-cell { width: var(--sw); }
+
+/* Eigene Hand */
+.st-hand { --cw: 68px; display: grid; grid-template-columns: repeat(auto-fill, var(--cw)); justify-content: center; gap: 8px 6px; }
+.st-hand.many { --cw: 52px; }
+.st-hand.lots { --cw: 48px; }
+.st-handbox h2 { margin-bottom: .3em; }
+.st-line { min-height: 3.6rem; margin: 6px 0 0; }
+.st-line.warn { background: #fde7e7; border: 3px solid var(--warn); border-radius: 12px; padding: 6px 10px; color: #6b1410; font-weight: 800; }
+.st-act { padding: 12px; }
+
+.st-bidgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; margin-top: 8px; }
+.st-bidgrid .btn { margin: 0; min-height: 60px; padding: 4px; font-size: 1.6rem; font-weight: 900; background: #fff; color: var(--primary); border-color: var(--primary); }
+.st-bidgrid .btn:disabled { opacity: .35; cursor: not-allowed; }
+.st-suits { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
+.st-suits .btn { margin: 0; min-height: 4.4rem; padding: 4px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; }
+.st-suits .btn span { font-size: 2rem; line-height: 1; }
+.st-suits .btn small { font-size: .8rem; font-weight: 800; }
+.st-suits .btn.s0 { color: #b71c1c; border-color: #b71c1c; } .st-suits .btn.s1 { color: #8a6500; border-color: #b58900; }
+.st-suits .btn.s2 { color: #1b7a2e; border-color: #1b7a2e; } .st-suits .btn.s3 { color: #1a56c4; border-color: #1a56c4; }
+
+/* Tabellen */
+.st-scroll { overflow: auto; max-height: 17rem; margin-top: 8px; border: 2px solid var(--line); border-radius: 10px; }
+.st-table table, .st-res table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+.st-table th, .st-table td, .st-res th, .st-res td { padding: 6px 6px; text-align: center; border-top: 1px solid var(--line); white-space: nowrap; }
+.st-table th { position: sticky; top: 0; background: #f1ede3; border-top: 0; max-width: 5.5em; overflow: hidden; text-overflow: ellipsis; }
+.st-table td.neg, .st-res td.neg { color: var(--warn); font-weight: 800; }
+.st-table td.pos, .st-res td.pos { color: #1b6e2a; font-weight: 800; }
+.st-table tr.sum td { font-weight: 900; background: #f6f3ea; }
+.st-res th { background: #f1ede3; font-size: .8rem; border-top: 0; }
+.st-res td.nm { text-align: left; max-width: 6.5em; overflow: hidden; text-overflow: ellipsis; font-weight: 800; }
+.st-rank { list-style: none; padding: 0; margin: 4px 0 0; font-size: 1.1rem; font-weight: 700; }
+.st-rank li { display: flex; justify-content: space-between; padding: 4px 2px; border-bottom: 1px solid var(--line); }
+.st-rank li b { font-weight: 900; }
+.st-over h1 { text-align: center; margin: 4px 0 6px; font-size: 1.6rem; }
+.st-over .medal { font-size: 4rem; text-align: center; }
+.st-btns { display: grid; gap: 4px; margin-top: 10px; }
+.st-over .rows { font-size: 1.1rem; margin: 6px 0; text-align: center; font-weight: 700; }
+
+@media (min-width: 700px) {
+  .st-hand { --cw: 84px; }
+  .st-hand.many { --cw: 68px; }
+  .st-hand.lots { --cw: 60px; }
+  .st-center { --sw: min(96px, calc((100vw - 80px - 6px * (var(--n) - 1)) / var(--n))); }
+  .st-up { width: 54px; }
+}
+
+/* Statusbanner: immer gleich hoch, damit das Spielfeld nicht springt */
+.banner { box-sizing: border-box; height: 5.2rem; min-height: 0; overflow: hidden; font-size: 1.35rem; line-height: 1.25; }

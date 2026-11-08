@@ -33,6 +33,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Bingo** (`bingo/`): Zahlen-Bingo (75 Zahlen) mit Vorlesen, allein, mit Mitspielenden oder gegen Computer, mit Lernrunde.
 - **Schwimmen** (`schwimmen/`): Kartenspiel (31) mit Leben, Tauschen, Klopfen für 2–6 Personen, mit Computer und Lernrunde.
 - **Mogeln** (`mogeln/`): Karten-Bluffspiel für 2–6 Personen, mit Computer und Lernrunde.
+- **Stichprophet** (`stichprophet/`): Stichspiel mit Vorhersage (Zauberer, Narren, Trumpf) für 3–6 Personen, mit Computer und Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
