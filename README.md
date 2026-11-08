@@ -37,6 +37,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Zehntausend** (`zehntausend/`): Würfelspiel (Farkle-Art) bis 10.000 Punkte, allein, mit Mitspielenden oder gegen Computer, mit Lernrunde.
 - **Bunco** (`bunco/`): Würfelspiel mit Zielzahl über sechs Runden, allein, mit Mitspielenden oder gegen Computer, mit Lernrunde.
 - **Reversi** (`reversi/`): Brettspiel für zwei (8×8, Einschließen und Umdrehen), mit Computer und Lernrunde.
+- **Backgammon** (`backgammon/`): Würfel-Brettspiel für zwei (Spiel bis 3 oder 5 Punkte, Gammon, Backgammon), mit Computer und Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 

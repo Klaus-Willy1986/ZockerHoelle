@@ -1,0 +1,77 @@
+/* ===== Backgammon ===== */
+:root { --bg-a: #ead2a0; --bg-b: #86aaa4; --bg-frame: #f6efe0; --bg-ring: #e07a00; }
+
+/* Statuszeile: feste Höhe, damit nichts springt */
+.bg-banner { height: 4.6rem; min-height: 4.6rem; overflow: hidden; padding: 6px 12px; margin: 6px 0; }
+.bg-banner h1 { display: inline; font-size: 1.15rem; margin: 0; color: #fff; -webkit-text-fill-color: #fff; background: none; line-height: 1.2; }
+.bg-banner .trophy { display: inline-block; font-size: 1.6rem; animation: none; vertical-align: middle; filter: none; }
+
+/* Brett */
+.bg-boardcard { padding: 8px; margin-left: -6px; margin-right: -6px; }
+.bg-wrap { width: 100%; max-width: 600px; margin: 0 auto; touch-action: manipulation; }
+.bg-wrap.zoom { overflow-x: auto; max-width: none; -webkit-overflow-scrolling: touch; }
+.bg-wrap.zoom .bg-svg { width: 150%; }
+.bg-svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.bg-frame { fill: var(--bg-frame); stroke: #5a4a30; stroke-width: 2; }
+.bg-tri0 { fill: var(--bg-a); } .bg-tri1 { fill: var(--bg-b); }
+.bg-tri { stroke: #5a4a30; stroke-width: .8; }
+.bg-homezone { fill: rgba(46, 139, 61, .12); }
+.bg-barstrip { fill: #cdbb95; stroke: #5a4a30; stroke-width: 1.5; }
+.bg-barsep { stroke: #5a4a30; stroke-width: 1.5; stroke-dasharray: 4 4; }
+.bg-offbox { fill: #e4d7b8; stroke: #5a4a30; stroke-width: 1.5; }
+.bg-tgtbox { fill: #fff2c0; }
+.bg-lab { font-size: 11px; font-weight: 800; fill: #3a2f1c; pointer-events: none; }
+.bg-num { font-size: 11px; font-weight: 700; fill: #3a2f1c; pointer-events: none; }
+.bg-numh { fill: #14602a; font-weight: 900; }
+.bg-st0 > circle:first-child { fill: #fff; stroke: #1b1b1f; stroke-width: 2; }
+.bg-in0 { fill: #1b1b1f; }
+.bg-st1 > circle:first-child { fill: #26262c; stroke: #000; stroke-width: 2; }
+.bg-in1 { fill: #f4f4f4; }
+.bg-off0 { fill: #fff; stroke: #1b1b1f; stroke-width: 1.5; } .bg-off1 { fill: #26262c; stroke: #000; stroke-width: 1.5; }
+.bg-cnt { font-size: 14px; font-weight: 900; pointer-events: none; }
+.bg-cnt0 { fill: #111; } .bg-cnt1 { fill: #fff; }
+.bg-lastp { fill: none; stroke: #6a3fb5; stroke-width: 3; stroke-dasharray: 6 4; pointer-events: none; }
+.bg-can-mark { fill: rgba(255, 220, 90, .28); stroke: #b88700; stroke-width: 2; pointer-events: none; }
+.bg-sel-mark { fill: rgba(255, 179, 0, .30); stroke: var(--bg-ring); stroke-width: 4; pointer-events: none; }
+.bg-tgt-mark { fill: rgba(46, 139, 61, .18); stroke: #1d7a34; stroke-width: 3.5; pointer-events: none; }
+.bg-tgt-dot { fill: #1d7a34; stroke: #fff; stroke-width: 2; pointer-events: none; }
+.bg-pt { fill: transparent; stroke: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.bg-pt:focus-visible { outline: 3px solid #ffb300; }
+.bg-legend { margin: 6px 4px 8px; font-size: .85rem; line-height: 1.3; }
+.bg-legend .bg-icon { vertical-align: middle; }
+.bg-zoom { margin-top: 4px; }
+.bg-icon { flex: none; }
+.bg-icon .bg-st0 > circle:first-child, .bg-icon .bg-st1 > circle:first-child { stroke-width: 2; }
+
+/* Würfel und Text unter dem Brett: feste Mindesthöhe */
+.bg-status { min-height: 12rem; padding: 14px 16px; }
+.bg-diceline { min-height: 72px; display: flex; align-items: center; gap: 4px; margin-bottom: 6px; }
+.bg-dice { display: flex; flex-wrap: nowrap; align-items: center; min-height: 66px; }
+.bg-die { width: 56px; height: 56px; padding: 7px; margin: 3px; }
+.bg-d0 { background: #fff; color: #111; }
+.bg-d1 { background: #26262c; color: #fff; border-color: #000; }
+.bg-die.bg-used { opacity: .28; filter: grayscale(1); box-shadow: none; border-style: dashed; }
+.bg-die-empty { display: inline-flex; align-items: center; justify-content: center; background: #f2f2f2; color: #999; border-style: dashed; font-size: 1.8rem; font-weight: 900; }
+.bg-status .big { margin: 0 0 8px; font-weight: 700; font-size: 1.12rem; }
+.bg-warn { background: #fde7c8; color: #7a3b00; border-radius: 8px; padding: 1px 6px; font-weight: 800; }
+.bg-hint { background: #fff3cd; border: 2px solid #e0a800; border-radius: 12px; padding: 10px 12px; margin: 8px 0 0; font-weight: 600; color: #4d3b00; }
+.bg-choice { display: flex; flex-direction: column; gap: 8px; }
+
+/* Punktestand */
+.bg-score { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; margin: 6px 0; }
+.bg-pl { background: #fff; border: 3px solid var(--line); border-radius: 14px; padding: 6px 10px; min-width: 0; }
+.bg-pl.turn { border-color: var(--ok); background: #f1f8f2; }
+.bg-n { display: flex; align-items: center; gap: 6px; font-size: 1rem; min-height: 2rem; }
+.bg-n b { word-break: break-word; line-height: 1.15; }
+.bg-c { font-size: .85rem; color: var(--muted); }
+.bg-p { font-size: .95rem; line-height: 1.3; }
+.bg-p b, .bg-pip b { font-size: 1.15rem; }
+.bg-pip { font-size: .85rem; color: var(--muted); }
+.bg-round { grid-column: 1 / -1; margin: 0; text-align: center; font-weight: 700; font-size: 1rem; min-height: 1.4em; }
+@media (min-width: 600px) { .bg-boardcard { margin-left: 0; margin-right: 0; padding: 12px; } }
+@media (max-width: 340px) { .bg-boardcard { margin-left: -10px; margin-right: -10px; padding: 4px; } .bg-pl { padding: 6px 8px; } .bg-n { font-size: .9rem; } }
+
+/* Lernrunde: anzutippende Flächen (SVG: Umriss gilt dort nicht) */
+.bg-pt.coach-target { fill: rgba(255, 143, 0, .30); stroke: #ff6f00; stroke-width: 4; outline: none !important; animation: bg-coach 1s ease-in-out infinite; }
+@keyframes bg-coach { 50% { fill: rgba(255, 143, 0, .08); } }
+@media (prefers-reduced-motion: reduce) { .bg-pt.coach-target { animation: none; } }
