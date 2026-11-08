@@ -1,0 +1,55 @@
+/* ===== Kreuzworträtsel ===== */
+.kw-status { display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 8px; height: 44px; margin: 2px 0; font-weight: 800; font-size: 1.05rem; }
+.kw-lvl { background: #3b3b42; color: #fff; padding: 4px 14px; border-radius: 999px; white-space: nowrap; }
+.kw-clock { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.kw-left { color: var(--muted); font-size: .88rem; text-align: right; flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kw-left.warn { color: var(--warn); }
+.kw-left.ok { color: #1b6e2b; }
+
+.kw-wrap { margin: 6px -10px; }
+.kw-board { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); width: min(100%, calc(var(--cols) * 46px)); margin: 0 auto; border: 2px solid #111; background: #111; gap: 1px; }
+.kw-c { position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 1; min-width: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: #fff; color: #111; font: inherit; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+div.kw-c { cursor: default; }
+.kw-c.blk { background: #2b2b33; }
+.kw-c:focus-visible { outline: 4px solid #ffb300; outline-offset: -4px; z-index: 3; }
+.kw-n { position: absolute; top: 1px; left: 2px; font-size: .62rem; font-weight: 800; line-height: 1; color: #33333b; pointer-events: none; }
+.kw-v { font-size: clamp(1.05rem, 5.6vw, 1.6rem); font-weight: 800; line-height: 1; margin-top: .25em; }
+.kw-c.inw { background: #d6e6ff; }
+.kw-c.mine { color: var(--primary); }
+.kw-c.rev { color: #1b6e2b; background: #e8f4ea; }
+.kw-c.rev.inw { background: #cfe8d4; }
+.kw-c.wrong { background: #f6b4b4; color: #7d0f0f; }
+.kw-c.sel { background: #ffd56b; box-shadow: inset 0 0 0 3px #d98200; z-index: 2; }
+.kw-board.ro .kw-c { cursor: default; }
+
+.kw-tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 8px 0; }
+.kw-tool.btn { margin: 0; background: #fff; color: var(--primary); border-color: var(--primary); font-size: .9rem; padding: 6px 4px; min-height: 52px; line-height: 1.15; }
+.kw-tool.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.kw-tool:focus-visible, .kw-key:focus-visible, .kw-nav:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+
+.kw-lists { display: grid; grid-template-columns: 1fr; gap: 6px; margin: 10px 0; }
+.kw-lists h3 { margin: 8px 0 4px; font-size: 1.15rem; }
+.kw-lists ul { list-style: none; margin: 0; padding: 0; }
+.kw-lists li { margin: 0; }
+.kw-item { display: flex; gap: 8px; width: 100%; text-align: left; min-height: 48px; padding: 6px 10px; margin: 0 0 4px; border: 2px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); font: inherit; font-size: 1rem; cursor: pointer; align-items: center; }
+.kw-item b { min-width: 1.6rem; color: var(--primary); }
+.kw-item.cur { border-color: #d98200; background: #fff3cf; }
+@media (min-width: 640px) { .kw-lists { grid-template-columns: 1fr 1fr; gap: 16px; } }
+
+.kw-dock { position: sticky; bottom: 0; z-index: 10; background: var(--bg); padding: 5px 0 6px; margin-top: 8px; border-top: 2px solid var(--line); }
+.kw-cluerow { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 6px; align-items: stretch; margin-bottom: 6px; }
+.kw-nav { min-height: 48px; border: 2px solid var(--primary); border-radius: 12px; background: #fff; color: var(--primary); font: inherit; font-size: 1.4rem; font-weight: 800; cursor: pointer; touch-action: manipulation; padding: 0; }
+.kw-clue { display: flex; align-items: center; height: 4.4rem; margin: 0; padding: 4px 10px; border: 2px solid var(--line); border-radius: 12px; background: #fff; font-size: 1.05rem; font-weight: 700; line-height: 1.25; overflow: hidden; }
+.kw-clue.warn { background: #fde7e7; border-color: var(--warn); color: #6b1410; }
+.kw-clue.idle { color: var(--muted); font-weight: 600; }
+.kw-keys { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 3px; }
+.kw-key { min-height: 48px; padding: 0; border: 2px solid var(--primary); border-radius: 9px; background: #fff; color: var(--primary); font: inherit; font-size: 1.3rem; font-weight: 800; cursor: pointer; touch-action: manipulation; }
+.kw-key:hover, .kw-nav:hover { background: #eef3fc; }
+.kw-key.del { color: var(--warn); border-color: var(--warn); }
+@media (min-width: 560px) { .kw-keys { gap: 5px; } }
+
+.kw-opts { margin: 8px 0; }
+.kw-choose h2 { margin-top: 0; }
+.kw-now { font-weight: 800; font-size: 1.15rem; margin: 6px 0 10px; }
+.over .kw-clock { font-size: 1rem; }
+.kw-c.sel.wrong { background: #f08a8a; color: #5a0a0a; }
