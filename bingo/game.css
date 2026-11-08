@@ -1,0 +1,87 @@
+/* ===== Bingo ===== */
+.bg { --c0: #d32f2f; --c1: #e8890c; --c2: #2e8b3d; --c3: #1f5fbf; --c4: #8e24aa; }
+.bg .c0 { --c: var(--c0); } .bg .c1 { --c: var(--c1); } .bg .c2 { --c: var(--c2); } .bg .c3 { --c: var(--c3); } .bg .c4 { --c: var(--c4); }
+
+/* Statuszeile: feste Höhe, damit nichts springt */
+.banner { height: 3.3rem; min-height: 0; padding: 6px 14px; font-size: 1.25rem; line-height: 1.2; overflow: hidden; }
+
+/* Gezogene Zahl: Kugel links; rechts die fünf davor und "nochmal vorlesen". Immer gleich hoch. */
+.bg-draw { height: 5.7rem; margin: 6px 0; padding: 8px 12px; display: flex; align-items: center; gap: 10px; overflow: hidden; }
+.bg-ball {
+  flex: none; width: 4.6rem; height: 4.6rem; border-radius: 50%; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--c, #777); box-shadow: 0 5px 12px rgba(0,0,0,.3), inset 0 -5px 9px rgba(0,0,0,.2);
+}
+.bg-ball::before { content: ""; position: absolute; inset: 8%; border-radius: 50%; background: #fff; }
+.bg-ball small, .bg-ball b { position: relative; }
+.bg-ball small { font-size: .95rem; font-weight: 900; color: var(--c, #555); line-height: 1; margin-top: -.15rem; }
+.bg-ball b { font-size: 2rem; font-weight: 900; line-height: 1; color: #1d1d1f; }
+.bg-ball.empty b { color: #888; }
+.bg-side { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.bg-chips { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
+.bg-chip { flex: 1 1 0; min-width: 0; height: 1.9rem; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 2px; font-weight: 800; font-size: .9rem; color: #fff; background: var(--c, #999); }
+.bg-chip small { font-size: .62rem; opacity: .9; }
+.bg-chip.none { background: #ece9e0; color: #bdb8a8; }
+.btn.bg-read { margin: 0; padding: 4px 6px; min-height: 48px; font-size: .9rem; line-height: 1.1; }
+
+/* Ende der Runde: ersetzt die Kugel an derselben Stelle */
+.bg-over .trophy { flex: none; font-size: 2.6rem; line-height: 1; animation: none; }
+.bg-overtxt { flex: 1; min-width: 0; }
+.bg-over h1 { font-size: 1.1rem; margin: 0; line-height: 1.2; text-align: left; }
+.bg-oversub { margin: 2px 0 0; font-size: .85rem; line-height: 1.2; }
+
+/* Karte */
+.bg-boardcard { margin: 6px 0; padding: 6px 8px 8px; border-radius: 22px; background: linear-gradient(160deg, #fff8e1 0%, #ffe9b0 100%); border: 3px solid #e0a800; }
+.bg-card + .bg-card { margin-top: 12px; }
+.bg-cardno { margin: 0 0 2px; font-weight: 800; font-size: .95rem; color: #6d4c00; }
+.bg-head, .bg-grid { --gap: 5px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--gap); max-width: 440px; margin: 0 auto; }
+.bg-head { margin-bottom: var(--gap); }
+.bg-h { display: grid; place-items: center; height: 1.8rem; border-radius: 12px; background: var(--c); color: #fff; font-weight: 900; font-size: 1.25rem; }
+.bg-cell {
+  position: relative; display: grid; place-items: center; width: 100%; height: 2.8rem; min-height: 56px; padding: 0; margin: 0;
+  border-radius: 14px; border: 2px solid #c9b57a; background: #fff; color: #1d1d1f; font: inherit; font-size: 1.55rem; font-weight: 900; cursor: pointer;
+  box-shadow: 0 2px 0 rgba(0,0,0,.15); -webkit-tap-highlight-color: transparent; touch-action: manipulation; line-height: 1;
+}
+.bg-cell:focus-visible { outline: 4px solid #1f5fbf; outline-offset: 2px; }
+.bg-cell.on { background: #ffd54a; border-color: #b8860b; color: #3b2a00; box-shadow: inset 0 0 0 3px #fff3b0, 0 2px 0 rgba(0,0,0,.15); }
+.bg-cell.on::after { content: ""; position: absolute; inset: 9%; border-radius: 50%; border: 5px solid rgba(214,40,40,.85); pointer-events: none; }
+.bg-cell.free { background: #ffe082; }
+.bg-cell.free::after { display: none; }
+.bg-cell .bg-star { font-size: 1.7rem; line-height: 1; color: #c62828; }
+.bg-cell small { font-size: .7rem; font-weight: 800; color: #6d4c00; margin-top: -.6rem; }
+.bg-cell.win { background: #7be08a; border-color: #1b7a32; box-shadow: 0 0 0 3px #1b7a32, 0 0 14px rgba(27,122,50,.7); }
+
+/* Knöpfe unter der Karte: bleiben am unteren Rand sichtbar, gleich hoch */
+.bg-action { position: sticky; bottom: 6px; z-index: 10; margin: 6px 0; padding: 6px 10px; border: 2px solid var(--line); box-shadow: 0 -3px 12px rgba(0,0,0,.22); }
+.bg-action p { margin: 0 0 4px; font-size: .9rem; line-height: 1.2; height: 2.4em; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.bg-btns { display: grid; grid-template-columns: 1fr; gap: 10px; min-height: 58px; }
+.bg-btns.two { grid-template-columns: 1fr 1fr; }
+.btn.bg-btn { margin: 0; min-height: 58px; padding: 4px 8px; font-size: 1.1rem; line-height: 1.15; white-space: nowrap; }
+.btn.bg-bingo { background: linear-gradient(180deg, #ff6a3d 0%, #e53935 55%, #b71c1c 100%); color: #fff; font-size: 1.5rem; letter-spacing: .06em; box-shadow: 0 6px 14px rgba(183,28,28,.4), inset 0 1px 0 rgba(255,255,255,.3); }
+.btn.bg-bingo:hover { background: linear-gradient(180deg, #ff7a50 0%, #ee443f 55%, #c62828 100%); }
+
+/* Mitspieler und Punkte */
+.bg-players h2 { margin-bottom: .2em; }
+.bg-fact { margin: .2em 0; font-size: 1rem; }
+.bg-pls { list-style: none; margin: 6px 0; padding: 0; }
+.bg-pl { display: flex; align-items: center; gap: 6px; padding: 6px 8px; margin: 5px 0; border-radius: 14px; background: #f3f1ea; font-size: 1rem; white-space: nowrap; border: 3px solid transparent; }
+.bg-pl.me { background: #e8f0fd; }
+.bg-pl.won { background: #fff6d6; border-color: #e0a800; }
+.bg-pn { font-weight: 800; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.bg-pf { flex: none; font-size: .8rem; color: var(--muted); }
+.bg-pp { flex: none; }
+.bg-pp b { font-size: 1.3rem; }
+
+/* Liste der gezogenen Zahlen (eingeklappt) */
+.bg-listcard { padding: 8px; }
+.btn.bg-ltoggle { margin: 0; }
+.bg-lgrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
+.bg-lcol { display: flex; flex-direction: column; gap: 4px; align-items: stretch; }
+.bg-lcol b { text-align: center; color: #fff; background: var(--c); border-radius: 10px; font-size: 1.2rem; padding: 2px 0; }
+.bg-lcol span { text-align: center; font-weight: 800; font-size: 1.05rem; background: #f3f1ea; border-radius: 8px; padding: 2px 0; }
+.bg-lcol span.none { color: #aaa; background: none; }
+
+@media (min-width: 560px) {
+  .bg-grid, .bg-head { max-width: 420px; }
+  .banner { font-size: 1.4rem; }
+}
+@media (prefers-reduced-motion: reduce) { .bg-over .trophy { animation: none; } }
