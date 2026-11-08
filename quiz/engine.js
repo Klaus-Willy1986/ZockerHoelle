@@ -24,6 +24,8 @@ export const TIMER_MS = 30000;
 export const MAX_PLAYERS = 8;
 // Nerd-Runde: nur Fragen aus diesen Kategorien, Schwierigkeit 1/2/3 etwa 40/35/25 %
 export const NERD_KATEGORIEN = ['nerd', 'weltall', 'spiele', 'erfinder', 'serien'];
+// Emoji-Runde: nur Fragen dieser Kategorie (Vorrang vor der Nerd-Runde)
+export const EMOJI_KATEGORIE = 'emoji';
 export const NERD_MIX = [0.4, 0.35, 0.25];
 
 export const isBotId = (id) => String(id).startsWith('bot');
@@ -203,7 +205,7 @@ export function createGame(playerList, opts = {}, rng = Math.random, bank = []) 
   if (!Array.isArray(playerList) || playerList.length < 1 || playerList.length > MAX_PLAYERS) throw new Error('1 bis 8 Personen');
   const players = playerList.map((p) => ({ id: String(p.id), name: String(p.name) }));
   if (new Set(players.map((p) => p.id)).size !== players.length) throw new Error('Doppelte Spieler-Id');
-  let qs; let nerd = false;
+  let qs; let nerd = false; let emoji = false;
   if (Array.isArray(opts.fixed) && opts.fixed.length) {
     qs = opts.fixed.filter(isValidQuestion).map((q) => prepare(q, rng));
   } else {
@@ -213,8 +215,9 @@ export function createGame(playerList, opts = {}, rng = Math.random, bank = []) 
     const uniq = valid.filter((q) => (seen.has(q.id) ? false : (seen.add(q.id), true)));
     const ex = new Set((opts.exclude || []).map(String));
     // Nerd-Runde: nur die Nerd-Kategorien (gibt es keine, wird normal gemischt)
-    nerd = !!opts.nerd && uniq.some((q) => NERD_KATEGORIEN.includes(q.k));
-    const base = nerd ? uniq.filter((q) => NERD_KATEGORIEN.includes(q.k)) : uniq;
+    emoji = !!opts.emoji && uniq.some((q) => q.k === EMOJI_KATEGORIE);
+    nerd = !emoji && !!opts.nerd && uniq.some((q) => NERD_KATEGORIEN.includes(q.k));
+    const base = emoji ? uniq.filter((q) => q.k === EMOJI_KATEGORIE) : nerd ? uniq.filter((q) => NERD_KATEGORIEN.includes(q.k)) : uniq;
     let pool = base.filter((q) => !ex.has(String(q.id)));
     if (pool.length < len) pool = pool.concat(shuffle(base.filter((q) => ex.has(String(q.id))), rng).slice(0, len - pool.length));
     const n = Math.min(len, pool.length);
@@ -232,6 +235,7 @@ export function createGame(playerList, opts = {}, rng = Math.random, bank = []) 
     joker: opts.joker !== false,
     timer: !!opts.timer,
     nerd,
+    emoji,
     qs,
     qi: 0,
     phase: 'ask', // ask | reveal | over

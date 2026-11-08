@@ -14,6 +14,7 @@
 .qz-timer i { display: block; height: 100%; width: 100%; background: var(--amber); transform-origin: left; animation: qz-shrink 30s linear forwards; }
 @keyframes qz-shrink { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 .qz-qtext { flex: 1 1 auto; min-height: 0; overflow-y: auto; margin: 4px 0; font-size: 1.3rem; font-weight: 800; line-height: 1.3; color: #2a1c0c; }
+.qz-emo { font-size: 2.4rem; line-height: 1.35; letter-spacing: .08em; font-weight: 400; }
 .qz-read { flex: none; align-self: flex-start; font: inherit; font-size: .95rem; font-weight: 700; min-height: 48px; padding: 8px 16px; border-radius: 999px; border: 2px solid var(--amber); background: #fff; color: var(--amber-d); cursor: pointer; }
 .qz-read:focus-visible, .qz-opt:focus-visible, .qz-btn:focus-visible, .qz-card:focus-visible, .qz-range:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
 

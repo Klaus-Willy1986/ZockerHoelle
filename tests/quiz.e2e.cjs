@@ -90,7 +90,7 @@ async function noMarking(page, label) {
     const ans = document.querySelector('.qz-ans');
     const card = document.querySelector('.qz-q');
     if (!ans) return { err: 'kein .qz-ans' };
-    const white = new Set(['qz-ans', 't-mc', 't-tf', 't-est', 't-order', 'qz-opts', 'qz-opt', 'sel', 'gone', 'qz-tf', 'qz-est', 'qz-val', 'qz-range', 'qz-mm', 'qz-pm', 'two', 'qz-btn', 'small', 'btn', 'secondary', 'primary', 'huge', 'qz-joker', 'qz-ord', 'qz-hint', 'qz-cards', 'qz-card', 'on', 'qz-n', 'card', 'action', 'qz-q', 'qz-meta', 'qz-cat', 'qz-no', 'qz-timer', 'off', 'qz-qtext', 'big', 'qz-read', 'qz-sub', 'qz-nerd']);
+    const white = new Set(['qz-ans', 't-mc', 't-tf', 't-est', 't-order', 'qz-opts', 'qz-opt', 'sel', 'gone', 'qz-tf', 'qz-est', 'qz-val', 'qz-range', 'qz-mm', 'qz-pm', 'two', 'qz-btn', 'small', 'btn', 'secondary', 'primary', 'huge', 'qz-joker', 'qz-ord', 'qz-hint', 'qz-cards', 'qz-card', 'on', 'qz-n', 'card', 'action', 'qz-q', 'qz-meta', 'qz-cat', 'qz-no', 'qz-timer', 'off', 'qz-qtext', 'big', 'qz-read', 'qz-sub', 'qz-nerd', 'qz-emo']);
     const odd = [];
     for (const el of [...ans.querySelectorAll('*'), ...card.querySelectorAll('*'), ans, card]) for (const c of el.classList) if (!white.has(c)) odd.push(c);
     const attrs = [];
@@ -211,7 +211,7 @@ async function soloRun(browser) {
   if (await page.isChecked('[data-opt=timer]')) fail('Bedenkzeit standardmäßig an');
   if (await page.isChecked('[data-opt=nerd]')) fail('Nerd-Runde standardmäßig an');
   const lbls = await page.$$eval('.optcard .opt', (o) => o.map((x) => x.textContent.replace(/\s+/g, ' ').trim()));
-  for (const w of ['Kurzes Quiz (8 Fragen)', 'Langes Quiz (20 Fragen)', 'Nerd-Runde: nur Nerd-Fragen', '50:50-Joker', 'Mit Bedenkzeit 30 s']) if (!lbls.some((l) => l.startsWith(w))) fail('Option fehlt: ' + w);
+  for (const w of ['Kurzes Quiz (8 Fragen)', 'Langes Quiz (20 Fragen)', 'Nerd-Runde: nur Nerd-Fragen', 'Emoji-Runde: nur Emoji-Rätsel', '50:50-Joker', 'Mit Bedenkzeit 30 s']) if (!lbls.some((l) => l.startsWith(w))) fail('Option fehlt: ' + w);
   await page.click('[data-act=solo]');
   await page.waitForSelector('#board');
   let exp = 0; let rights = 0;
@@ -472,6 +472,49 @@ async function nerdRun(browser) {
   await ctx.close();
 }
 
+async function emojiRun(browser) {
+  const mod = await import(REAL ? '../quiz/fragen.js' : './quiz.fixture.mjs');
+  if (!mod.KATEGORIEN.emoji) { console.log('Emoji-Runde übersprungen: quiz/fragen.js hat die Kategorie emoji noch nicht'); return; }
+  const ctx = await newCtx(browser);
+  const page = await newPage(ctx, 'emoji');
+  await page.goto(base + '?seed=41');
+  await page.fill('#name', 'Emil');
+  if (await page.isChecked('[data-opt=emoji]')) fail('Emoji-Runde standardmäßig an');
+  await page.check('[data-opt=nerd]');
+  await page.check('[data-opt=emoji]');
+  if ((await page.isChecked('[data-opt=nerd]')) || !(await page.isChecked('[data-opt=emoji]'))) fail('Emoji/Nerd schließen sich nicht aus');
+  await page.check('[data-opt=kurz]');
+  await shot(page, 'start_emoji', false);
+  await page.click('[data-act=solo]');
+  const seen = []; const lay = new Set(); const sizes = [];
+  for (let i = 0; i < 8; i++) {
+    await page.waitForSelector('.qz-ans');
+    const q = await curQ(page);
+    if (q.k !== 'emoji') fail('Emoji-Runde: Frage aus ' + q.k);
+    const cat = ((await page.textContent('.qz-cat')) || '').trim();
+    if (cat !== mod.KATEGORIEN.emoji) fail(`Emoji-Runde: Kategorie "${cat}"`);
+    if (seen.includes(q.q)) fail('Emoji-Runde: Wiederholung');
+    seen.push(q.q);
+    const fs = await page.$$eval('.qz-emo', (e) => e.map((x) => parseFloat(getComputedStyle(x).fontSize)));
+    const root = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).fontSize));
+    if (!fs.length || fs.some((f) => f < 2.2 * root - 0.5)) fail(`Emoji-Schrift zu klein: ${fs} (Root ${root})`);
+    sizes.push(Math.min(...fs));
+    await overflow(page, 'emoji Frage ' + (i + 1));
+    await noMarking(page, 'emoji ' + (i + 1));
+    const li = await layoutInfo(page);
+    lay.add(`${li.bt}/${li.bh}/${li.at}`);
+    if (i === 0) await shot(page, 'ask_emoji');
+    await answer(page, q, 'right');
+    await page.waitForSelector('.qz-res');
+    if (i === 0) await shot(page, 'reveal_emoji', false);
+    await page.click('[data-act=next]');
+  }
+  await page.waitForSelector('.qz-over');
+  if (lay.size > 1) fail('Emoji-Fragen: Layout springt ' + [...lay]);
+  console.log(`Emoji-Runde: ${seen.length} Fragen nur aus emoji, keine Wiederholung, Emoji-Schrift ${Math.min(...sizes)}px, Layout ${[...lay]}`);
+  await ctx.close();
+}
+
 async function lernrunde(browser) {
   const ctx = await newCtx(browser);
   const page = await newPage(ctx, 'lern');
@@ -721,6 +764,7 @@ function portUp() { return new Promise((res) => { http.get(`http://localhost:${P
   await run('bot0', () => botRun(browser, 0));
   await run('bot1', () => botRun(browser, 1));
   await run('nerd', () => nerdRun(browser));
+  await run('emoji', () => emojiRun(browser));
   await run('lern', () => lernrunde(browser));
   await run('duo', () => duoRun(browser));
   await run('timer', () => timerRun(browser));

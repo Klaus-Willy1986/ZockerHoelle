@@ -11,6 +11,7 @@ const OPTIONS = [
   { id: 'kurz', label: 'Kurzes Quiz (8 Fragen)', help: 'Ohne Häkchen bei Kurz und Lang sind es 12 Fragen.', def: false },
   { id: 'lang', label: 'Langes Quiz (20 Fragen)', def: false },
   { id: 'nerd', label: 'Nerd-Runde: nur Nerd-Fragen', help: 'Nur Fragen zu Computern, Wissenschaft, Spielen, Erfindungen und Serien & Filmen, auch besonders knifflige mit dem Zeichen Nerd-Level. Ohne Häkchen kommen Fragen aus allen Bereichen.', def: false },
+  { id: 'emoji', label: 'Emoji-Runde: nur Emoji-Rätsel', help: 'Nur Rätsel aus Emoji-Bildchen. Mit Häkchen bei Nerd-Runde zusammen gilt die Emoji-Runde.', def: false },
   { id: 'joker', label: '50:50-Joker', help: 'Jede Person darf einmal pro Spiel zwei falsche Antworten ausblenden lassen (nur bei Fragen mit vier Antworten).', def: true },
   { id: 'timer', label: 'Mit Bedenkzeit 30 s', help: 'Pro Frage läuft ein Balken. Danach zählt die bisher gewählte Antwort, sonst keine. Ohne Häkchen gibt es kein Zeitlimit.', def: false },
 ];
@@ -31,16 +32,17 @@ function makeGame(players, opts) {
   const base = { joker: opts.joker !== false, timer: !!opts.timer, host: sess.cid };
   if (S.learn) return Q.createGame(players, { ...base, joker: true, timer: false, fixed: TUTORIAL_BANK }, rng, []);
   const len = opts.lang ? Q.LENGTHS.lang : opts.kurz ? Q.LENGTHS.kurz : Q.LENGTHS.normal;
-  const nerd = !!opts.nerd;
+  const emoji = !!opts.emoji;
+  const nerd = !emoji && !!opts.nerd;
   let used = sess.get('qz_used', []);
   if (!Array.isArray(used)) used = [];
   const usedSet = new Set(used);
-  const scope = nerd ? FRAGEN.filter((q) => Q.NERD_KATEGORIEN.includes(q.k)) : FRAGEN;
-  if (scope.filter((q) => !usedSet.has(q.id)).length < (nerd ? 25 : 40)) { // fast alles schon gesehen: von vorn
+  const scope = emoji ? FRAGEN.filter((q) => q.k === Q.EMOJI_KATEGORIE) : nerd ? FRAGEN.filter((q) => Q.NERD_KATEGORIEN.includes(q.k)) : FRAGEN;
+  if (scope.length && scope.filter((q) => !usedSet.has(q.id)).length < (emoji ? 20 : nerd ? 25 : 40)) { // fast alles schon gesehen: von vorn
     const ids = new Set(scope.map((q) => q.id));
     used = used.filter((id) => !ids.has(id));
   }
-  const g = Q.createGame(players, { ...base, len, nerd, exclude: used }, rng, FRAGEN);
+  const g = Q.createGame(players, { ...base, len, nerd, emoji, exclude: used }, rng, FRAGEN);
   sess.set('qz_used', used.concat(g.qs.map((q) => q.id)));
   return g;
 }
@@ -165,6 +167,12 @@ function bannerHtml(g) {
   return `<div class="banner">Warte auf: ${listNames(pend)}</div>`;
 }
 
+// Emoji-Ketten groß darstellen, übrigen Text normal
+const EMO = /((?:\p{Extended_Pictographic}|\p{Regional_Indicator}|[\u200d\ufe0f\u20e3\u{1F3FB}-\u{1F3FF}])+)/gu;
+function emojiHtml(text) {
+  return String(text).split(EMO).map((part, i) => (i % 2 ? `<span class="qz-emo">${esc(part)}</span>` : esc(part))).join('');
+}
+
 function questionCard(g, reveal) {
   const q = g.qs[g.qi];
   const cat = (KATEGORIEN && KATEGORIEN[q.k]) || '';
@@ -177,7 +185,7 @@ function questionCard(g, reveal) {
   return `<section id="board" class="card qz-q${reveal ? '' : ' action'}">
     <div class="qz-meta"><span class="qz-cat">${esc(cat)}</span><span class="qz-no">Frage ${g.qi + 1} von ${g.len}</span></div>
     <div class="qz-sub">${q.d === 3 ? '<span class="qz-nerd">🤓 Nerd-Level</span>' : ''}</div>${bar}
-    <p class="${reveal ? '' : 'big '}qz-qtext">${esc(q.q)}</p>${read}</section>`;
+    <p class="${reveal ? '' : 'big '}qz-qtext">${q.k === Q.EMOJI_KATEGORIE ? emojiHtml(q.q) : esc(q.q)}</p>${read}</section>`;
 }
 
 function answerCard(g) {
@@ -347,6 +355,7 @@ function helpBody() {
     </ul>
     <h3>Nerd-Runde und Nerd-Level</h3>
     <p>Mit dem Häkchen bei Nerd-Runde kommen nur Fragen aus diesen Bereichen dran: Computer, Wissenschaft, Spiele, Erfindungen, Serien und Filme. Besonders knifflige Fragen tragen das Zeichen Nerd-Level. Sie sind schwerer, geben aber keine Extrapunkte. In einer normalen Runde gibt es höchstens eine davon pro sechs Fragen.</p>
+    <p>Die Emoji-Runde bringt nur Emoji-Rätsel: Aus kleinen Bildchen erkennst du einen Film, ein Tier oder eine Redewendung.</p>
     <h3>Der 50:50-Joker</h3>
     <p>Jede Person hat einmal pro Spiel einen Joker. Er blendet bei einer Frage mit vier Antworten zwei falsche Antworten für dich aus. Tippe den Joker vor deiner Antwort an. Bei den anderen Fragearten gibt es ihn nicht.</p>
     <h3>Die Theke</h3>
@@ -452,6 +461,13 @@ $app.addEventListener('input', (ev) => {
 $app.addEventListener('change', (ev) => {
   const t = ev.target;
   if (t.classList && t.classList.contains('qz-range') && S.game) { draft(S.ui.est); endDrag(); }
+  // "Emoji-Runde" und "Nerd-Runde" schließen sich aus (das zuletzt angekreuzte bleibt)
+  if (t && t.dataset && (t.dataset.opt === 'emoji' || t.dataset.opt === 'nerd') && t.checked) {
+    const other = t.dataset.opt === 'emoji' ? 'nerd' : 'emoji';
+    sess.setOpt(other, false);
+    const box = $app.querySelector(`[data-opt="${other}"]`);
+    if (box) box.checked = false;
+  }
   // "Kurz" und "Lang" schließen sich aus
   if (t && t.dataset && (t.dataset.opt === 'kurz' || t.dataset.opt === 'lang') && t.checked) {
     const other = t.dataset.opt === 'kurz' ? 'lang' : 'kurz';

@@ -1,10 +1,10 @@
 // Beispiel-Fragensammlung für die Tests des Kneipenquiz (unabhängig von quiz/fragen.js).
-// 8 Kategorien x 9 Fragen = 72 Fragen (je 5 mc, 2 tf, 1 est, 1 order, d:1/2) plus 5 Nerd-Kategorien x 8 Fragen = 40
+// 8 Kategorien x 9 Fragen = 72 Fragen (je 5 mc, 2 tf, 1 est, 1 order, d:1/2) plus 5 Nerd-Kategorien x 8 Fragen = 40 und 8 Emoji-Rätsel
 // (je 4 mc, 2 tf, 1 est, 1 order; davon 15 mit d:3).
 export const KATEGORIEN = {
   geo: 'Erdkunde 🌍', gesch: 'Geschichte 🏰', natur: 'Natur 🌿', essen: 'Essen und Trinken 🍺',
   musik: 'Musik 🎵', film: 'Film und Fernsehen 📺', sport: 'Sport ⚽', allg: 'Allgemeinwissen 🧠',
-  nerd: 'Nerd und Technik 🤓', weltall: 'Weltall und Wissenschaft 🔭', spiele: 'Spiele und Games 🎲', erfinder: 'Erfindungen und Entdeckungen 💡', serien: 'Serien und Filme 📺',
+  nerd: 'Nerd und Technik 🤓', weltall: 'Weltall und Wissenschaft 🔭', spiele: 'Spiele und Games 🎲', erfinder: 'Erfindungen und Entdeckungen 💡', serien: 'Serien und Filme 📺', emoji: 'Emoji-Rätsel 🎭',
 };
 
 let n = 0;
@@ -140,4 +140,13 @@ export const FRAGEN = [
   tf('serien', 2, 'Spock stammt vom Planeten Vulkan.', true),
   est('serien', 1, 'Wie viele Staffeln hat die Serie The Big Bang Theory?', 12, 'Staffeln', 1, 30),
   order('serien', 3, 'Ordne die Star-Wars-Filme der ersten Trilogie nach ihrer Entstehung.', ['Eine neue Hoffnung', 'Das Imperium schlägt zurück', 'Die Rückkehr der Jedi-Ritter', 'Die dunkle Bedrohung']),
+  // ---- Emoji-Rätsel
+  mc('emoji', 1, '🦁👑', ['Der König der Löwen', 'Dschungelbuch', 'Madagascar', 'Bambi'], 0),
+  mc('emoji', 1, '🐟🔍', ['Findet Nemo', 'Der weiße Hai', 'Arielle', 'Pinocchio'], 0),
+  mc('emoji', 2, '🧊❄️👸', ['Die Eiskönigin', 'Schneewittchen', 'Aschenputtel', 'Dornröschen'], 0),
+  mc('emoji', 2, '🚢💔🧊', ['Titanic', 'Poseidon', 'Waterworld', 'Cast Away'], 0),
+  mc('emoji', 1, 'Welches Tier ist das? 🐘', ['Nilpferd', 'Elefant', 'Nashorn', 'Giraffe'], 1),
+  tf('emoji', 1, '🍺🍺 bedeutet zwei Bier.', true),
+  est('emoji', 2, 'Wie viele Beine hat dieses Tier? 🕷️', 8, 'Beine', 0, 20),
+  order('emoji', 2, 'Ordne das Wachstum: 🌱 🌿 🌳 🪵', ['🌱', '🌿', '🌳', '🪵']),
 ];

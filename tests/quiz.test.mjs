@@ -666,3 +666,53 @@ test('d:3, fehlende und unbekannte Kategorien werden robust behandelt', () => {
   playAll(g2, right);
   assert.equal(g2.scores.p0, Q.maxPoints(g2));
 });
+
+// ---------- Emoji-Runde ----------
+test('Emoji-Runde: nur Kategorie emoji, keine Wiederholung, Länge begrenzt, Typen ausgeglichen', () => {
+  assert.equal(Q.EMOJI_KATEGORIE, 'emoji');
+  const emojiQs = FRAGEN.filter((q) => q.k === 'emoji');
+  assert.equal(emojiQs.length, 8);
+  for (const len of [8, 12, 20]) {
+    for (let seed = 1; seed <= 40; seed++) {
+      const g = mk(2, { len, emoji: true }, seed);
+      assert.equal(g.emoji, true);
+      assert.equal(g.nerd, false);
+      assert.equal(g.qs.length, 8, 'Länge auf die vorhandenen Fragen begrenzt');
+      assert.ok(g.qs.every((q) => q.k === 'emoji'));
+      assert.equal(new Set(g.qs.map((q) => q.id)).size, 8);
+    }
+  }
+  // genug Fragen: gewünschte Länge, Typmischung wie sonst (hier nur mc und tf vorhanden)
+  const many = [];
+  for (let i = 0; i < 50; i++) many.push({ ...MC, id: 'e' + i, k: 'emoji', q: '🎭' + i, d: 1 + (i % 2) });
+  const g = Q.createGame(P(1), { len: 12, emoji: true }, seedRng(3), many.concat(FRAGEN.slice(0, 30)));
+  assert.equal(g.qs.length, 12);
+  assert.ok(g.qs.every((q) => q.k === 'emoji' && q.t === 'mc'), 'fehlende Typen werden mit mc ausgeglichen');
+  const g2 = Q.createGame(P(1), { len: 12, emoji: true, exclude: g.qs.map((q) => q.id) }, seedRng(4), many);
+  assert.ok(g2.qs.every((q) => !g.qs.some((x) => x.id === q.id)));
+  assert.equal(g2.qs.length, 12);
+});
+
+test('Emoji-Runde hat Vorrang vor der Nerd-Runde; ohne Emoji-Fragen wird normal gemischt', () => {
+  const g = mk(2, { len: 8, emoji: true, nerd: true }, 5);
+  assert.ok(g.qs.every((q) => q.k === 'emoji'));
+  assert.equal(g.emoji, true);
+  assert.equal(g.nerd, false);
+  const noEmoji = FRAGEN.filter((q) => q.k !== 'emoji');
+  const g2 = Q.createGame(P(1), { len: 8, emoji: true }, seedRng(1), noEmoji);
+  assert.equal(g2.qs.length, 8);
+  assert.equal(g2.emoji, false);
+  const g3 = Q.createGame(P(1), { len: 8, emoji: true, nerd: true }, seedRng(1), noEmoji);
+  assert.equal(g3.nerd, true, 'ohne Emoji-Fragen gilt die Nerd-Runde');
+  playAll(mk(3, { len: 8, emoji: true }, 9), right);
+});
+
+test('Normale Runde: Emoji-Fragen kommen als Kategorie unter den anderen vor', () => {
+  let rounds = 0;
+  for (let seed = 1; seed <= 200; seed++) {
+    const g = mk(2, { len: 12 }, seed);
+    assert.equal(g.emoji, false);
+    if (g.qs.some((q) => q.k === 'emoji')) rounds++;
+  }
+  assert.ok(rounds > 40, 'Emoji in normalen Runden: ' + rounds);
+});

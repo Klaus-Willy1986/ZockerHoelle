@@ -3,13 +3,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { FRAGEN, KATEGORIEN } from '../quiz/fragen.js';
 
-const ALT = ['allgemein', 'essen', 'natur', 'geschichte', 'erde', 'sprichwort', 'musik', 'film', 'hessen', 'sport', 'kurios'];
+const ALT = ['allgemein', 'essen', 'natur', 'geschichte', 'erde', 'sprichwort', 'musik', 'film', 'hessen', 'sport', 'kurios', 'emoji'];
 const NERD = ['nerd', 'weltall', 'spiele', 'erfinder', 'serien'];
 const KATS = [...ALT, ...NERD];
 const TYPEN = ['mc', 'tf', 'est', 'order'];
 const STEUER = new RegExp('[\\u0000-\\u001f\\u007f-\\u009f\\u2028\\u2029]');
 const nonEmpty = (s) => typeof s === 'string' && s.trim().length > 0;
-const norm = (s) => s.toLowerCase().replace(/[^a-z0-9äöüß]+/g, ' ').trim();
+const norm = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}\p{Extended_Pictographic}]+/gu, ' ').trim();
+const EMOJI = /\p{Extended_Pictographic}/u;
 const anzahl = (f) => FRAGEN.filter(f).length;
 
 function alleTexte(q) {
@@ -21,7 +22,7 @@ function alleTexte(q) {
   return t;
 }
 
-test('Kategorien: alle sechzehn vorhanden, mit Anzeigename', () => {
+test('Kategorien: alle siebzehn vorhanden, mit Anzeigename', () => {
   assert.deepEqual(Object.keys(KATEGORIEN).sort(), [...KATS].sort());
   for (const k of KATS) assert.ok(nonEmpty(KATEGORIEN[k]), k);
 });
@@ -81,6 +82,7 @@ test('Mindestmengen', () => {
   assert.ok(anzahl((q) => q.t === 'order') >= 15, 'Ordnenfragen');
   assert.ok(anzahl((q) => q.t === 'tf') >= 50, 'Wahr/Falsch');
   assert.ok(anzahl((q) => q.t === 'mc') >= 180, 'Mehrfachauswahl');
+  assert.ok(anzahl((q) => q.k === 'emoji') >= 45, 'Emoji-Rätsel');
 });
 
 test('Typ-Anteile ungefähr wie geplant', () => {
@@ -166,4 +168,18 @@ test('mc: richtige Antwort steht nicht wörtlich in der Frage', () => {
 
 test('Fragetexte beziehen sich nicht auf andere Fragen', () => {
   for (const q of FRAGEN) assert.ok(!/dieser \d+|oben genannt|siehe/i.test(q.q), q.id);
+});
+
+test('emoji: Rätsel bestehen aus Emoji, ohne ZWJ/Variantenselektoren und ohne den Antworttext', () => {
+  const em = FRAGEN.filter((q) => q.k === 'emoji');
+  for (const q of em) {
+    assert.ok(EMOJI.test(q.q), `kein Emoji: ${q.id}`);
+    assert.ok(!/[\u200d\ufe0f\u{1f3fb}-\u{1f3ff}]/u.test(q.q), `ZWJ/Selektor in ${q.id}`);
+    if (q.t === 'mc') {
+      const emojiAnteil = (q.q.match(/\p{Extended_Pictographic}/gu) || []).length;
+      assert.ok(emojiAnteil >= 1 && emojiAnteil <= 12, `Emoji-Anzahl ${q.id}`);
+      assert.ok(!norm(q.q).includes(norm(q.a[q.c])), `Antwort im Rätsel: ${q.id}`);
+    }
+  }
+  assert.ok(em.filter((q) => q.t === 'mc').length >= 40, 'überwiegend mc');
 });
