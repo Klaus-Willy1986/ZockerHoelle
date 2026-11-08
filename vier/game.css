@@ -1,0 +1,57 @@
+/* ===== Vier in Reihe ===== */
+:root { --vr-y: #f7c600; --vr-r: #d3122e; --vr-board: #1c47a8; --vr-hole: #e9eefb; --vr-win: #ffffff; }
+
+/* Statuszeile: feste Höhe, damit nichts springt */
+.vr-banner { height: 4.6rem; min-height: 4.6rem; overflow: hidden; padding: 6px 12px; margin: 6px 0; }
+.vr-banner h1 { display: inline; font-size: 1.3rem; margin: 0; color: #fff; -webkit-text-fill-color: #fff; background: none; line-height: 1.2; }
+.vr-banner .trophy { display: inline-block; font-size: 1.7rem; animation: none; vertical-align: middle; filter: none; }
+
+/* Punktestand */
+.vr-score { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; margin: 6px 0; }
+.vr-pl { background: #fff; border: 3px solid var(--line); border-radius: 14px; padding: 6px 10px; min-width: 0; }
+.vr-pl.turn { border-color: var(--ok); background: #f1f8f2; }
+.vr-n { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; font-size: 1rem; min-height: 2rem; }
+.vr-n b { overflow-wrap: break-word; line-height: 1.15; min-width: 0; }
+.vr-c { font-size: .9rem; color: var(--muted); }
+.vr-p { font-size: 1.05rem; line-height: 1.2; }
+.vr-p b { font-size: 1.5rem; }
+.vr-round { grid-column: 1 / -1; margin: 0; text-align: center; font-weight: 700; font-size: 1rem; min-height: 1.4em; }
+.vr-icon { flex: none; width: 28px; height: 28px; }
+@media (max-width: 340px) { .vr-n { font-size: .85rem; gap: 4px; } .vr-icon { width: 22px; height: 22px; } }
+
+/* Steine */
+.vr-disc { display: block; width: 100%; height: 100%; }
+.vr-disc .d { stroke-width: 4; }
+.vr-disc.y .d { fill: var(--vr-y); stroke: #6b5200; }
+.vr-disc.y .rim { fill: none; stroke: #b88f00; stroke-width: 4; }
+.vr-disc.r .d { fill: var(--vr-r); stroke: #5c0510; }
+.vr-disc.r .rim { fill: none; stroke: #8f0a1e; stroke-width: 4; }
+.vr-disc.last .d { stroke: #000; stroke-width: 9; }
+.vr-disc.win { animation: vr-glow .8s ease-in-out infinite alternate; }
+.vr-disc.win .d { stroke: var(--vr-win); stroke-width: 10; }
+@keyframes vr-glow { from { filter: drop-shadow(0 0 2px #fff); } to { filter: drop-shadow(0 0 9px #fff) brightness(1.15); } }
+.vr-disc.drop { animation: vr-fall calc(.16s + var(--fall, 1) * .07s) cubic-bezier(.5, 0, 1, .6); }
+@keyframes vr-fall { from { transform: translateY(calc(var(--fall, 1) * -100% - 20%)); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .vr-disc.drop, .vr-disc.win { animation: none; } }
+
+/* Brett: feste Stelle; über die volle Breite, je Spalte eine große Tippfläche */
+.vr-board-card { padding: 0; overflow: hidden; background: var(--vr-board); border-radius: 18px; }
+@media (max-width: 560px) { .vr-board-card { margin-left: -14px; margin-right: -14px; border-radius: 0; } }
+.vr-board { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 0; width: 100%; max-width: 600px; margin: 0 auto; padding: 0; touch-action: manipulation; background: var(--vr-board); }
+.vr-col { display: flex; flex-direction: column; min-width: 0; min-height: 48px; margin: 0; padding: 4px 0 4px; font: inherit; background: transparent; border: 0; border-radius: 0; cursor: default; -webkit-tap-highlight-color: transparent; }
+.vr-col.mine { cursor: pointer; }
+.vr-col.mine:hover { background: rgba(255, 255, 255, .12); }
+.vr-col:active { background: rgba(255, 255, 255, .22); }
+.vr-col:focus-visible { outline: 4px solid #ffb300; outline-offset: -4px; }
+.vr-cell { position: relative; display: block; width: 100%; aspect-ratio: 1 / 1; padding: 7%; box-sizing: border-box; overflow: hidden; }
+.vr-hole { display: block; width: 100%; height: 100%; border-radius: 50%; background: var(--vr-hole); box-shadow: inset 0 3px 5px rgba(0, 0, 0, .35); }
+.vr-board.ended .vr-col { cursor: default; }
+.vr-board.ended .vr-hole { opacity: .55; }
+
+/* Unter dem Brett: wechselnde Hinweise, feste Mindesthöhe */
+.vr-status { min-height: 9rem; padding: 14px 16px; }
+.vr-status .big { margin: 0 0 6px; font-weight: 700; font-size: 1.2rem; }
+.vr-hint { background: #fff3cd; border: 2px solid #e0a800; border-radius: 12px; padding: 10px 12px; margin: 8px 0 0; font-weight: 600; color: #4d3b00; }
+
+/* Lernrunde: anzutippende Spalten */
+.vr-col.coach-target { background: transparent; outline: 0 !important; box-shadow: inset 0 0 0 4px #ffb300; }

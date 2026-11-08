@@ -27,6 +27,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Kneipenquiz** (`quiz/`): rund 390 Fragen in 11 Kategorien (Auswahl, Wahr/Falsch, Schätzen, Ordnen) für 1–8 Personen, mit Computer und Lernrunde.
 - **Bauernskat** (`bauernskat/`): Skat-Variante für zwei mit verdeckt/offen ausgelegten Karten (Offiziersskat), mit Computer und Lernrunde.
 - **Mäxchen** (`maexchen/`): Würfel-Bluffspiel für 2–8 Personen, mit Computer und Lernrunde.
+- **Vier in Reihe** (`vier/`): Steine fallen lassen, vier in einer Reihe gewinnen (7×6 oder 8×7), für zwei, mit Computer und Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 
