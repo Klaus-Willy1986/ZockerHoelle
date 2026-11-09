@@ -217,6 +217,7 @@ export function createUI(cfg) {
       const max = Math.max(stab.tops[id] || 0, top);
       stab.tops[id] = max;
       const gap = Math.round(max - top);
+      if (gap > 200) { stab.tops[id] = top; return; } // veraltete Marke: kein riesiger Leerraum
       if (gap > 1 && el.parentNode) {
         const sp = document.createElement('div');
         sp.className = 'stable-gap'; sp.setAttribute('aria-hidden', 'true'); sp.style.height = gap + 'px';
