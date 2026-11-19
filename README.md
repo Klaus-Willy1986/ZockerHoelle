@@ -52,6 +52,7 @@ Würfel- und Brettspiele für 2–5 Personen, direkt im Browser. Kein Konto, kei
 - **Patience** (`patience/`): Kartenlegen zum Alleinspielen (Klondike und FreeCell), mit unbegrenztem Zurück und Lernrunde.
 - **Zeichenraten** (`zeichnen/`): Zeichnen und Raten für 2–8 Personen (online oder an einem Gerät), 422 Begriffe, mit Lernrunde.
 - **Mahjong-Solitär** (`mahjong/`): Mahjong-Solitär (144 Steine, drei Brettformen, immer lösbar), mit Hinweis, Zurück, Mischen und Lernrunde.
+- **Waldleben** (`waldleben/`): Kartenspiel mit eigenem Kartensatz (116 Karten): Bäume pflanzen, Tiere/Pflanzen/Pilze anlegen, mit Handkarten bezahlen, Wertung beim dritten Winter. Computergegner, Lernrunde.
 - **Springspiel** (`springspiel/`): Solitär mit Steckern, zum Alleinspielen.
 - **Mühle** (`muehle/`) und **Dame** (`dame/`): Brettspiele für zwei.
 

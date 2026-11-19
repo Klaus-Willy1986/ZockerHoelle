@@ -1,0 +1,167 @@
+/* ===== Waldleben ===== */
+/* Baumfarben: Eiche braun ●, Buche blau ■, Linde gelb ▲, Ahorn rot ◆, Birke grau-weiß ★, Kiefer grün ✚ (Zeichen zusätzlich zur Farbe) */
+.sp0 { --c: #7b4a1e; --ct: #fff; --cl: #efdcc8; --cd: #4e2e0f; }
+.sp1 { --c: #1565c0; --ct: #fff; --cl: #dbe8f8; --cd: #0d47a1; }
+.sp2 { --c: #f2c200; --ct: #111; --cl: #fff3bf; --cd: #8a6a00; }
+.sp3 { --c: #c62828; --ct: #fff; --cl: #f9dcdc; --cd: #8e1c1c; }
+.sp4 { --c: #d9dde0; --ct: #111; --cl: #f1f3f4; --cd: #6f7a80; }
+.sp5 { --c: #1b6b2f; --ct: #fff; --cl: #d9eedd; --cd: #0f4a1f; }
+.sp-1 { --c: #8d8a80; --ct: #fff; --cl: #ecebe6; --cd: #55534b; }
+
+/* Anzeige oben: Stapel, Winter, Lichtung. Feste Höhe, damit nichts springt. */
+.wl-board { padding: 12px 10px; }
+.wl-stats { display: grid; grid-template-columns: 1fr 1.25fr 1.25fr; gap: 6px; }
+.wl-stat { height: 3.6rem; box-sizing: border-box; padding: 4px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px; background: #f1efe8; line-height: 1.1; text-align: center; overflow: hidden; }
+.wl-stat b { font-size: 1.15rem; white-space: nowrap; }
+.wl-stat small { font-size: .72rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.wl-win b span { opacity: .3; filter: grayscale(1); }
+.wl-win b span.on { opacity: 1; filter: none; }
+.wl-win { background: #e3effa; }
+.wl-h { margin: 10px 0 6px; font-size: 1.1rem; }
+.wl-lich, .wl-trees, .wl-pick { display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; padding: 4px 4px 8px; border-radius: 10px; }
+.wl-lich:focus-visible, .wl-trees:focus-visible, .wl-pick:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.wl-lich { height: 112px; box-sizing: content-box; align-items: stretch; background: #e9f3e4; }
+.wl-empty { align-self: center; color: var(--muted); font-weight: 700; padding: 0 10px; }
+.wl-sw { font-size: .8rem; margin: 6px 0 0; height: 2.4em; overflow: hidden; line-height: 1.2; }
+
+/* Kleine Karte (Lichtung) */
+.wl-mini { flex: none; width: 82px; box-sizing: border-box; display: flex; flex-direction: column; padding: 0; font: inherit; color: #111; background: #fff; border: 3px solid var(--cd); border-radius: 10px; overflow: hidden; cursor: pointer; }
+.wl-mini.sel { outline: 5px solid #111; outline-offset: 1px; }
+.wl-mini:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.wl-top { display: flex; justify-content: space-between; align-items: center; height: 26px; padding: 0 5px; background: var(--c); color: var(--ct); font-weight: 900; flex: none; }
+.wl-sym { font-size: 1rem; }
+.wl-cost { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; border-radius: 999px; background: #fff; color: #111; border: 2px solid #111; font-size: .9rem; font-weight: 900; }
+.wl-em { display: block; text-align: center; font-size: 1.7rem; line-height: 1.25; flex: none; }
+.wl-nm { display: block; text-align: center; font-size: .78rem; font-weight: 800; line-height: 1.1; padding: 0 3px; overflow: hidden; overflow-wrap: anywhere; hyphens: auto; }
+.wl-mini .wl-nm { height: 2.2em; }
+
+/* Handkarten: 3 pro Reihe, große Tippflächen */
+.wl-handcard { padding: 12px 10px; }
+.wl-handcard h2 { margin: 0 0 8px; font-size: 1.15rem; }
+.wl-hand { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.wl-card { position: relative; box-sizing: border-box; height: 118px; min-width: 0; display: flex; flex-direction: column; padding: 0; font: inherit; color: #111; background: #fff; border: 3px solid var(--cd); border-radius: 12px; overflow: hidden; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,.25); }
+.wl-card .wl-nm { height: 2.2em; font-size: .85rem; }
+.wl-card .wl-pt { display: block; text-align: center; font-size: .8rem; font-weight: 800; color: #3a3a40; padding-top: 1px; }
+.wl-card.tree { background: var(--cl); }
+.wl-card:focus-visible { outline: 4px solid #ffb300; outline-offset: 3px; }
+.wl-card.sel { outline: 5px solid #111; outline-offset: 1px; transform: translateY(-3px); }
+.wl-card.pay { outline: 5px solid #2e8b3d; outline-offset: 1px; }
+.wl-chk { position: absolute; left: 0; right: 0; bottom: 0; background: #2e8b3d; color: #fff; font-size: .78rem; font-weight: 900; text-align: center; padding: 2px 0; }
+.wl-card.can { box-shadow: 0 0 0 3px #fff, 0 0 0 6px #111, 0 5px 9px rgba(0,0,0,.35); }
+.wl-card.dim { opacity: .42; filter: grayscale(.55); box-shadow: none; }
+.wl-leg { font-size: .8rem; margin: 8px 0 0; }
+
+/* Handlungsleiste: klebt unten am Bildschirm, damit die Handkarten darüber stehen bleiben */
+.wl-action { position: sticky; bottom: 6px; z-index: 12; background: #fff; border: 3px solid var(--primary); max-height: 52vh; overflow-y: auto; padding: 10px 12px; box-shadow: 0 -4px 14px rgba(0,0,0,.28); }
+.wl-action p { margin: 0 0 8px; }
+.wl-action .btn { margin: 6px 0; }
+.wl-action .btn.huge { padding: 12px 16px; min-height: 60px; }
+.wl-opts { margin: 0 0 8px; padding-left: 1.2rem; font-size: 1rem; line-height: 1.3; }
+.wl-note { color: #b3261e; font-weight: 800; }
+.wl-good { background: #e3f4e6; border: 2px solid #2e8b3d; border-radius: 10px; padding: 6px 8px; font-weight: 700; font-size: .95rem; }
+.wl-lab { font-weight: 800; font-size: .95rem; margin: 8px 0 4px !important; }
+
+/* Große Karte: oben Farbe, Name und Kosten – unten Punkte und Wirkung */
+.wl-big { border: 3px solid var(--cd); border-radius: 14px; overflow: hidden; background: #fff; margin: 6px 0 8px; text-align: left; }
+.wl-bt { display: flex; justify-content: space-between; gap: 8px; background: var(--c); color: var(--ct); font-weight: 900; font-size: .95rem; padding: 4px 10px; }
+.wl-bb { display: flex; align-items: center; gap: 10px; padding: 6px 10px; background: var(--cl); border-bottom: 3px dashed var(--cd); }
+.wl-bb .em { font-size: 2.2rem; line-height: 1; }
+.wl-bb h3 { margin: 0; font-size: 1.3rem; line-height: 1.1; }
+.wl-bb .ty { font-size: .9rem; font-weight: 700; color: #444; }
+.wl-bp { padding: 6px 10px 8px; }
+.wl-bp p { margin: 2px 0; font-size: 1rem; line-height: 1.3; }
+.wl-bp .pts { font-weight: 800; }
+.wl-bp .fx { font-weight: 700; color: #1a4d8f; }
+
+/* Baum- und Platzwahl */
+.wl-pick { padding-bottom: 6px; background: #f1efe8; }
+.wl-ptree { flex: none; width: 64px; height: 72px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 2px; font: inherit; line-height: 1.1; background: var(--cl); color: #111; border: 3px solid var(--cd); border-radius: 12px; cursor: pointer; }
+.wl-ptree .n { font-size: 1rem; font-weight: 900; }
+.wl-ptree .e { font-size: 1.2rem; font-weight: 900; color: var(--cd); }
+.wl-ptree .f { font-size: .72rem; font-weight: 800; }
+.wl-ptree.sel { background: var(--c); color: var(--ct); outline: 4px solid #111; outline-offset: 1px; }
+.wl-ptree.sel .e { color: var(--ct); }
+.wl-ptree[disabled] { opacity: .4; cursor: not-allowed; }
+.wl-sides { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.wl-sides .wl-side { margin: 0; min-height: 56px; padding: 6px 8px; font-size: 1.05rem; display: flex; flex-direction: column; justify-content: center; align-items: center; line-height: 1.1; }
+.wl-side small { font-size: .72rem; font-weight: 700; }
+
+/* Mitspielende */
+.wl-players { padding: 12px 10px; }
+.wl-players h2 { margin: 0 0 8px; font-size: 1.15rem; }
+.wl-opps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.wl-opp { width: 100%; display: flex; align-items: center; gap: 6px; height: 58px; padding: 4px 8px; font: inherit; color: #111; border-radius: 12px; background: #f1efe8; border: 3px solid transparent; overflow: hidden; cursor: pointer; text-align: left; }
+.wl-opp.act { border-color: var(--primary); background: #e8f0fd; }
+.wl-opp.vw { box-shadow: inset 0 0 0 3px #2e8b3d; }
+.wl-opp:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.wl-nm2 { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .95rem; }
+.wl-st { flex: none; width: 3.5rem; display: flex; flex-direction: column; align-items: center; line-height: 1.05; }
+.wl-st b { font-size: 1.25rem; }
+.wl-st small { font-size: .68rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+
+/* Wald */
+.wl-forest { padding: 12px 10px; }
+.wl-forest h2 { margin: 0 0 6px; font-size: 1.15rem; }
+.wl-trees { min-height: 134px; box-sizing: border-box; background: #e9f3e4; align-items: stretch; }
+.wl-tree { flex: none; width: 92px; box-sizing: border-box; display: flex; flex-direction: column; padding: 0; font: inherit; color: #111; background: #fff; border: 3px solid var(--cd); border-radius: 12px; overflow: hidden; cursor: pointer; text-align: center; }
+.wl-tree .wl-top { height: 26px; }
+.wl-tree .wl-em { font-size: 1.6rem; }
+.wl-tree .wl-nm { font-size: .85rem; }
+.wl-tree .wl-sub { display: block; font-size: .78rem; font-weight: 800; color: #3a3a40; }
+.wl-tree .wl-mini-em { display: block; font-size: .8rem; letter-spacing: -1px; white-space: nowrap; overflow: hidden; }
+.wl-tree.sel { outline: 5px solid #111; outline-offset: 1px; }
+.wl-tree:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.wl-tdetail { min-height: 17.5rem; margin-top: 8px; padding: 8px; border: 3px solid var(--line); border-radius: 12px; background: #fafaf6; }
+.wl-tdetail.empty { display: flex; align-items: center; justify-content: center; text-align: center; }
+.wl-tdetail h3 { margin: 0 0 8px; font-size: 1.05rem; }
+.wl-cross { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-areas: ". up ." "left mid right" ". down ."; gap: 6px; }
+.c-up { grid-area: up; } .c-left { grid-area: left; } .c-right { grid-area: right; } .c-down { grid-area: down; } .c-mid { grid-area: mid; }
+.c-mid { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 84px; border-radius: 12px; background: var(--c); color: var(--ct); font-size: .9rem; text-align: center; padding: 4px; }
+.c-mid span { font-size: 1.8rem; line-height: 1.1; }
+.wl-cell { width: 100%; min-height: 84px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 3px 2px; font: inherit; line-height: 1.1; color: #111; background: var(--cl); border: 3px solid var(--cd); border-radius: 12px; cursor: pointer; text-align: center; }
+.wl-cell small { font-size: .68rem; font-weight: 800; color: #444; }
+.wl-cell .em { font-size: 1.4rem; line-height: 1.1; }
+.wl-cell b { font-size: .78rem; overflow-wrap: anywhere; }
+.wl-cell i { font-style: normal; font-size: .72rem; font-weight: 800; }
+.wl-cell.free { cursor: default; background: #fff; border: 3px dashed #b9b6ab; color: #777; justify-content: center; }
+.wl-cell.free span { font-weight: 800; }
+.wl-cell:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.wl-cave { margin: 10px 0 0; font-size: 1rem; }
+
+/* Spielende */
+.wl-over h1 { text-align: center; margin: 4px 0 8px; font-size: 1.6rem; }
+.wl-btns { display: grid; gap: 4px; margin-top: 10px; }
+.wl-table { width: 100%; border-collapse: collapse; font-size: 1.1rem; }
+.wl-table th { text-align: left; font-size: .8rem; color: var(--muted); padding: 4px 6px; }
+.wl-table td { padding: 8px 6px; border-top: 1px solid var(--line); }
+.wl-table td.n, .wl-table th.n { text-align: right; font-weight: 800; }
+.wl-table tr.lead td { background: #fff6d6; }
+.wl-bd { border: 2px solid var(--line); border-radius: 12px; margin: 10px 0; padding: 0 10px 8px; background: #fff; }
+.wl-bd summary { min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; font-size: 1.1rem; list-style: none; }
+.wl-bd summary::-webkit-details-marker { display: none; }
+.wl-bd summary::before { content: '▸'; margin-right: 6px; }
+.wl-bd[open] summary::before { content: '▾'; }
+.wl-bd summary b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wl-bd summary:focus-visible { outline: 4px solid #ffb300; outline-offset: 2px; }
+.wl-bd-tree h4, .wl-bd-cave h4 { display: flex; justify-content: space-between; margin: 10px 0 4px; font-size: 1rem; background: #f1efe8; padding: 4px 8px; border-radius: 8px; }
+.wl-bd-tree ul { list-style: none; margin: 0; padding: 0; }
+.wl-bd-tree li { display: flex; align-items: center; gap: 8px; padding: 5px 2px; border-bottom: 1px solid var(--line); }
+.wl-bd-tree li .em { font-size: 1.4rem; flex: none; width: 1.8rem; text-align: center; }
+.wl-bd-tree li .t { flex: 1; min-width: 0; font-size: .95rem; }
+.wl-bd-tree li .t small { display: block; color: var(--muted); font-size: .8rem; }
+.wl-bd-tree li .p { flex: none; font-size: 1.2rem; font-weight: 900; min-width: 1.6rem; text-align: right; }
+.wl-bd-tree li.none { color: var(--muted); }
+.wl-bd-sum { margin: 10px 0 0; font-size: 1.05rem; }
+
+@media (min-width: 700px) {
+  .wl-hand { grid-template-columns: repeat(5, 1fr); }
+  .wl-action { max-height: 55vh; }
+}
+
+/* Statusbanner: immer gleich hoch, damit das Spielfeld nicht springt */
+.banner { box-sizing: border-box; height: 5.2rem; min-height: 0; overflow: hidden; font-size: 1.35rem; line-height: 1.25; }
+
+/* Alle Knöpfe mindestens 48 px (auch die kleinen Knöpfe der Kopfzeile) */
+.btn.mini { min-height: 48px; }
+
+.wl-nm.long { font-size: .68rem; letter-spacing: -.2px; }
